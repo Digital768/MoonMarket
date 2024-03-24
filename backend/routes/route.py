@@ -2,7 +2,6 @@ from fastapi import APIRouter
 from models.stocks import Stock
 from config.database import collection_name
 from schema.schemas import list_serial
-from bson import ObjectId
 import requests
 
 router = APIRouter()
