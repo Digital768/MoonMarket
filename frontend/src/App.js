@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import StockItem from "./StockItem.js";
 import "reactjs-popup/dist/index.css";
+import FormDialog from "./FormDialog.js";
 
 function App() {
   const [tickerInput, setTickerInput] = useState(""); // State to store the typed ticker input
@@ -56,6 +57,9 @@ function App() {
       </form>
       <div>
         <StockItem {...stock} />
+      </div>
+      <div className="addStockBox">
+        <FormDialog stock ={stock}></FormDialog>
       </div>
     </div>
   );
