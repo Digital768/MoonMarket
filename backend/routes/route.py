@@ -28,7 +28,7 @@ def get_quote(symbol: str):
 #     return stocks
 
 #POST request Method
-@router.post("/")
+@router.post("/add/")
 async def post_stock(stock:Stock):
     collection_name.insert_one(dict(stock))
 
