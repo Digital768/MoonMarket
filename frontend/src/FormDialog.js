@@ -1,16 +1,21 @@
-import * as React from 'react';
+import React, { useState } from "react";
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import NumberInput from './NumberInput';
 import axios from "axios";
 
-export default function FormDialog() {
-    const [open, setOpen] = React.useState(false);
+export default function FormDialog({stock}) {
+    const [open, setOpen] = useState(false);
+    const [portfolioStock, setPortfolioStock] = useState({
+        name: stock.name ,
+        bought_price: '',
+        last_price: stock.price ,
+        quantity: '',
+        value: ''
+    })
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -20,16 +25,16 @@ export default function FormDialog() {
         setOpen(false);
     };
 
-    // async function postApiStock(stock, quantity) {
-    //     const value = stock.price * quantity;
+    async function postApiStock(portfolioStock, quantity) {
+        const value = stock.price * quantity;
 
-    //     return axios.post(`http://localhost:8000/api/add/${stock}`);
-    //   }
+        return axios.post(`http://localhost:8000/${portfolioStock}`);
+      }
 
     return (
         <React.Fragment>
             <Button variant="outlined" onClick={handleClickOpen}>
-                Open form dialog
+                add stock
             </Button>
             <Dialog
                 open={open}
@@ -43,12 +48,12 @@ export default function FormDialog() {
                 }}
             >
                 <DialogTitle>Add a stock</DialogTitle>
-                <DialogContent>
+                <DialogContent className='addStockForm'>
                     <DialogContentText>
                         To add a stock to your portfolio, please enter how many stocks of the company you bought and at which price.
                     </DialogContentText>
-                    <NumberInput placeholder="Enter bought price" />
-                    <NumberInput placeholder = "enter number of stocks"/>
+                    <input placeholder='enter bought price' type='number' />
+                    <input placeholder='enter quantity' type='number'/>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>

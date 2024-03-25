@@ -11,16 +11,6 @@ const CustomNumberInput = React.forwardRef(function CustomNumberInput(props, ref
       slots={{
         root: StyledInputRoot,
         input: StyledInputElement,
-        incrementButton: StyledButton,
-        decrementButton: StyledButton,
-      }}
-      slotProps={{
-        incrementButton: {
-          children: '▴',
-        },
-        decrementButton: {
-          children: '▾',
-        },
       }}
       {...props}
       ref={ref}

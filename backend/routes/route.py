@@ -27,10 +27,11 @@ def get_quote(symbol: str):
 #     stocks= list_serial(collection_name.find())
 #     return stocks
 
-# #POST request Method
-# @router.post("/")
-# async def post_stock(stock:Stock):
-#     collection_name.insert_one(dict(stock))
+#POST request Method
+@router.post("/")
+async def post_stock(stock:Stock):
+    collection_name.insert_one(dict(stock))
+
 
 # #PUT request Method
 # @router.put("/stocks/{id}")
