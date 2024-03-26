@@ -1,9 +1,9 @@
-import "./App.css";
 import React, { useState } from "react";
 import axios from "axios";
 import StockItem from "./StockItem.js";
-import "reactjs-popup/dist/index.css";
 import FormDialog from "./FormDialog.js";
+import "./App.css";
+
 
 function App() {
   const [tickerInput, setTickerInput] = useState(""); // State to store the typed ticker input
@@ -13,6 +13,7 @@ function App() {
     ticker: "",
     exchange: "",
   });
+  const [stockSearched, setStockSearched] = useState(false); // State to track if a stock has been searched
 
   const handleChange = (event) => {
     setTickerInput(event.target.value); // Update the typed ticker input
@@ -25,7 +26,7 @@ function App() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await getApiStocks(tickerInput); // Wait for the promise to resolve\
+      const response = await getApiStocks(tickerInput); // Wait for the promise to resolve
       const stockResponse = response.data[0];
       setStock({
         ...stock,
@@ -35,6 +36,7 @@ function App() {
         exchange: stockResponse.exchange,
       });
       setTickerInput(""); // Clear the input value after submission
+      setStockSearched(true); // Set stockSearched to true after the stock has been searched
     } catch (err) {
       console.log(err.message);
     }
@@ -53,13 +55,17 @@ function App() {
           onChange={handleChange}
           placeholder="Stock ticker"
         />
-        <button type="submit">Submit</button>
+        <button type="submit">Search</button>
       </form>
       <div>
         <StockItem {...stock} />
       </div>
-      <div className="addStockBox">
-        <FormDialog stock ={stock}></FormDialog>
+      <div>
+      {stockSearched && ( // Render FormDialog only if a stock has been searched
+        <div className="addStockBox">
+          <FormDialog stock={stock}></FormDialog>
+        </div>
+      )}
       </div>
     </div>
   );
