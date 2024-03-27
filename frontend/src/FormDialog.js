@@ -68,7 +68,7 @@ export default function FormDialog({ stock }) {
     };
 
     async function postApiStock(portfolioStock) {
-        return axios.post('http://localhost:8000/add/', portfolioStock);
+        return axios.post('http://localhost:8000/', portfolioStock);
     }
 
     return (

@@ -1,6 +1,9 @@
-from fastapi import FastAPI
-from routes.route import router
+from fastapi import FastAPI, Request
+from backend.Stock.route import router
 from fastapi.middleware.cors import CORSMiddleware
+from backend.Stock.database import client  # Import the MongoDB client
+from motor.motor_asyncio import AsyncIOMotorClient
+from database import settings
 
 origins = [
     "http://localhost:3000"
@@ -16,4 +19,11 @@ app.add_middleware(
     allow_headers=["*"]
     )
 
-
+@app.on_event("startup")
+async def startup_db_client():
+    app.mongodb_client = AsyncIOMotorClient(settings.DB_URL)
+    app.mongodb_db = app.mongodb_client[settings.DB_NAME]
+    
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    app.mongodb_client.close()
