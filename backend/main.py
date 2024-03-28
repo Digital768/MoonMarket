@@ -1,16 +1,16 @@
 from fastapi import FastAPI, Request
-from backend.Stock.route import router
+import uvicorn
+from Stock.route import Stocks_router
 from fastapi.middleware.cors import CORSMiddleware
-from backend.Stock.database import client  # Import the MongoDB client
+from config import client  # Import the MongoDB client
 from motor.motor_asyncio import AsyncIOMotorClient
-from database import settings
+from config import settings
 
 origins = [
     "http://localhost:3000"
 ]
 
 app = FastAPI()
-app.include_router(router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins = origins,
@@ -27,3 +27,13 @@ async def startup_db_client():
 @app.on_event("shutdown")
 async def shutdown_db_client():
     app.mongodb_client.close()
+    
+app.include_router(Stocks_router, prefix="/stocks")
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "main:app",
+        host=settings.HOST,
+        reload=settings.DEBUG_MODE,
+        port=settings.PORT,
+    )
