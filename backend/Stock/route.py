@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Body, HTTPException, status
+from fastapi import APIRouter, Request, Body, HTTPException, status, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from Stock.models import Stock, UpdateStock
@@ -48,10 +48,36 @@ async def add_stock(request: Request , stock:Stock= Body(...)):
     # collection_name.insert_one(dict(stock))
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_stock)
 
-@Stocks_router.delete("/", response_description = "Delete stock")
+        
+@Stocks_router.put("/{id}", response_description = "Update stock")
+async def update_stock(id:str, request: Request , stock:UpdateStock= Body(...)):
+    stock = {k: v for k, v in stock.dict().items() if v is not None}
+    
+    # Retrieve the existing stock document
+    existing_stock = await request.app.mongodb_db["stock_collection"].find_one({"_id":id})
+    if existing_stock is None:
+        raise HTTPException(status_code=404, detail = f"Stock with id {id} does not found")
+    
+    # If 'last_price' or 'quantity' is being updated, update 'value' as well
+    if 'last_price' in stock or 'quantity' in stock:
+        last_price = stock['last_price'] if 'last_price' in stock else existing_stock['last_price']
+        quantity = stock['quantity'] if 'quantity' in stock else existing_stock['quantity']
+        stock['value'] = last_price * quantity
+    
+    if(len(stock)>=1):
+        update_result = await request.app.mongodb_db["stock_collection"].update_one({"_id": id,}, {"$set": stock})
+        
+        if update_result.modified_count == 1:
+            if(updated_stock := await request.app.mongodb_db["stock_collection"].find_one({"_id":id})) is not None:
+                return updated_stock
+            
+    return existing_stock
+
+        
+@Stocks_router.delete("/{id}", response_description = "Delete stock")
 async def delete_stock(id:str, request: Request ):  
     delete_result = await request.app.mongodb_db["stock_collection"].delete_one({"_id":id})
     if delete_result.deleted_count == 1:
-        return JSONResponse(status_code=status.HTTP_204_NO_CONTENT)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
     
     raise HTTPException(status_code=404, detail = f"Stock with id {id} does not exist")

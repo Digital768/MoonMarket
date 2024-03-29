@@ -1,9 +1,11 @@
+from typing import Optional
 from pydantic import BaseModel, Field
 import uuid
 
 class Stock(BaseModel):
     id:str = Field(default_factory=uuid.uuid4, alias='_id')
     name:str = Field(...)
+    ticker:str = Field(...)
     bought_price:float
     last_price:float
     quantity:float
@@ -14,6 +16,7 @@ class Stock(BaseModel):
             "example": {
                 "id": "60000000-0000-0000",
                 "name": "Apple",
+                "ticker": "AAPL",
                 "bought_price": 100.0,
                 "last_price": 100.0,
                 "quantity": 10,
@@ -22,12 +25,14 @@ class Stock(BaseModel):
         }
     
 class UpdateStock(BaseModel):
-    last_price:float
+    quantity:Optional[float]
+    last_price:Optional[float]
     
     class Config:
         json_schema_extra = {
             "example": {
-                "last_price": 100.0
+                "last_price": 100.0,
+                "quantity": 20
             }
         }
     
