@@ -10,7 +10,7 @@ class Stock(BaseModel):
     value:float
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "id": "60000000-0000-0000",
                 "name": "Apple",
@@ -25,7 +25,7 @@ class UpdateStock(BaseModel):
     last_price:float
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "last_price": 100.0
             }
