@@ -12,6 +12,11 @@ function App() {
     price: 0,
     ticker: "",
     exchange: "",
+    nextEarningsAnnouncement: '',
+    priceAvg50: 0,
+    priceAvg200: 0,
+    yearHigh: 0,
+    yearLow: 0
   });
   const [stockSearched, setStockSearched] = useState(false); // State to track if a stock has been searched
 
@@ -20,7 +25,7 @@ function App() {
   };
 
   async function getApiStocks(ticker) {
-    return axios.get(`http://localhost:8000/api/quote/${ticker}`);
+    return axios.get(`http://localhost:8000/stocks/api/quote/${ticker}`);
   }
 
   const handleSubmit = async (event) => {
@@ -28,12 +33,20 @@ function App() {
     try {
       const response = await getApiStocks(tickerInput); // Wait for the promise to resolve
       const stockResponse = response.data[0];
+      const EarningsDate = stockResponse.earningsAnnouncement
+      const dateObj = new Date(EarningsDate);
+      const formattedEarningsDate = `${dateObj.getDate()}-${dateObj.getMonth() + 1}-${dateObj.getFullYear()}`;
       setStock({
         ...stock,
         price: stockResponse.price,
         name: stockResponse.name,
         ticker: tickerInput.toUpperCase(), // Set the ticker after submission
         exchange: stockResponse.exchange,
+        nextEarningsAnnouncement: formattedEarningsDate,
+        priceAvg50: stockResponse.priceAvg50,
+        priceAvg200: stockResponse.priceAvg200,
+        yearHigh: stockResponse.yearHigh,
+        yearLow: stockResponse.yearLow,
       });
       setTickerInput(""); // Clear the input value after submission
       setStockSearched(true); // Set stockSearched to true after the stock has been searched
@@ -44,11 +57,11 @@ function App() {
 
   return (
     <div className="App">
-      <nav></nav>
-      <h1>MOONMARKET</h1>
+      <nav className="logo-row">
+      <a className="logo">MoonMarket</a>
+      </nav>
       <form onSubmit={handleSubmit}>
-        <label>Stock ticker</label>
-        <input
+        <input className="search-stock"
           type="text"
           name="ticker"
           value={tickerInput} // Bind input value to tickerInput state

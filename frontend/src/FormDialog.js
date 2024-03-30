@@ -11,6 +11,7 @@ export default function FormDialog({ stock }) {
     const [open, setOpen] = useState(false);
     const [portfolioStock, setPortfolioStock] = useState({
         name: stock.name,
+        ticker: stock.ticker,
         bought_price: 0,
         last_price: stock.price,
         quantity: 0,
@@ -68,7 +69,7 @@ export default function FormDialog({ stock }) {
     };
 
     async function postApiStock(portfolioStock) {
-        return axios.post('http://localhost:8000/', portfolioStock);
+        return axios.post('http://localhost:8000/stocks', portfolioStock);
     }
 
     return (
