@@ -1,0 +1,58 @@
+.portfolio {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+.stock-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-gap: 20px;
+  background-color: #f2f2f2;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 900px;
+  height: 600px;
+  overflow: auto;
+}
+
+.stock-cube {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stock-ticker {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.stock-price {
+  font-size: 14px;
+  color: black;
+}
+
+.positive {
+  background-color: #5bb974;
+}
+
+.negative {
+  background-color: #f28b82;
+}
+
+.navbar{
+  display: flex;
+  width: 600px;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-bottom: 20px;
+}
