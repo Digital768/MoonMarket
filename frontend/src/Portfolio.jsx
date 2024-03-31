@@ -8,12 +8,11 @@ function Portfolio({getStockData}) {
 
   async function getStocksFromDb() {
     const dbStocks = await axios.get("http://localhost:8000/stocks/");
-    console.log(dbStocks)
     return dbStocks
   }
 
   async function updateStockPrice(id, new_price){
-    await axios.put(`http://localhost:8000/stocks/${id}`, new_price )
+    await axios.put(`http://localhost:8000/stocks/${id}`, { last_price: new_price, quantity: null } )
   }
 
   const { data, status } = useQuery({
@@ -42,13 +41,18 @@ function Portfolio({getStockData}) {
     // retrive all stocks from db, then get newest stock price for each stock and then update stock prices in db
     const response = await getStocksFromDb()
     const stock_collection = response["data"]
+    console.log("stock_collection: ", stock_collection)
     for (const stock of stock_collection){
       const ticker = stock.ticker
-      const apiResponse = getStockData(ticker)
-      const stockResponse = response.data[0];
-      const newPrice = stockResponse.price;
+      console.log("ticker: ", ticker)
+      const apiResponse =  await getStockData(ticker)
+      console.log("apiResponse: ", apiResponse)
+      const newPrice = apiResponse.data[0].price // Corrected
+      console.log("newPrice: ", newPrice)
       const StockId = stock._id; 
-      await updateStockPrice(StockId, newPrice)
+      console.log("StockId: ", StockId)
+      const updateResponse = await updateStockPrice(StockId, newPrice)
+      console.log("updateResponse: ", updateResponse)
     }
   }
 
