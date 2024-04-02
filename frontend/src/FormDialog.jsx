@@ -7,7 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import axios from "axios";
 
-export default function FormDialog({ stock }) {
+export default function FormDialog({ stock, setPortfolioVisible, setStockSearched }) {
     const [open, setOpen] = useState(false);
     const [portfolioStock, setPortfolioStock] = useState({
         name: stock.name,
@@ -58,6 +58,8 @@ export default function FormDialog({ stock }) {
             postApiStock(portfolioStock)
                 .then(() => {
                     handleClose();
+                    setStockSearched(false)
+                    setPortfolioVisible(true)
                 })
                 .catch(error => {
                     console.error("Error:", error);
@@ -69,7 +71,7 @@ export default function FormDialog({ stock }) {
     };
 
     async function postApiStock(portfolioStock) {
-        return axios.post('http://localhost:8000/stocks', portfolioStock);
+        return axios.post('http://localhost:8000/stocks/', portfolioStock);
     }
 
     return (

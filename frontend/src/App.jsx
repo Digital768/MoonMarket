@@ -7,7 +7,6 @@ import { CiSearch } from "react-icons/ci";
 import {
   QueryClient,
   QueryClientProvider,
-  useQuery,
 } from "@tanstack/react-query";
 import Portfolio from "./Portfolio.jsx";
 
@@ -96,7 +95,7 @@ function App() {
               <StockItem {...stock} />
             </div>
             <div className="addStockBox">
-              <FormDialog stock={stock}></FormDialog>
+              <FormDialog stock={stock} setPortfolioVisible ={setPortfolioVisible} setStockSearched ={setStockSearched}></FormDialog>
             </div>
           </div>
         )}
