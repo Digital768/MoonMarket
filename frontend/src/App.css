@@ -2,11 +2,6 @@
   text-align: center;
 }
 
-.addStockForm{
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-}
 
 .logo-row{
   padding-top: 15px;
@@ -26,12 +21,32 @@
   color: black
 }
 
-.search-stock{
-  border-radius: 20px;
-  width: 150px;
-  height: 30px;
-  box-shadow: 3px 5px 5px #888888;
+/* search-ticker-row */
+.search-bar{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
-.search-stock::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-  padding-left: 6px;
+.search-container{
+  position: relative;
+}
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+}
+.search-input{
+  padding-left: 30px;
+  border-radius: 30px;
+  border: 1px solid #ccc;
+  box-shadow: 5px 5px 5px #888888;
+  height: 40px;
+}
+
+.addStockForm{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
 }

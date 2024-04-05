@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import "./portfolio.css";
+import { IoMdClose } from "react-icons/io";
 
 function Portfolio({ getStockData }) {
   const [totalValue, setTotalValue] = useState(0);
@@ -25,10 +26,17 @@ function Portfolio({ getStockData }) {
 
   useEffect(() => {
     if (data?.data) {
-      const stockValues = data.data.map((stock) => ({ value: stock.value }));
+      const stockValues = data.data.map((stock) => ({
+        id: stock._id,
+        value: stock.value,
+        last_price :stock.last_price,
+        bought_price: stock.bought_price,
+        ticker: stock.ticker,
+        percentage: (stock.value / totalValue) * 100, // Calculate percentage
+      }));
       setStockValues(stockValues);
     }
-  }, [data]);
+  }, [data, totalValue]);
 
   useEffect(() => {
     const sum = stockValues.reduce((acc, obj) => acc + obj.value, 0);
@@ -64,6 +72,11 @@ function Portfolio({ getStockData }) {
     await Promise.all(updatePromises);
     refetch(); // Refetch the data after updating all the stock prices
   }
+
+  async function delteStock(id) {
+    await axios.delete(`http://localhost:8000/stocks/${id}`)
+    refetch();
+  }
   
 
   function isStockProfitable(stock) {
@@ -80,11 +93,12 @@ function Portfolio({ getStockData }) {
         <button onClick={refreshStockPrices}>Refresh Data</button>
       </div>
       <div className="stock-container">
-        {data?.data.map((stock) => (
-          <div className={`stock-cube ${isStockProfitable(stock) ? 'positive' : 'negative'}`} key={stock._id}>
+        {stockValues?.map((stock) => (
+          <div className={`stock-cube ${isStockProfitable(stock) ? 'positive' : 'negative'}`} key={stock._id} style={{height: `${stock.percentage}%`}}>
+            <IoMdClose className="delete-stock-btn" onClick={() => delteStock(stock._id)} />
             <div className="stock-ticker">{stock.ticker}</div>
             <div className="stock-price">{Math.round(stock.value)}$</div>
-            <div>
+            <div className="profit-percentage">
               {Math.round(
                 ((stock.last_price - stock.bought_price) / stock.bought_price) *
                 100

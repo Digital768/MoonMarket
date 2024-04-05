@@ -75,17 +75,19 @@ function App() {
           </a>
         </nav>
         <form onSubmit={handleSubmit}>
-          <div>
-            <CiSearch /> {/* Place CiSearch component before the input */}
+          <div className="search-bar">
+            <div className="search-container">
+            <CiSearch className="search-icon"/> {/* Place CiSearch component before the input */}
             <input
-              className="search-stock"
+              className="search-input"
               type="text"
               name="ticker"
               value={tickerInput}
               onChange={handleChange}
-              placeholder="Stock ticker"
+              placeholder="Enter ticker"
             />
             <input type="submit" hidden />
+            </div>
           </div>
         </form>
         {portfolioVisible && (<Portfolio getStockData ={getStockData}></Portfolio>)}
