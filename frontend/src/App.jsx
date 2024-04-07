@@ -40,7 +40,6 @@ function App() {
     event.preventDefault();
     const response = await getStockData(tickerInput); // Wait for the promise to resolve
     const stockResponse = response.data[0];
-    console.log(stockResponse)
     if (stockResponse === undefined) {
       return alert("stock not found");
     }

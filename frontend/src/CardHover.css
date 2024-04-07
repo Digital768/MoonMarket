@@ -1,0 +1,31 @@
+.popup-card {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  border-radius: 10px;
+}
+
+.card-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+hr{
+    color: 3px solid black;
+    width: 100%;
+}
+
+h4{
+    font-size: 14px;
+}
+p{
+    font-size: 10px;
+}
