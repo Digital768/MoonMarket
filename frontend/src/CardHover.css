@@ -9,6 +9,7 @@
   flex-direction: column;
   width: 150px;
   border-radius: 10px;
+  pointer-events: none;
 }
 
 .card-header {

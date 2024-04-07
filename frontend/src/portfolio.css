@@ -17,6 +17,7 @@
   width: 900px;
   height: 600px;
   overflow: auto;
+  position: relative;
 }
 
 .stock-cube {
@@ -29,6 +30,7 @@
   flex-direction: column;
   justify-content: center;
   position: relative;
+  cursor: pointer;
 }
 
 .stock-ticker {

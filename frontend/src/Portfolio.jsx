@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import "./portfolio.css";
@@ -8,6 +8,7 @@ import CardHover from "./CardHover";
 function Portfolio({ getStockData }) {
   const [totalValue, setTotalValue] = useState(0);
   const [hoveredStockId, setHoveredStockId] = useState(null);
+  const stockContainerRef = useRef(null);
 
   const { data, status, refetch } = useQuery({
     queryKey: ["stocks"],
@@ -79,7 +80,7 @@ function Portfolio({ getStockData }) {
           <div
             className={`stock-cube ${isStockProfitable(stock) ? "positive" : "negative"}`}
             key={stock._id}
-            style={{ height: `${(stock.value / totalValue) * 100}%` }}
+            style={{ height: `${(stock.value / totalValue) * 100}%`}}
             onMouseEnter={() => setHoveredStockId(stock._id)}
             onMouseLeave={() => setHoveredStockId(null)}
           >
@@ -88,9 +89,9 @@ function Portfolio({ getStockData }) {
             <div className="profit-percentage">
               {Math.round(((stock.last_price - stock.bought_price) / stock.bought_price) * 100)}%
             </div>
-            {hoveredStockId === stock._id && (
-            <CardHover stock = {stock} inYourPorfolio ={(stock.value / totalValue) * 100}></CardHover>
-            )}
+            {/* {hoveredStockId === stock._id && (
+            <CardHover stock = {stock} inYourPorfolio ={(stock.value / totalValue) * 100} containerRef={stockContainerRef}></CardHover>
+            )} */}
           </div>
         ))}
       </div>
