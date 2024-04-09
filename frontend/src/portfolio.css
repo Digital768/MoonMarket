@@ -5,24 +5,22 @@
   align-items: center;
   height: 80vh;
 }
-
-.stock-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  grid-gap: 20px;
+.stock-container{
+  display: block;
+}
+.stock-grid {
+  display: flex;
   background-color: #f2f2f2;
-  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 900px;
-  height: 600px;
-  overflow: auto;
+  width: 1200px;
+  height: 500px;
+  overflow: hidden;
   position: relative;
+  align-items: center;
 }
-
 .stock-cube {
   background-color: #fff;
-  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
@@ -31,6 +29,13 @@
   justify-content: center;
   position: relative;
   cursor: pointer;
+  flex-grow: 1;
+  margin: 3px;
+  height: 100%;
+}
+/* Set the width of each column in the grid to auto */
+.stock-grid > * {
+  width: auto;
 }
 
 .stock-ticker {

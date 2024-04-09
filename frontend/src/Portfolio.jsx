@@ -7,6 +7,7 @@ import CardHover from "./CardHover";
 
 function Portfolio({ getStockData }) {
   const [totalValue, setTotalValue] = useState(0);
+  const [sortedData, setSortedData] = useState([]);
   const [hoveredStockId, setHoveredStockId] = useState(null);
   const stockContainerRef = useRef(null);
 
@@ -14,7 +15,8 @@ function Portfolio({ getStockData }) {
     queryKey: ["stocks"],
     queryFn: getStocksFromDb,
     refetchOnWindowFocus: false,
-  });
+  },
+);
 
   async function getStocksFromDb() {
     const dbStocks = await axios.get("http://localhost:8000/stocks/");
@@ -28,7 +30,7 @@ function Portfolio({ getStockData }) {
     });
   }
 
-  async function delteStock(id) {
+  async function deleteStock(id) {
     await axios.delete(`http://localhost:8000/stocks/${id}`);
     refetch();
   }
@@ -57,9 +59,18 @@ function Portfolio({ getStockData }) {
     if (data?.data) {
       const sum = data.data.reduce((acc, stock) => acc + stock.value, 0);
       setTotalValue(Math.round(sum));
+
+       // Sort the stocks by value
+       const sortedStocks = sortStocksByValue(data.data);
+       setSortedData(sortedStocks);
     }
   }, [data]);
 
+    // Function to sort stocks by value
+    const sortStocksByValue = (stocks) => {
+      return stocks.slice().sort((a, b) => b.value - a.value);
+    };
+    
   if (status === "loading") {
     return <p>Loading...</p>;
   }
@@ -68,7 +79,6 @@ function Portfolio({ getStockData }) {
     return <p>Error</p>;
   }
 
-
   return (
     <div className="portfolio">
       <div className="navbar">
@@ -76,27 +86,44 @@ function Portfolio({ getStockData }) {
         <button onClick={refreshStockPrices}>Refresh Data</button>
       </div>
       <div className="stock-container">
-        {data?.data?.map((stock) => (
-          <div
-            className={`stock-cube ${isStockProfitable(stock) ? "positive" : "negative"}`}
-            key={stock._id}
-            style={{ height: `${(stock.value / totalValue) * 100}%`}}
-            onMouseEnter={() => setHoveredStockId(stock._id)}
-            onMouseLeave={() => setHoveredStockId(null)}
-          >
-            <IoMdClose className="delete-stock-btn" onClick={() => delteStock(stock._id)} />
-            <div className="stock-ticker">{stock.ticker}</div>
-            <div className="profit-percentage">
-              {Math.round(((stock.last_price - stock.bought_price) / stock.bought_price) * 100)}%
+        <div className="stock-grid">
+          {/* Sorting the stocks by value before rendering */}
+          {sortedData.map((stock) => (
+            <div
+              className={`stock-cube ${
+                isStockProfitable(stock) ? "positive" : "negative"
+              }`}
+              key={stock._id}
+              style={{ width: `${(stock.value / totalValue) * 100}%` }}
+              onMouseEnter={() => setHoveredStockId(stock._id)}
+              onMouseLeave={() => setHoveredStockId(null)}
+            >
+              <IoMdClose
+                className="delete-stock-btn"
+                onClick={() => deleteStock(stock._id)} // Corrected function name here
+              />
+              <div className="stock-ticker">{stock.ticker}</div>
+              <div className="profit-percentage">
+                {Math.round(
+                  ((stock.last_price - stock.bought_price) /
+                    stock.bought_price) *
+                    100
+                )}
+                %
+              </div>
+              {/* {hoveredStockId === stock._id && (
+                <CardHover
+                  stock={stock}
+                  inYourPorfolio={(stock.value / totalValue) * 100}
+                  containerRef={stockContainerRef}
+                ></CardHover>
+              )} */}
             </div>
-            {/* {hoveredStockId === stock._id && (
-            <CardHover stock = {stock} inYourPorfolio ={(stock.value / totalValue) * 100} containerRef={stockContainerRef}></CardHover>
-            )} */}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-export default Portfolio
+export default Portfolio;
