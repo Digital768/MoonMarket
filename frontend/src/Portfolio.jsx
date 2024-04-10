@@ -2,21 +2,20 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import "./portfolio.css";
-import { IoMdClose } from "react-icons/io";
-import CardHover from "./CardHover";
+import Treemap from "./Treemap";
 
 function Portfolio({ getStockData }) {
   const [totalValue, setTotalValue] = useState(0);
   const [sortedData, setSortedData] = useState([]);
-  const [hoveredStockId, setHoveredStockId] = useState(null);
-  const stockContainerRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [stocksTree, setStocksTree] = useState(null); // Define stocksTree state
 
   const { data, status, refetch } = useQuery({
     queryKey: ["stocks"],
     queryFn: getStocksFromDb,
     refetchOnWindowFocus: false,
   },
-);
+  );
 
   async function getStocksFromDb() {
     const dbStocks = await axios.get("http://localhost:8000/stocks/");
@@ -60,17 +59,52 @@ function Portfolio({ getStockData }) {
       const sum = data.data.reduce((acc, stock) => acc + stock.value, 0);
       setTotalValue(Math.round(sum));
 
-       // Sort the stocks by value
-       const sortedStocks = sortStocksByValue(data.data);
-       setSortedData(sortedStocks);
+      // Sort the stocks by value
+      const sortedStocks = sortStocksByValue(data.data);
+      setSortedData(sortedStocks);
+
+      const positiveStocks = [];
+      const negativeStocks = [];
+
+      sortedStocks.forEach(stock => {
+        if (isStockProfitable(stock)) {
+          positiveStocks.push({
+            category: 'Positive',
+            name: stock.name,
+            value: Math.round(stock.value),
+          });
+        } else {
+          negativeStocks.push({
+            category: 'Negative',
+            name: stock.name,
+            value: Math.round(stock.value),
+          });
+        }
+      });
+
+      const newStocksTree = {
+        name: 'Stocks',
+        children: [
+          {
+            name: 'Positive',
+            children: positiveStocks
+          },
+          {
+            name: 'Negative',
+            children: negativeStocks
+          }
+        ]
+      };
+      setStocksTree(newStocksTree); // Set stocksTree state
+      setIsLoading(false);
     }
   }, [data]);
 
-    // Function to sort stocks by value
-    const sortStocksByValue = (stocks) => {
-      return stocks.slice().sort((a, b) => b.value - a.value);
-    };
-    
+  // Function to sort stocks by value
+  const sortStocksByValue = (stocks) => {
+    return stocks.slice().sort((a, b) => b.value - a.value);
+  };
+
   if (status === "loading") {
     return <p>Loading...</p>;
   }
@@ -85,43 +119,7 @@ function Portfolio({ getStockData }) {
         <span>total value: {totalValue.toLocaleString("en-US")}$</span>
         <button onClick={refreshStockPrices}>Refresh Data</button>
       </div>
-      <div className="stock-container">
-        <div className="stock-grid">
-          {/* Sorting the stocks by value before rendering */}
-          {sortedData.map((stock) => (
-            <div
-              className={`stock-cube ${
-                isStockProfitable(stock) ? "positive" : "negative"
-              }`}
-              key={stock._id}
-              style={{ width: `${(stock.value / totalValue) * 100}%` }}
-              onMouseEnter={() => setHoveredStockId(stock._id)}
-              onMouseLeave={() => setHoveredStockId(null)}
-            >
-              <IoMdClose
-                className="delete-stock-btn"
-                onClick={() => deleteStock(stock._id)} // Corrected function name here
-              />
-              <div className="stock-ticker">{stock.ticker}</div>
-              <div className="profit-percentage">
-                {Math.round(
-                  ((stock.last_price - stock.bought_price) /
-                    stock.bought_price) *
-                    100
-                )}
-                %
-              </div>
-              {/* {hoveredStockId === stock._id && (
-                <CardHover
-                  stock={stock}
-                  inYourPorfolio={(stock.value / totalValue) * 100}
-                  containerRef={stockContainerRef}
-                ></CardHover>
-              )} */}
-            </div>
-          ))}
-        </div>
-      </div>
+      {stocksTree && <Treemap data={stocksTree} />} {/* Render Treemap if stocksTree is not null */}
     </div>
   );
 }
