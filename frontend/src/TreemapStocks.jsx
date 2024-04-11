@@ -3,7 +3,6 @@ import * as d3 from 'd3';
 
 export default function TreemapStocks({ data ,width = '1000px', height = '600px' }) {
   const svgRef = useRef(null);
-  console.log(data)
   function renderTreemap() {
     const parsedWidth = parseInt(width);
     const parsedHeight = parseInt(height);
@@ -12,7 +11,6 @@ export default function TreemapStocks({ data ,width = '1000px', height = '600px'
 
     const root = d3.hierarchy(data, (d) => d.children).sum((d) => d.value);
     const treemapRoot = d3.treemap().size([parsedWidth, parsedHeight]).padding(2)(root);
-    const fader = (color) => d3.interpolateRgb(color, '#fff')(0.3);
 
     const nodes = svg
   .selectAll('g')

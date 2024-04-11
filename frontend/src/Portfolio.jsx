@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import "./portfolio.css";
-import TreemapStocks from "./TreemapStocks";
+import { Treemap } from "./Treemap";
 
 function Portfolio({ getStockData }) {
   const [totalValue, setTotalValue] = useState(0);
@@ -13,8 +13,7 @@ function Portfolio({ getStockData }) {
     queryKey: ["stocks"],
     queryFn: getStocksFromDb,
     refetchOnWindowFocus: false,
-  },
-  );
+  });
 
   async function getStocksFromDb() {
     const dbStocks = await axios.get("http://localhost:8000/stocks/");
@@ -58,39 +57,44 @@ function Portfolio({ getStockData }) {
       const stockCollection = data.data;
       const sum = data.data.reduce((acc, stock) => acc + stock.value, 0);
       setTotalValue(Math.round(sum));
-  
+
       const positiveStocks = [];
       const negativeStocks = [];
-  
-      stockCollection.forEach(stock => {
+
+      stockCollection.forEach((stock) => {
         if (isStockProfitable(stock)) {
           positiveStocks.push({
-            category: 'Positive',
             name: stock.name,
             value: Math.round(stock.value),
           });
         } else {
           negativeStocks.push({
-            category: 'Negative',
             name: stock.name,
             value: Math.round(stock.value),
           });
         }
       });
-  
+
       const newStocksTree = {
-        name: 'Stocks',
+        name: "Stocks",
         value: 0,
         children: [
-          { name: 'Positive', children: positiveStocks },
-          { name: 'Negative', children: negativeStocks },
+          {
+            name: "Positive",
+            value: 0,
+            children: positiveStocks,
+          },
+          {
+            name: "Negative",
+            value: 0,
+            children: negativeStocks,
+          },
         ],
       };
-  
+
       setStocksTree(newStocksTree); // Trigger a re-render of the Treemap
     }
   }, [data]);
-
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -106,8 +110,7 @@ function Portfolio({ getStockData }) {
         <span>total value: {totalValue.toLocaleString("en-US")}$</span>
         <button onClick={refreshStockPrices}>Refresh Data</button>
       </div>
-      {stocksTree && <TreemapStocks data={stocksTree} />}
-      
+      {stocksTree && <Treemap data={stocksTree} width={1000} height={600}></Treemap>}
     </div>
   );
 }
