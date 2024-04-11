@@ -2,12 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import "./portfolio.css";
-import Treemap from "./Treemap";
+import TreemapStocks from "./TreemapStocks";
 
 function Portfolio({ getStockData }) {
   const [totalValue, setTotalValue] = useState(0);
   const [sortedData, setSortedData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [stocksTree, setStocksTree] = useState(null); // Define stocksTree state
 
   const { data, status, refetch } = useQuery({
@@ -56,17 +55,14 @@ function Portfolio({ getStockData }) {
 
   useEffect(() => {
     if (data?.data) {
+      const stockCollection = data.data;
       const sum = data.data.reduce((acc, stock) => acc + stock.value, 0);
       setTotalValue(Math.round(sum));
-
-      // Sort the stocks by value
-      const sortedStocks = sortStocksByValue(data.data);
-      setSortedData(sortedStocks);
-
+  
       const positiveStocks = [];
       const negativeStocks = [];
-
-      sortedStocks.forEach(stock => {
+  
+      stockCollection.forEach(stock => {
         if (isStockProfitable(stock)) {
           positiveStocks.push({
             category: 'Positive',
@@ -81,29 +77,20 @@ function Portfolio({ getStockData }) {
           });
         }
       });
-
+  
       const newStocksTree = {
         name: 'Stocks',
+        value: 0,
         children: [
-          {
-            name: 'Positive',
-            children: positiveStocks
-          },
-          {
-            name: 'Negative',
-            children: negativeStocks
-          }
-        ]
+          { name: 'Positive', children: positiveStocks },
+          { name: 'Negative', children: negativeStocks },
+        ],
       };
-      setStocksTree(newStocksTree); // Set stocksTree state
-      setIsLoading(false);
+  
+      setStocksTree(newStocksTree); // Trigger a re-render of the Treemap
     }
   }, [data]);
 
-  // Function to sort stocks by value
-  const sortStocksByValue = (stocks) => {
-    return stocks.slice().sort((a, b) => b.value - a.value);
-  };
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -119,7 +106,8 @@ function Portfolio({ getStockData }) {
         <span>total value: {totalValue.toLocaleString("en-US")}$</span>
         <button onClick={refreshStockPrices}>Refresh Data</button>
       </div>
-      {stocksTree && <Treemap data={stocksTree} />} {/* Render Treemap if stocksTree is not null */}
+      {stocksTree && <TreemapStocks data={stocksTree} />}
+      
     </div>
   );
 }

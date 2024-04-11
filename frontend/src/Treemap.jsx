@@ -1,46 +1,77 @@
-import { useRef, useEffect } from 'react';
-import * as d3 from 'd3';
+import { useMemo } from "react";
+import * as d3 from "d3";
 
-export default function Treemap({ data, width = '1000px', height = '600px' }) {
-  const svgRef = useRef(null);
+const colors = [
+  "#e0ac2b",
+  "#6689c6",
+  "#a4c969",
+  "#e85252",
+  "#9a6fb0",
+  "#a53253",
+  "#7f7f7f",
+];
 
-  function renderTreemap() {
-    const svg = d3.select(svgRef.current);
-
-    svg.attr('width', width).attr('height', height);
-
-    const root = d3
-      .hierarchy(data)
-      .sum((d) => d.value)
-      .sort((a, b) => b.value - a.value);
-
-    const treemapRoot = d3.treemap().size([width, height]).padding(1)(root);
-    
-
-    const nodes = svg
-      .selectAll('g')
-      .data(treemapRoot.leaves())
-      .join('g')
-      .attr('transform', (d) => `translate(${d.x0},${d.y0})`);
-      console.log(treemapRoot.leaves())
-
-    const fader = (color) => d3.interpolateRgb(color, '#fff')(0.3);
-    const colorScale = d3.scaleOrdinal(d3.schemeCategory10.map(fader));
-
-    nodes
-      .append('rect')
-      .attr('width', (d) => d.x1 - d.x0)
-      .attr('height', (d) => d.y1 - d.y0)
-      .attr('fill', (d) => colorScale(d.data.name));
-  }
-
-  useEffect(() => {
-    renderTreemap();
+export const Treemap = ({ width, height, data }) => {
+  const hierarchy = useMemo(() => {
+    return d3.hierarchy(data).sum((d) => d.value);
   }, [data]);
+
+  // List of item of level 1 (just under root) & related color scale
+  const firstLevelGroups = hierarchy?.children?.map((child) => child.data.name);
+  const colorScale = d3
+    .scaleOrdinal()
+    .domain(firstLevelGroups || [])
+    .range(colors);
+
+  const root = useMemo(() => {
+    const treeGenerator = d3.treemap().size([width, height]).padding(4);
+    return treeGenerator(hierarchy);
+  }, [hierarchy, width, height]);
+
+  const allShapes = root.leaves().map((leaf, i) => {
+    const parentName = leaf.parent?.data.name;
+    return (
+      <g key={leaf.id}>
+        <rect
+          x={leaf.x0}
+          y={leaf.y0}
+          width={leaf.x1 - leaf.x0}
+          height={leaf.y1 - leaf.y0}
+          stroke="transparent"
+          fill={colorScale(parentName)}
+          className={"opacity-80 hover:opacity-100"}
+        />
+        <text
+          x={leaf.x0 + 3}
+          y={leaf.y0 + 3}
+          fontSize={12}
+          textAnchor="start"
+          alignmentBaseline="hanging"
+          fill="white"
+          className="font-bold"
+        >
+          {leaf.data.name}
+        </text>
+        <text
+          x={leaf.x0 + 3}
+          y={leaf.y0 + 18}
+          fontSize={12}
+          textAnchor="start"
+          alignmentBaseline="hanging"
+          fill="white"
+          className="font-light"
+        >
+          {leaf.data.value}
+        </text>
+      </g>
+    );
+  });
 
   return (
     <div>
-      <svg ref={svgRef} />
+      <svg width={width} height={height}>
+        {allShapes}
+      </svg>
     </div>
   );
-}
+};
