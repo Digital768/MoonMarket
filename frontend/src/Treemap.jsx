@@ -36,8 +36,30 @@ export const Treemap = ({ width, height, data }) => {
   const showTooltip = (event, data) => {
     const tooltip = d3.select(tooltipRef.current);
     tooltip.style("visibility", "visible")
-      .html(`${data.name}<br>${data.value}`);
+      .html(`
+        <div style="width: 200px;"><h4 style="margin: 2px">${data.name}</h4></div>
+        <hr>
+        <div style="display: flex; flex-direction: row; width: fit-content; height: fit-content;">
+          <ul style="list-style-type: none; margin: 0; padding: 0; width: 200px;">
+            <li style="display: flex; justify-content: space-between; margin: 0; padding: 0; margin-bottom: 0;">
+              <p>In your portfolio</p>
+              <p>${data.percentageOfPortfolio}%</p>
+            </li>
+            <li style="display: flex; justify-content: space-between; margin: 0; padding: 0; margin-bottom: 0;">
+              <p>Value (${data.quantity} shares)</p>
+              <p>${data.value.toLocaleString("en-US")}$</p>
+            </li>
+            <li style="display: flex; justify-content: space-between; margin: 0; padding: 0; margin-bottom: 0;">
+              <p>Last price</p>
+              <p>${data.last_price}$</p>
+            </li>
+          </ul>
+        </div>
+      `);
   };
+  
+  
+  
   
   const mousemove = (event, data) => {
     const tooltip = d3.select(tooltipRef.current);
@@ -78,7 +100,7 @@ export const Treemap = ({ width, height, data }) => {
           fill="white"
           className="font-bold"
         >
-          {leaf.data.name}
+          {leaf.data.ticker}
         </text>
         <text
           x={leaf.x0 + 3}
@@ -89,7 +111,7 @@ export const Treemap = ({ width, height, data }) => {
           fill="white"
           className="font-light"
         >
-          {leaf.data.value}
+          {leaf.data.priceChangePercentage}%
         </text>
       </g>
     );

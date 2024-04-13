@@ -57,7 +57,6 @@ function Portfolio({ getStockData }) {
       const stockCollection = data.data;
       const sum = data.data.reduce((acc, stock) => acc + stock.value, 0);
       setTotalValue(Math.round(sum));
-
       const positiveStocks = [];
       const negativeStocks = [];
 
@@ -65,12 +64,22 @@ function Portfolio({ getStockData }) {
         if (isStockProfitable(stock)) {
           positiveStocks.push({
             name: stock.name,
+            ticker: stock.ticker,
             value: Math.round(stock.value),
+            last_price: Math.round(stock.last_price),
+            quantity: stock.quantity,
+            priceChangePercentage: Math.round(((stock.last_price - stock.bought_price) /stock.bought_price)*100),
+            percentageOfPortfolio: Math.round((stock.value/Math.round(sum))* 100)
           });
         } else {
           negativeStocks.push({
             name: stock.name,
+            ticker: stock.ticker,
             value: Math.round(stock.value),
+            last_price: Math.round(stock.last_price),
+            quantity: stock.quantity,
+            priceChangePercentage: Math.round(((stock.last_price - stock.bought_price) /stock.bought_price)*100),
+            percentageOfPortfolio: Math.round((stock.value/Math.round(sum))* 100)
           });
         }
       });
