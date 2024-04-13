@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import "./portfolio.css";
@@ -6,7 +6,6 @@ import { Treemap } from "./Treemap";
 
 function Portfolio({ getStockData }) {
   const [totalValue, setTotalValue] = useState(0);
-  const [sortedData, setSortedData] = useState([]);
   const [stocksTree, setStocksTree] = useState(null); // Define stocksTree state
 
   const { data, status, refetch } = useQuery({
