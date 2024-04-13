@@ -31,25 +31,46 @@ function Portfolio({ getStockData }) {
     refetch();
   }
 
-  async function refreshStockPrices() {
-    const response = await getStocksFromDb();
-    const stock_collection = response["data"];
+  // async function refreshStockPrices() {
+  //   const response = await getStocksFromDb();
+  //   const stock_collection = response["data"];
 
-    const updatePromises = stock_collection.map(async (stock) => {
-      const ticker = stock.ticker;
-      const apiResponse = await getStockData(ticker);
-      const newPrice = apiResponse.data[0].price;
-      const StockId = stock._id;
-      return updateStockPrice(StockId, newPrice);
-    });
+  //   const updatePromises = stock_collection.map(async (stock) => {
+  //     const ticker = stock.ticker;
+  //     const apiResponse = await getStockData(ticker);
+  //     const newPrice = apiResponse.data[0].price;
+  //     const StockId = stock._id;
+  //     return updateStockPrice(StockId, newPrice);
+  //   });
 
-    await Promise.all(updatePromises);
-    refetch();
-  }
+  //   await Promise.all(updatePromises);
+  //   refetch();
+  // }
 
   function isStockProfitable(stock) {
-    return stock.last_price > stock.bought_price;
+    const stock_avg_price = calculate_average_purchase_price(stock)
+    return stock.last_price > stock_avg_price;
   }
+  function calculate_average_purchase_price(stock) {
+    let total_cost = 0;
+    let total_quantity = 0;
+    for (const purchase of stock.purchases) {
+        total_cost += purchase.price * purchase.quantity;
+        total_quantity += purchase.quantity;
+    }
+    if (total_quantity === 0) {
+        return 0;
+    }
+    return total_cost / total_quantity;
+}
+function calculate_total_quantity(stock) {
+  let total_quantity = 0;
+  for (const purchase of stock.purchases) {
+      total_quantity += purchase.quantity;
+  }
+  return total_quantity;
+}
+
 
   useEffect(() => {
     if (data?.data) {
@@ -60,6 +81,8 @@ function Portfolio({ getStockData }) {
       const negativeStocks = [];
 
       stockCollection.forEach((stock) => {
+        const stock_avg_price = calculate_average_purchase_price(stock)
+        const quantity = calculate_total_quantity(stock)
         if (isStockProfitable(stock)) {
           positiveStocks.push({
             name: stock.name,
@@ -67,8 +90,8 @@ function Portfolio({ getStockData }) {
             ticker: stock.ticker,
             value: Math.round(stock.value),
             last_price: Math.round(stock.last_price),
-            quantity: stock.quantity,
-            priceChangePercentage: Math.round(((stock.last_price - stock.bought_price) /stock.bought_price)*100),
+            quantity: quantity,
+            priceChangePercentage: Math.round(((stock.last_price - stock_avg_price) /stock_avg_price)*100),
             percentageOfPortfolio: Math.round((stock.value/Math.round(sum))* 100)
           });
         } else {
@@ -78,8 +101,8 @@ function Portfolio({ getStockData }) {
             id: stock._id,
             value: Math.round(stock.value),
             last_price: Math.round(stock.last_price),
-            quantity: stock.quantity,
-            priceChangePercentage: Math.round(((stock.last_price - stock.bought_price) /stock.bought_price)*100),
+            quantity: quantity,
+            priceChangePercentage: Math.round(((stock.last_price - stock_avg_price) /stock_avg_price)*100),
             percentageOfPortfolio: Math.round((stock.value/Math.round(sum))* 100)
           });
         }
@@ -118,7 +141,7 @@ function Portfolio({ getStockData }) {
     <div className="portfolio">
       <div className="navbar">
         <span>total value: {totalValue.toLocaleString("en-US")}$</span>
-        <button onClick={refreshStockPrices}>Refresh Data</button>
+        {/* <button onClick={refreshStockPrices}>Refresh Data</button> */}
       </div>
       {stocksTree && <Treemap data={stocksTree} width={1000} height={600} deletestock={deleteStock}></Treemap>}
     </div>

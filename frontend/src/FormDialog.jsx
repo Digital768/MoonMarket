@@ -12,9 +12,8 @@ export default function FormDialog({ stock, setPortfolioVisible, setStockSearche
     const [portfolioStock, setPortfolioStock] = useState({
         name: stock.name,
         ticker: stock.ticker,
-        bought_price: 0,
+        purchases: [{price: 0, quantity: 0}],  // Initialize with a single purchase
         last_price: stock.price,
-        quantity: 0,
         value: 0
     });
     const [error, setError] = useState(""); // State variable to track form errors
@@ -28,35 +27,31 @@ export default function FormDialog({ stock, setPortfolioVisible, setStockSearche
     };
 
     const handleInputChange = (event) => {
+        console.log("portfolioStock", portfolioStock)
         const { name, value } = event.target;
-        if (name === 'quantity') {
+        console.log("name", name ,"value" , value) 
+        if (name === 'quantity' || name === 'price') {
             if (parseFloat(value) > 0) {
-                setPortfolioStock(prevState => ({
-                    ...prevState,
-                    [name]: parseFloat(value),
-                    value: parseFloat(value) * prevState.last_price
-                }));
+                setPortfolioStock(prevState => {
+                    const newPurchase = {...prevState.purchases[0], [name]: parseFloat(value)};
+                    return {
+                        ...prevState,
+                        purchases: [newPurchase],  // Update the first purchase
+                        value: newPurchase.quantity * prevState.last_price  // Update value based on new quantity and last_price
+                    };
+                });
                 setError(""); // Clear error if value is valid
             } else {
-                setError("Quantity must be greater than zero");
-            }
-        } else if (name === 'bought_price') {
-            if (parseFloat(value) > 0) {
-                setPortfolioStock(prevState => ({
-                    ...prevState,
-                    [name]: parseFloat(value),
-                }));
-                setError(""); // Clear error if value is valid
-            } else {
-                setError("Bought price must be greater than zero");
+                setError(name.charAt(0).toUpperCase() + name.slice(1) + " must be greater than zero");
             }
         }
     };
-
+    
     const handleSubmit = () => {
-        if (portfolioStock.quantity > 0 && portfolioStock.bought_price > 0) {
+        if (portfolioStock.purchases[0].quantity > 0 && portfolioStock.purchases[0].price > 0) {
             postApiStock(portfolioStock)
                 .then(() => {
+                    console.log(portfolioStock)
                     handleClose();
                     setStockSearched(false)
                     setPortfolioVisible(true)
@@ -66,11 +61,12 @@ export default function FormDialog({ stock, setPortfolioVisible, setStockSearche
                     // Handle error, display error message to the user
                 });
         } else {
-            setError("quantity and bought price MUST be above 0");
+            setError("Quantity and price MUST be above 0");
         }
     };
-
+    
     async function postApiStock(portfolioStock) {
+        console.log(portfolioStock)
         return axios.post('http://localhost:8000/stocks/', portfolioStock);
     }
 
@@ -98,7 +94,7 @@ export default function FormDialog({ stock, setPortfolioVisible, setStockSearche
                     <label>Enter bought price</label>
                     <input
                         type='number'
-                        name="bought_price"
+                        name="price"
                         value={portfolioStock.bought_price}
                         onChange={handleInputChange}
                     />

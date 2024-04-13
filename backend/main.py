@@ -13,6 +13,12 @@ origins = [
 async def lifespan(app: FastAPI):
     app.mongodb_client = AsyncIOMotorClient(settings.DB_URL)
     app.mongodb_db = app.mongodb_client[settings.DB_NAME]
+     # Get the collection
+    collection = app.mongodb_db['stock_collection']  # replace with your actual collection name
+
+    # Create unique indexes
+    await collection.create_index('name', unique=True)
+    await collection.create_index('ticker', unique=True)
     yield
     app.mongodb_client.close()
     

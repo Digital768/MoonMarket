@@ -33,7 +33,10 @@ export const Treemap = ({ width, height, data, deletestock }) => {
     return treeGenerator(hierarchy);
   }, [hierarchy, width, height]);
 
+  console.log(root)
+
   const showTooltip = (event, data) => {
+    event.stopPropagation();
     const tooltip = d3.select(tooltipRef.current);
     tooltip.style("visibility", "visible")
       .html(`
@@ -82,6 +85,11 @@ export const Treemap = ({ width, height, data, deletestock }) => {
     const centerX = (leaf.x0 + leaf.x1) / 2;
     const centerY = (leaf.y0 + leaf.y1) / 2;
   
+    const handleDeleteClick = (event) => {
+      event.stopPropagation(); // Prevent the parent click event from firing
+      deleteStockWithConfirmation(leaf.data.id);
+    };
+  
     return (
       <g
         key={leaf.id}
@@ -101,7 +109,7 @@ export const Treemap = ({ width, height, data, deletestock }) => {
         />
         <text
           x={centerX}
-          y={centerY - 6} // adjust as needed
+          y={centerY - 6}
           fontSize={12}
           textAnchor="middle"
           alignmentBaseline="middle"
@@ -112,7 +120,7 @@ export const Treemap = ({ width, height, data, deletestock }) => {
         </text>
         <text
           x={centerX}
-          y={centerY + 6} // adjust as needed
+          y={centerY + 6}
           fontSize={12}
           textAnchor="middle"
           alignmentBaseline="middle"
@@ -121,22 +129,24 @@ export const Treemap = ({ width, height, data, deletestock }) => {
         >
           {leaf.data.priceChangePercentage}%
         </text>
-        <text
-          x={leaf.x1 - 10} // position the 'X' near the top right corner of the rectangle
-          y={leaf.y0 + 10} // adjust as needed
-          fontSize={12}
-          textAnchor="end"
-          alignmentBaseline="hanging"
-          fill="white"
-          className="font-bold"
-          onClick={() => deleteStockWithConfirmation(leaf.data.id)} // replace with your delete function
-          style={{ cursor: 'pointer' }} // change cursor on hover
-        >
-          X
-        </text>
+        {leaf.data.id === leaf.data.id && (
+          <text
+            x={leaf.x1 - 10}
+            y={leaf.y0 + 10}
+            fontSize={12}
+            textAnchor="end"
+            alignmentBaseline="hanging"
+            fill="white"
+            className="font-bold"
+            onClick={handleDeleteClick}
+            style={{ cursor: 'pointer' }}
+          >
+            X
+          </text>
+        )}
       </g>
     );
-  }); 
+  });
 
   return (
     <div>

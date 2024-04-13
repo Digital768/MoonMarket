@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from Stock.models import Stock, UpdateStock
 from Stock.schemas import list_serial
 import requests
+from pymongo.errors import DuplicateKeyError
 
 Stocks_router = APIRouter()
 
@@ -43,9 +44,12 @@ async def get_stock(id:str, request: Request ):
 @Stocks_router.post("/", response_description = "Add new stock to portfolio")
 async def add_stock(request: Request , stock:Stock= Body(...)): 
     stock = jsonable_encoder(stock)
-    new_stock = await request.app.mongodb_db["stock_collection"].insert_one(stock)
+    try:
+        new_stock = await request.app.mongodb_db["stock_collection"].insert_one(stock)
+    except DuplicateKeyError:
+        raise HTTPException(status_code=400, detail="A stock with this name or ticker already exists.")
+    
     created_stock = await request.app.mongodb_db["stock_collection"].find_one({"_id":new_stock.inserted_id})
-    # collection_name.insert_one(dict(stock))
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_stock)
 
         
