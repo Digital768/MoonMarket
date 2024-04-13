@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef} from "react";
 import * as d3 from "d3";
 import "./Treemap.css";
 
@@ -7,7 +7,7 @@ const colors = {
   negative: "#e85252",
 };
 
-export const Treemap = ({ width, height, data }) => {
+export const Treemap = ({ width, height, data, deletestock }) => {
   const tooltipRef = useRef(null);
 
   const hierarchy = useMemo(() => {
@@ -59,9 +59,7 @@ export const Treemap = ({ width, height, data }) => {
   };
   
   
-  
-  
-  const mousemove = (event, data) => {
+  const mousemove = (event) => {
     const tooltip = d3.select(tooltipRef.current);
     tooltip.style("top", `${event.pageY + 10}px`)
       .style("left", `${event.pageX + 10}px`);
@@ -72,8 +70,18 @@ export const Treemap = ({ width, height, data }) => {
     tooltip.style("visibility", "hidden");
   };
 
+  const deleteStockWithConfirmation = (id) => {
+    if (window.confirm('Are you sure you want to delete this stock?')) {
+      deletestock(id);
+    }
+  };
+  
+
   const allShapes = root.leaves().map((leaf, i) => {
     const parentName = leaf.parent?.data.name;
+    const centerX = (leaf.x0 + leaf.x1) / 2;
+    const centerY = (leaf.y0 + leaf.y1) / 2;
+  
     return (
       <g
         key={leaf.id}
@@ -92,30 +100,43 @@ export const Treemap = ({ width, height, data }) => {
           className={"opacity-80 hover:opacity-100"}
         />
         <text
-          x={leaf.x0 + 3}
-          y={leaf.y0 + 3}
+          x={centerX}
+          y={centerY - 6} // adjust as needed
           fontSize={12}
-          textAnchor="start"
-          alignmentBaseline="hanging"
+          textAnchor="middle"
+          alignmentBaseline="middle"
           fill="white"
           className="font-bold"
         >
           {leaf.data.ticker}
         </text>
         <text
-          x={leaf.x0 + 3}
-          y={leaf.y0 + 18}
+          x={centerX}
+          y={centerY + 6} // adjust as needed
           fontSize={12}
-          textAnchor="start"
-          alignmentBaseline="hanging"
+          textAnchor="middle"
+          alignmentBaseline="middle"
           fill="white"
           className="font-light"
         >
           {leaf.data.priceChangePercentage}%
         </text>
+        <text
+          x={leaf.x1 - 10} // position the 'X' near the top right corner of the rectangle
+          y={leaf.y0 + 10} // adjust as needed
+          fontSize={12}
+          textAnchor="end"
+          alignmentBaseline="hanging"
+          fill="white"
+          className="font-bold"
+          onClick={() => deleteStockWithConfirmation(leaf.data.id)} // replace with your delete function
+          style={{ cursor: 'pointer' }} // change cursor on hover
+        >
+          X
+        </text>
       </g>
     );
-  });
+  }); 
 
   return (
     <div>

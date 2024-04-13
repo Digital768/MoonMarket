@@ -63,6 +63,7 @@ function Portfolio({ getStockData }) {
         if (isStockProfitable(stock)) {
           positiveStocks.push({
             name: stock.name,
+            id: stock._id,
             ticker: stock.ticker,
             value: Math.round(stock.value),
             last_price: Math.round(stock.last_price),
@@ -74,6 +75,7 @@ function Portfolio({ getStockData }) {
           negativeStocks.push({
             name: stock.name,
             ticker: stock.ticker,
+            id: stock._id,
             value: Math.round(stock.value),
             last_price: Math.round(stock.last_price),
             quantity: stock.quantity,
@@ -118,7 +120,7 @@ function Portfolio({ getStockData }) {
         <span>total value: {totalValue.toLocaleString("en-US")}$</span>
         <button onClick={refreshStockPrices}>Refresh Data</button>
       </div>
-      {stocksTree && <Treemap data={stocksTree} width={1000} height={600}></Treemap>}
+      {stocksTree && <Treemap data={stocksTree} width={1000} height={600} deletestock={deleteStock}></Treemap>}
     </div>
   );
 }
