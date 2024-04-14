@@ -20,9 +20,8 @@ function Portfolio({ getStockData }) {
   }
 
   async function updateStockPrice(id, new_price) {
-    await axios.put(`http://localhost:8000/stocks/${id}`, {
-      last_price: new_price,
-      quantity: null,
+    await axios.put(`http://localhost:8000/stocks/update_price/${id}`, {
+      last_price: new_price
     });
   }
 

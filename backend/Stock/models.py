@@ -35,13 +35,11 @@ class Stock(BaseModel):
         }
     
 class UpdateStock(BaseModel):
-    quantity:Optional[float]
     last_price:Optional[float]
     
     class Config:
         json_schema_extra = {
             "example": {
-                "last_price": 100.0,
-                "quantity": 20
+                "last_price": 100.0
             }
         }
