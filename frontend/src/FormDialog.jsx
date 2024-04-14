@@ -27,9 +27,7 @@ export default function FormDialog({ stock, setPortfolioVisible, setStockSearche
     };
 
     const handleInputChange = (event) => {
-        console.log("portfolioStock", portfolioStock)
-        const { name, value } = event.target;
-        console.log("name", name ,"value" , value) 
+        const { name, value } = event.target; 
         if (name === 'quantity' || name === 'price') {
             if (parseFloat(value) > 0) {
                 setPortfolioStock(prevState => {
@@ -51,7 +49,6 @@ export default function FormDialog({ stock, setPortfolioVisible, setStockSearche
         if (portfolioStock.purchases[0].quantity > 0 && portfolioStock.purchases[0].price > 0) {
             postApiStock(portfolioStock)
                 .then(() => {
-                    console.log(portfolioStock)
                     handleClose();
                     setStockSearched(false)
                     setPortfolioVisible(true)
@@ -66,7 +63,6 @@ export default function FormDialog({ stock, setPortfolioVisible, setStockSearche
     };
     
     async function postApiStock(portfolioStock) {
-        console.log(portfolioStock)
         return axios.post('http://localhost:8000/stocks/', portfolioStock);
     }
 
