@@ -30,21 +30,21 @@ function Portfolio({ getStockData }) {
     refetch();
   }
 
-  // async function refreshStockPrices() {
-  //   const response = await getStocksFromDb();
-  //   const stock_collection = response["data"];
+  async function refreshStockPrices() {
+    const response = await getStocksFromDb();
+    const stock_collection = response["data"];
 
-  //   const updatePromises = stock_collection.map(async (stock) => {
-  //     const ticker = stock.ticker;
-  //     const apiResponse = await getStockData(ticker);
-  //     const newPrice = apiResponse.data[0].price;
-  //     const StockId = stock._id;
-  //     return updateStockPrice(StockId, newPrice);
-  //   });
+    const updatePromises = stock_collection.map(async (stock) => {
+      const ticker = stock.ticker;
+      const apiResponse = await getStockData(ticker);
+      const newPrice = apiResponse.data[0].price;
+      const StockId = stock._id;
+      return updateStockPrice(StockId, newPrice);
+    });
 
-  //   await Promise.all(updatePromises);
-  //   refetch();
-  // }
+    await Promise.all(updatePromises);
+    refetch();
+  }
 
   function isStockProfitable(stock) {
     const stock_avg_price = calculate_average_purchase_price(stock)
@@ -145,7 +145,7 @@ if (negativeStocks.length > 0) {
     <div className="portfolio">
       <div className="navbar">
         <span>total value: {totalValue.toLocaleString("en-US")}$</span>
-        {/* <button onClick={refreshStockPrices}>Refresh Data</button> */}
+        <button onClick={refreshStockPrices}>Refresh Data</button>
       </div>
       {stocksTree && <Treemap data={stocksTree} width={1000} height={600} deletestock={deleteStock}></Treemap>}
     </div>

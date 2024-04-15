@@ -33,7 +33,6 @@ export const Treemap = ({ width, height, data, deletestock }) => {
     return treeGenerator(hierarchy);
   }, [hierarchy, width, height]);
 
-  console.log(root)
 
   const showTooltip = (event, data) => {
     event.stopPropagation();
