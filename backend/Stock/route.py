@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Body, HTTPException, status, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from Stock.models import Stock, UpdateStock
+from Stock.models import Stock, UpdateStockPrice, Purchase
 from Stock.schemas import list_serial
 import requests
 from pymongo.errors import DuplicateKeyError
@@ -78,7 +78,7 @@ async def add_stock(request: Request , stock:Stock= Body(...)):
 #     return existing_stock
 
 @Stocks_router.put("/update_price/{id}", response_description = "Update stock")
-async def update_stock(id:str, request: Request , stock:UpdateStock= Body(...)):
+async def update_stock(id:str, request: Request , stock:UpdateStockPrice= Body(...)):
     stock = {k: v for k, v in stock.dict().items() if v is not None}
     
     # Retrieve the existing stock document
@@ -101,8 +101,20 @@ async def update_stock(id:str, request: Request , stock:UpdateStock= Body(...)):
             
     return existing_stock
 
-
-
+@Stocks_router.put("/add_shares/{id}", response_description = "add shares")
+async def add_stock_shares(id:str, request: Request, purchase: Purchase = Body(...)):
+    # Retrieve the existing stock document
+    existing_stock = await request.app.mongodb_db["stock_collection"].find_one({"_id":id})
+    if existing_stock is None:
+        raise HTTPException(status_code=404, detail = f"Stock with id {id} does not found")
+    existing_stock['purchases'].append(purchase.dict())  # Append the purchase
+    try:
+        quantity = sum(purchase['quantity'] for purchase in existing_stock['purchases'])
+        existing_stock['value'] = existing_stock['last_price'] * quantity 
+        await request.app.mongodb_db["stock_collection"].update_one({"_id": id,}, {"$set": existing_stock})  # Update the stock document
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An error occurred while updating the stock.") from e
+    return {"message": "Stock updated successfully", "stock": existing_stock}
         
 @Stocks_router.delete("/{id}", response_description = "Delete stock")
 async def delete_stock(id:str, request: Request ):  

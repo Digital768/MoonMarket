@@ -21,8 +21,13 @@ function Portfolio({ getStockData }) {
 
   async function updateStockPrice(id, new_price) {
     await axios.put(`http://localhost:8000/stocks/update_price/${id}`, {
-      last_price: new_price
+      last_price: new_price,
     });
+    refetch();
+  }
+  async function updateStockShares(id, purchase) {
+    await axios.put(`http://localhost:8000/stocks/add_shares/${id}`, purchase);
+    refetch();
   }
 
   async function deleteStock(id) {
@@ -47,87 +52,94 @@ function Portfolio({ getStockData }) {
   }
 
   function isStockProfitable(stock) {
-    const stock_avg_price = calculate_average_purchase_price(stock)
+    const stock_avg_price = calculate_average_purchase_price(stock);
     return stock.last_price > stock_avg_price;
   }
   function calculate_average_purchase_price(stock) {
     let total_cost = 0;
     let total_quantity = 0;
     for (const purchase of stock.purchases) {
-        total_cost += purchase.price * purchase.quantity;
-        total_quantity += purchase.quantity;
+      total_cost += purchase.price * purchase.quantity;
+      total_quantity += purchase.quantity;
     }
     if (total_quantity === 0) {
-        return 0;
+      return 0;
     }
     return total_cost / total_quantity;
-}
-function calculate_total_quantity(stock) {
-  let total_quantity = 0;
-  for (const purchase of stock.purchases) {
-      total_quantity += purchase.quantity;
   }
-  return total_quantity;
-}
-
+  function calculate_total_quantity(stock) {
+    let total_quantity = 0;
+    for (const purchase of stock.purchases) {
+      total_quantity += purchase.quantity;
+    }
+    return total_quantity;
+  }
 
   useEffect(() => {
     if (data?.data) {
       const stockCollection = data.data;
-const sum = data.data.reduce((acc, stock) => acc + stock.value, 0);
-setTotalValue(Math.round(sum));
-const positiveStocks = [];
-const negativeStocks = [];
+      const sum = data.data.reduce((acc, stock) => acc + stock.value, 0);
+      setTotalValue(Math.round(sum));
+      const positiveStocks = [];
+      const negativeStocks = [];
 
-stockCollection.forEach((stock) => {
-  const stock_avg_price = calculate_average_purchase_price(stock)
-  const quantity = calculate_total_quantity(stock)
-  if (isStockProfitable(stock)) {
-    positiveStocks.push({
-      name: stock.name,
-      id: stock._id,
-      ticker: stock.ticker,
-      value: Math.round(stock.value),
-      last_price: Math.round(stock.last_price),
-      quantity: quantity,
-      priceChangePercentage: Math.round(((stock.last_price - stock_avg_price) /stock_avg_price)*100),
-      percentageOfPortfolio: Math.round((stock.value/Math.round(sum))* 100)
-    });
-  } else {
-    negativeStocks.push({
-      name: stock.name,
-      ticker: stock.ticker,
-      id: stock._id,
-      value: Math.round(stock.value),
-      last_price: Math.round(stock.last_price),
-      quantity: quantity,
-      priceChangePercentage: Math.round(((stock.last_price - stock_avg_price) /stock_avg_price)*100),
-      percentageOfPortfolio: Math.round((stock.value/Math.round(sum))* 100)
-    });
-  }
-});
+      stockCollection.forEach((stock) => {
+        const stock_avg_price = calculate_average_purchase_price(stock);
+        const quantity = calculate_total_quantity(stock);
+        if (isStockProfitable(stock)) {
+          positiveStocks.push({
+            name: stock.name,
+            id: stock._id,
+            ticker: stock.ticker,
+            value: Math.round(stock.value),
+            last_price: Math.round(stock.last_price),
+            quantity: quantity,
+            priceChangePercentage: Math.round(
+              ((stock.last_price - stock_avg_price) / stock_avg_price) * 100
+            ),
+            percentageOfPortfolio: Math.round(
+              (stock.value / Math.round(sum)) * 100
+            ),
+          });
+        } else {
+          negativeStocks.push({
+            name: stock.name,
+            ticker: stock.ticker,
+            id: stock._id,
+            value: Math.round(stock.value),
+            last_price: Math.round(stock.last_price),
+            quantity: quantity,
+            priceChangePercentage: Math.round(
+              ((stock.last_price - stock_avg_price) / stock_avg_price) * 100
+            ),
+            percentageOfPortfolio: Math.round(
+              (stock.value / Math.round(sum)) * 100
+            ),
+          });
+        }
+      });
 
-const newStocksTree = {
-  name: "Stocks",
-  value: 0,
-  children: [],
-};
+      const newStocksTree = {
+        name: "Stocks",
+        value: 0,
+        children: [],
+      };
 
-if (positiveStocks.length > 0) {
-  newStocksTree.children.push({
-    name: "Positive",
-    value: 0,
-    children: positiveStocks,
-  });
-}
+      if (positiveStocks.length > 0) {
+        newStocksTree.children.push({
+          name: "Positive",
+          value: 0,
+          children: positiveStocks,
+        });
+      }
 
-if (negativeStocks.length > 0) {
-  newStocksTree.children.push({
-    name: "Negative",
-    value: 0,
-    children: negativeStocks,
-  });
-}
+      if (negativeStocks.length > 0) {
+        newStocksTree.children.push({
+          name: "Negative",
+          value: 0,
+          children: negativeStocks,
+        });
+      }
 
       setStocksTree(newStocksTree); // Trigger a re-render of the Treemap
     }
@@ -147,7 +159,15 @@ if (negativeStocks.length > 0) {
         <span>total value: {totalValue.toLocaleString("en-US")}$</span>
         <button onClick={refreshStockPrices}>Refresh Data</button>
       </div>
-      {stocksTree && <Treemap data={stocksTree} width={1000} height={600} deletestock={deleteStock}></Treemap>}
+      {stocksTree && (
+        <Treemap
+          data={stocksTree}
+          width={1000}
+          height={600}
+          deletestock={deleteStock}
+          updateStockShares= {updateStockShares}
+        ></Treemap>
+      )}
     </div>
   );
 }

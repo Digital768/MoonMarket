@@ -34,7 +34,7 @@ class Stock(BaseModel):
             }
         }
     
-class UpdateStock(BaseModel):
+class UpdateStockPrice(BaseModel):
     last_price:Optional[float]
     
     class Config:
@@ -43,3 +43,4 @@ class UpdateStock(BaseModel):
                 "last_price": 100.0
             }
         }
+

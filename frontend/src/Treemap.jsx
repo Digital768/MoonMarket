@@ -1,14 +1,22 @@
-import { useMemo, useRef} from "react";
+import { useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
+import { FaPlus } from "react-icons/fa6";
 import "./Treemap.css";
+import AddSharesDialog from "./AddSharesDialog.jsx";
 
 const colors = {
   positive: "#a4c969",
   negative: "#e85252",
 };
 
-export const Treemap = ({ width, height, data, deletestock }) => {
+export const Treemap = ({ width, height, data, deletestock, updateStockShares }) => {
+  const [leafDataId, setLeafDataId] = useState(null);
   const tooltipRef = useRef(null);
+  const [dialogOpen, setdialogOpen] = useState(false);
+
+  function handleClose () {
+    setdialogOpen(false)
+  }
 
   const hierarchy = useMemo(() => {
     return d3.hierarchy(data).sum((d) => d.value);
@@ -33,13 +41,13 @@ export const Treemap = ({ width, height, data, deletestock }) => {
     return treeGenerator(hierarchy);
   }, [hierarchy, width, height]);
 
-
   const showTooltip = (event, data) => {
     event.stopPropagation();
     const tooltip = d3.select(tooltipRef.current);
-    tooltip.style("visibility", "visible")
-      .html(`
-        <div style="width: 200px;"><h4 style="margin: 2px">${data.name}</h4></div>
+    tooltip.style("visibility", "visible").html(`
+        <div style="width: 200px;"><h4 style="margin: 2px">${
+          data.name
+        }</h4></div>
         <hr>
         <div style="display: flex; flex-direction: row; width: fit-content; height: fit-content;">
           <ul style="list-style-type: none; margin: 0; padding: 0; width: 200px;">
@@ -59,11 +67,11 @@ export const Treemap = ({ width, height, data, deletestock }) => {
         </div>
       `);
   };
-  
-  
+
   const mousemove = (event) => {
     const tooltip = d3.select(tooltipRef.current);
-    tooltip.style("top", `${event.pageY + 10}px`)
+    tooltip
+      .style("top", `${event.pageY + 10}px`)
       .style("left", `${event.pageX + 10}px`);
   };
 
@@ -73,22 +81,26 @@ export const Treemap = ({ width, height, data, deletestock }) => {
   };
 
   const deleteStockWithConfirmation = (id) => {
-    if (window.confirm('Are you sure you want to delete this stock?')) {
+    if (window.confirm("Are you sure you want to delete this stock?")) {
       deletestock(id);
     }
   };
-  
 
   const allShapes = root.leaves().map((leaf, i) => {
     const parentName = leaf.parent?.data.name;
     const centerX = (leaf.x0 + leaf.x1) / 2;
     const centerY = (leaf.y0 + leaf.y1) / 2;
-  
+
     const handleDeleteClick = (event) => {
       event.stopPropagation(); // Prevent the parent click event from firing
       deleteStockWithConfirmation(leaf.data.id);
     };
-  
+    const handleAddClick = () => {
+      // event.stopPropagation(); // Prevent the parent
+      setLeafDataId(leaf.data.id)
+      setdialogOpen(true);
+    };
+
     return (
       <g
         key={leaf.id}
@@ -138,10 +150,23 @@ export const Treemap = ({ width, height, data, deletestock }) => {
             fill="white"
             className="font-bold"
             onClick={handleDeleteClick}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           >
             X
           </text>
+        )}
+        {leaf.data.id === leaf.data.id && (
+          <FaPlus
+            x={leaf.x1 - 40}
+            y={leaf.y0 + 10}
+            fontSize={12}
+            textAnchor="end"
+            alignmentBaseline="hanging"
+            fill="white"
+            className="font-bold"
+            onClick={handleAddClick}
+            style={{ cursor: "pointer" }}
+          />
         )}
       </g>
     );
@@ -153,6 +178,9 @@ export const Treemap = ({ width, height, data, deletestock }) => {
       <svg width={width} height={height} className="container">
         {allShapes}
       </svg>
+      {dialogOpen && (
+        <AddSharesDialog open ={dialogOpen} handleClose ={handleClose} updateStockShares={updateStockShares} id={leafDataId}></AddSharesDialog>
+      )}
     </div>
   );
 };

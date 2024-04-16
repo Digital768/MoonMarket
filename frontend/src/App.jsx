@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import StockItem from "./StockItem.jsx";
-import FormDialog from "./FormDialog.jsx";
+import FormDialog from "./AddStockDialog.jsx";
 import "./App.css";
 import { CiSearch } from "react-icons/ci";
 import {

@@ -7,7 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import axios from "axios";
 
-export default function FormDialog({ stock, setPortfolioVisible, setStockSearched }) {
+export default function AddStockDialog({ stock, setPortfolioVisible, setStockSearched }) {
     const [open, setOpen] = useState(false);
     const [portfolioStock, setPortfolioStock] = useState({
         name: stock.name,
