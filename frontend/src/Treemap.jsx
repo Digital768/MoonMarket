@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import { FaPlus } from "react-icons/fa6";
 import "./Treemap.css";
 import AddSharesDialog from "./AddSharesDialog.jsx";
+import { FaMinus } from "react-icons/fa";
 
 const colors = {
   positive: "#a4c969",
@@ -100,6 +101,10 @@ export const Treemap = ({ width, height, data, deletestock, updateStockShares })
       setLeafDataId(leaf.data.id)
       setdialogOpen(true);
     };
+    const handleDecreaseClick = () => {
+      // event.stopPropagation(); // Prevent the parent
+      setLeafDataId(leaf.data.id)
+    };
 
     return (
       <g
@@ -154,10 +159,11 @@ export const Treemap = ({ width, height, data, deletestock, updateStockShares })
           >
             X
           </text>
+          
         )}
         {leaf.data.id === leaf.data.id && (
           <FaPlus
-            x={leaf.x1 - 40}
+            x={leaf.x1 - 35}
             y={leaf.y0 + 10}
             fontSize={12}
             textAnchor="end"
@@ -165,6 +171,19 @@ export const Treemap = ({ width, height, data, deletestock, updateStockShares })
             fill="white"
             className="font-bold"
             onClick={handleAddClick}
+            style={{ cursor: "pointer" }}
+          />
+        )}
+        {leaf.data.id === leaf.data.id && (
+          <FaMinus
+            x={leaf.x1 - 55}
+            y={leaf.y0 + 10}
+            fontSize={12}
+            textAnchor="end"
+            alignmentBaseline="hanging"
+            fill="white"
+            className="font-bold"
+            onClick={handleDecreaseClick}
             style={{ cursor: "pointer" }}
           />
         )}

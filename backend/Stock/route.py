@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Body, HTTPException, status, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from Stock.models import Stock, UpdateStockPrice, Purchase
+from Stock.models import Stock, UpdateStockPrice, Purchase, Sale
 from Stock.schemas import list_serial
 import requests
 from pymongo.errors import DuplicateKeyError
@@ -115,6 +115,25 @@ async def add_stock_shares(id:str, request: Request, purchase: Purchase = Body(.
     except Exception as e:
         raise HTTPException(status_code=500, detail="An error occurred while updating the stock.") from e
     return {"message": "Stock updated successfully", "stock": existing_stock}
+
+@Stocks_router.put("/sell_shares/{id}", response_description = "sell shares")
+async def sell_stock_shares(id:str, request: Request, sale: Sale = Body(...)):
+    # Retrieve the existing stock document
+    existing_stock = await request.app.mongodb_db["stock_collection"].find_one({"_id":id})
+    if existing_stock is None:
+        raise HTTPException(status_code=404, detail = f"Stock with id {id} does not found")
+    # need to add validations
+    # TODO: make sure that quantity of shares sold isnt greater than quantity of overall shares
+    # TODO: make sure that the price of a share is smaller than the last_price
+    existing_stock['sales'].append(sale.dict())  # Append the sale
+    try:
+        quantity = sum(purchase['quantity'] for purchase in existing_stock['purchases']) - sum(sale['quantity'] for sale in existing_stock['sales'])
+        existing_stock['value'] = existing_stock['last_price'] * quantity 
+        await request.app.mongodb_db["stock_collection"].update_one({"_id": id,}, {"$set": existing_stock})  # Update the stock document
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An error occurred while updating the stock.") from e
+    return {"message": "Stock updated successfully", "stock": existing_stock}
+    
         
 @Stocks_router.delete("/{id}", response_description = "Delete stock")
 async def delete_stock(id:str, request: Request ):  

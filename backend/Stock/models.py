@@ -14,11 +14,24 @@ class Purchase(BaseModel):
             }
         }
 
+class Sale(BaseModel):
+    price: float
+    quantity: float
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "price": 100.0,
+                "quantity": 10
+            }
+        }
+
 class Stock(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias='_id')  # Convert UUID to string
     name:str = Field(...)
     ticker:str = Field(...)
     purchases: List[Purchase]  # List of purchases
+    sales:List[Sale]
     last_price:float
     value:float
     
@@ -29,6 +42,7 @@ class Stock(BaseModel):
                 "name": "Apple",    
                 "ticker": "AAPL",
                 "purchases": [{"price": 100.0, "quantity": 10}],  # List of purchases
+                "sales": [{"price": 100.0, "quantity": 5}],  # List of purchases
                 "last_price": 100.0,
                 "value": 100.0
             }
