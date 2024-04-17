@@ -57,20 +57,7 @@ function Portfolio({ getStockData }) {
   }
 
   function isStockProfitable(stock) {
-    const stock_avg_price = calculate_average_purchase_price(stock);
-    return stock.last_price > stock_avg_price;
-  }
-  function calculate_average_purchase_price(stock) {
-    let total_cost = 0;
-    let total_quantity = 0;
-    for (const purchase of stock.purchases) {
-      total_cost += purchase.price * purchase.quantity;
-      total_quantity += purchase.quantity;
-    }
-    if (total_quantity === 0) {
-      return 0;
-    }
-    return total_cost / total_quantity;
+    // todo use reduce instead of for loop here
   }
   function calculate_total_quantity(stock) {
     // calculate total quantity after removing sold shares quantity
@@ -155,6 +142,7 @@ function Portfolio({ getStockData }) {
 
       setStocksTree(newStocksTree); // Trigger a re-render of the Treemap
     }
+    else{setStocksTree(null)}
   }, [data]);
 
   if (status === "loading") {
