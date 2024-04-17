@@ -57,45 +57,61 @@ function Portfolio({ getStockData }) {
   }
 
   function isStockProfitable(stock) {
-    // todo use reduce instead of for loop here
+    const avgSharePrice = calculate_average_price(stock)
+    if (stock.last_price > avgSharePrice) return true;
+    return false;
+  }
+  function calculate_average_price(stock) {
+    // Step 2: Calculate the total amount spent on buying shares and the total amount earned from selling shares
+    const totalSpent = stock.purchases.reduce((total, purchase) => total + purchase.quantity * purchase.price, 0);
+    console.log("Total amount spent on buying shares " + totalSpent);
+    // const totalEarned = stock.sales.reduce((total, sale) => total + sale.quantity * sale.price, 0);
+    // console.log("total earned " + totalEarned);
+    const remainingQuantity = total_purchased_shares(stock);
+    // Step 4: Calculate the average share price
+    const avgSharePrice = remainingQuantity > 0 ? totalSpent / remainingQuantity : 0;
+    console.log("average share price " + avgSharePrice);
+    return avgSharePrice;
   }
   function calculate_total_quantity(stock) {
     // calculate total quantity after removing sold shares quantity
-    let total_quantity = 0;
-    let purchases_quantity = 0
-    let sales_quantity = 0
-    for (const purchase of stock.purchases) {
-      purchases_quantity += purchase.quantity;
-    }
-    for( const sale of stock.sales) {
-      sales_quantity+= sale.quantity;
-    }
-    total_quantity = purchases_quantity - sales_quantity
-    return total_quantity;
+    // Step 1: Calculate the total quantity of shares bought and sold
+    const totalQuantityBought = stock.purchases.reduce((total, purchase) => total + purchase.quantity, 0);
+    // console.log("total quantity bought " + totalQuantityBought);
+    const totalQuantitySold = stock.sales.reduce((total, sale) => total + sale.quantity, 0);
+    // console.log("total quantity sold " + totalQuantitySold);
+    // Step 3: Calculate the remaining quantity of shares you own
+    const remainingQuantity = totalQuantityBought - totalQuantitySold;
+    // console.log("remaining quantity " + remainingQuantity);
+    return remainingQuantity;
   }
-
+  function total_purchased_shares(stock) {
+    const totalQuantityBought = stock.purchases.reduce((total, purchase) => total + purchase.quantity, 0);
+    return totalQuantityBought;
+  }
   useEffect(() => {
     if (data?.data !== null && data?.data !== undefined && data?.data.length !== 0) {
       const stockCollection = data.data;
       const sum = data.data.reduce((acc, stock) => acc + stock.value, 0);
-      setTotalValue(Math.round(sum));
+      setTotalValue(Math.round(sum*100)/100)
       const positiveStocks = [];
       const negativeStocks = [];
 
       stockCollection.forEach((stock) => {
-        const stock_avg_price = calculate_average_purchase_price(stock);
+        const stock_avg_price = calculate_average_price(stock);
         const quantity = calculate_total_quantity(stock);
         if (isStockProfitable(stock)) {
           positiveStocks.push({
             name: stock.name,
             id: stock._id,
             ticker: stock.ticker,
-            value: Math.round(stock.value),
-            last_price: Math.round(stock.last_price),
+            value: Math.round(stock.value*100)/100,
+            avgSharePrice: Math.round(stock_avg_price*100)/100,
+            last_price: Math.round(stock.last_price*100)/100,
             quantity: quantity,
             priceChangePercentage: Math.round(
               ((stock.last_price - stock_avg_price) / stock_avg_price) * 100
-            ),
+            ),  
             percentageOfPortfolio: Math.round(
               (stock.value / Math.round(sum)) * 100
             ),
@@ -105,8 +121,10 @@ function Portfolio({ getStockData }) {
             name: stock.name,
             ticker: stock.ticker,
             id: stock._id,
-            value: Math.round(stock.value),
-            last_price: Math.round(stock.last_price),
+            value: Math.round(stock.value*100)/100,
+            avgSharePrice: Math.round(stock_avg_price*100)/100,
+            last_price: Math.round(stock.last_price*100)/100,
+            quantity: quantity,
             quantity: quantity,
             priceChangePercentage: Math.round(
               ((stock.last_price - stock_avg_price) / stock_avg_price) * 100
@@ -142,8 +160,11 @@ function Portfolio({ getStockData }) {
 
       setStocksTree(newStocksTree); // Trigger a re-render of the Treemap
     }
-    else{setStocksTree(null)}
-  }, [data]);
+    else {
+       setStocksTree(null)
+       setTotalValue(0)
+       }
+  }, [data,]);
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -165,8 +186,8 @@ function Portfolio({ getStockData }) {
           width={1000}
           height={600}
           deletestock={deleteStock}
-          updateStockShares= {addStockShares}
-          decreaseStockShares ={decreaseStockShares}
+          addStockShares={addStockShares}
+          decreaseStockShares={decreaseStockShares}
         ></Treemap>
       )}
     </div>

@@ -65,6 +65,10 @@ export const Treemap = ({ width, height, data, deletestock, addStockShares, decr
               <p>${data.percentageOfPortfolio}%</p>
             </li>
             <li style="display: flex; justify-content: space-between; margin: 0; padding: 0; margin-bottom: 0;">
+            <p>Avarage share price:</p>
+            <p>${data.avgSharePrice}$</p>
+          </li>
+            <li style="display: flex; justify-content: space-between; margin: 0; padding: 0; margin-bottom: 0;">
               <p>Value (${data.quantity} shares)</p>
               <p>${data.value.toLocaleString("en-US")}$</p>
             </li>
@@ -132,7 +136,7 @@ export const Treemap = ({ width, height, data, deletestock, addStockShares, decr
           text : 'To sell shares of the stock, please enter how many shares of the stock you sold and at which price.',
           labelText: 'Enter sold price',
           function: decreaseStockShares,
-          buttonText: 'Add',
+          buttonText: 'Sell',
           stock: leaf.data
         }
         return newDialog

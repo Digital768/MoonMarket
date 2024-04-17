@@ -8,7 +8,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 
 
 function SharesDialog({handleClose, open, id, dialog}) {
-  console.log(dialog)
   const [error, setError] = useState(""); // State variable to track form errors
   const [shares, setShares] = useState({
     price: 0,
