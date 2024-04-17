@@ -12,7 +12,8 @@ export default function AddStockDialog({ stock, setPortfolioVisible, setStockSea
     const [portfolioStock, setPortfolioStock] = useState({
         name: stock.name,
         ticker: stock.ticker,
-        purchases: [{price: 0, quantity: 0}],  // Initialize with a single purchase
+        purchases: [{price: 0, quantity: 0}],  // Initialize with a single purchase,
+        sales: [],
         last_price: stock.price,
         value: 0
     });

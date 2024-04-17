@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import { FaPlus } from "react-icons/fa6";
 import "./Treemap.css";
-import AddSharesDialog from "./AddSharesDialog.jsx";
+import SharesDialog from "./SharesDialog.jsx";
 import { FaMinus } from "react-icons/fa";
 
 const colors = {
@@ -10,10 +10,18 @@ const colors = {
   negative: "#e85252",
 };
 
-export const Treemap = ({ width, height, data, deletestock, updateStockShares }) => {
+export const Treemap = ({ width, height, data, deletestock, addStockShares, decreaseStockShares }) => {
   const [leafDataId, setLeafDataId] = useState(null);
   const tooltipRef = useRef(null);
   const [dialogOpen, setdialogOpen] = useState(false);
+  const [dialog, setDialog] = useState({
+    title: '',
+    text: '',
+    labelText: '',
+    function: '',
+    buttonText: '',
+    stock: {}
+  });
 
   function handleClose () {
     setdialogOpen(false)
@@ -100,10 +108,35 @@ export const Treemap = ({ width, height, data, deletestock, updateStockShares })
       // event.stopPropagation(); // Prevent the parent
       setLeafDataId(leaf.data.id)
       setdialogOpen(true);
+      setDialog((prevDialog) => {
+        const newDialog = {
+          ...prevDialog,
+          title: 'Add shares',
+          text : 'To add shares of the stock, please enter how many shares of the stock you bought and at which price.',
+          labelText: 'Enter bought price',
+          function: addStockShares,
+          buttonText: 'Add',
+          stock: leaf.data
+        }
+        return newDialog
+      })
     };
     const handleDecreaseClick = () => {
       // event.stopPropagation(); // Prevent the parent
       setLeafDataId(leaf.data.id)
+      setdialogOpen(true);
+      setDialog((prevDialog) => {
+        const newDialog = {
+          ...prevDialog,
+          title: 'Sell shares',
+          text : 'To sell shares of the stock, please enter how many shares of the stock you sold and at which price.',
+          labelText: 'Enter sold price',
+          function: decreaseStockShares,
+          buttonText: 'Add',
+          stock: leaf.data
+        }
+        return newDialog
+      })
     };
 
     return (
@@ -198,7 +231,7 @@ export const Treemap = ({ width, height, data, deletestock, updateStockShares })
         {allShapes}
       </svg>
       {dialogOpen && (
-        <AddSharesDialog open ={dialogOpen} handleClose ={handleClose} updateStockShares={updateStockShares} id={leafDataId}></AddSharesDialog>
+        <SharesDialog open ={dialogOpen} handleClose ={handleClose} dialog={dialog}  id={leafDataId}></SharesDialog>
       )}
     </div>
   );

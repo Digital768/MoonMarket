@@ -5,11 +5,12 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import axios from "axios";
 
-function AddSharesDialog({handleClose, open, id, updateStockShares}) {
+
+function SharesDialog({handleClose, open, id, dialog}) {
+  console.log(dialog)
   const [error, setError] = useState(""); // State variable to track form errors
-  const [purchase, setPurchase] = useState({
+  const [shares, setShares] = useState({
     price: 0,
     quantity: 0,
   });
@@ -18,12 +19,12 @@ function AddSharesDialog({handleClose, open, id, updateStockShares}) {
     const { name, value } = event.target;
     if (name === "quantity" || name === "price") {
       if (parseFloat(value) > 0) {
-        setPurchase((prevState) => {
-          const newPurchase = {
+        setShares((prevState) => {
+          const newShares = {
             ...prevState,
             [name]: parseFloat(value),
           };
-          return newPurchase
+          return newShares
         });
         setError(""); // Clear error if value is valid
       } else {
@@ -37,8 +38,8 @@ function AddSharesDialog({handleClose, open, id, updateStockShares}) {
   };
 
   const handleSubmit = () => {
-    if (purchase.quantity > 0 && purchase.price > 0) {
-        updateStockShares(id, purchase)
+    if (shares.quantity > 0 && shares.price > 0) {
+      dialog.function(id, shares)
             .then(() => {
                 handleClose();
             })
@@ -65,35 +66,34 @@ function AddSharesDialog({handleClose, open, id, updateStockShares}) {
           },
         }}
       >
-        <DialogTitle>Add shares</DialogTitle>
+        <DialogTitle>{dialog.title}</DialogTitle>
         <DialogContent className="addStockForm">
           <DialogContentText>
-            To add shares of the stock, please enter how many shares of the
-            stock you bought and at which price.
+            {dialog.text}
           </DialogContentText>
-          <label>Enter bought price</label>
+          <label>{dialog.labelText}</label>
           <input
             type="number"
             name="price"
-            value={purchase.price}
+            value={shares.price}
             onChange={handleInputChange}
           />
           <label>Enter quantity</label>
           <input
             type="number"
             name="quantity"
-            value={purchase.quantity}
+            value={shares.quantity}
             onChange={handleInputChange}
           />
           {error && <div style={{ color: "red" }}>{error}</div>}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit">Add</Button>
+          <Button type="submit">{dialog.buttonText}</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
   );
 }
 
-export default AddSharesDialog;
+export default SharesDialog;

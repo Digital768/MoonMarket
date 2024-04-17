@@ -25,8 +25,13 @@ function Portfolio({ getStockData }) {
     });
     refetch();
   }
-  async function updateStockShares(id, purchase) {
+  async function addStockShares(id, purchase) {
     await axios.put(`http://localhost:8000/stocks/add_shares/${id}`, purchase);
+    refetch();
+  }
+
+  async function decreaseStockShares(id, sale) {
+    await axios.put(`http://localhost:8000/stocks/sell_shares/${id}`, sale);
     refetch();
   }
 
@@ -68,15 +73,22 @@ function Portfolio({ getStockData }) {
     return total_cost / total_quantity;
   }
   function calculate_total_quantity(stock) {
+    // calculate total quantity after removing sold shares quantity
     let total_quantity = 0;
+    let purchases_quantity = 0
+    let sales_quantity = 0
     for (const purchase of stock.purchases) {
-      total_quantity += purchase.quantity;
+      purchases_quantity += purchase.quantity;
     }
+    for( const sale of stock.sales) {
+      sales_quantity+= sale.quantity;
+    }
+    total_quantity = purchases_quantity - sales_quantity
     return total_quantity;
   }
 
   useEffect(() => {
-    if (data?.data) {
+    if (data?.data !== null && data?.data !== undefined && data?.data.length !== 0) {
       const stockCollection = data.data;
       const sum = data.data.reduce((acc, stock) => acc + stock.value, 0);
       setTotalValue(Math.round(sum));
@@ -165,7 +177,8 @@ function Portfolio({ getStockData }) {
           width={1000}
           height={600}
           deletestock={deleteStock}
-          updateStockShares= {updateStockShares}
+          updateStockShares= {addStockShares}
+          decreaseStockShares ={decreaseStockShares}
         ></Treemap>
       )}
     </div>
