@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import "./portfolio.css";
 import { Treemap } from "./Treemap";
+import Skeleton from '@mui/material/Skeleton';
+import TreeMapSkeleton from "./TreeMapSkeleton";
 
 function Portfolio({ getStockData }) {
   const [totalValue, setTotalValue] = useState(0);
@@ -64,13 +66,13 @@ function Portfolio({ getStockData }) {
   function calculate_average_price(stock) {
     // Step 2: Calculate the total amount spent on buying shares and the total amount earned from selling shares
     const totalSpent = stock.purchases.reduce((total, purchase) => total + purchase.quantity * purchase.price, 0);
-    console.log("Total amount spent on buying shares " + totalSpent);
+    // console.log("Total amount spent on buying shares " + totalSpent);
     // const totalEarned = stock.sales.reduce((total, sale) => total + sale.quantity * sale.price, 0);
     // console.log("total earned " + totalEarned);
     const remainingQuantity = total_purchased_shares(stock);
     // Step 4: Calculate the average share price
     const avgSharePrice = remainingQuantity > 0 ? totalSpent / remainingQuantity : 0;
-    console.log("average share price " + avgSharePrice);
+    // console.log("average share price " + avgSharePrice);
     return avgSharePrice;
   }
   function calculate_total_quantity(stock) {
@@ -125,7 +127,6 @@ function Portfolio({ getStockData }) {
             avgSharePrice: Math.round(stock_avg_price*100)/100,
             last_price: Math.round(stock.last_price*100)/100,
             quantity: quantity,
-            quantity: quantity,
             priceChangePercentage: Math.round(
               ((stock.last_price - stock_avg_price) / stock_avg_price) * 100
             ),
@@ -164,11 +165,8 @@ function Portfolio({ getStockData }) {
        setStocksTree(null)
        setTotalValue(0)
        }
+       console.log(status)
   }, [data,]);
-
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
 
   if (status === "error") {
     return <p>Error</p>;
@@ -180,16 +178,15 @@ function Portfolio({ getStockData }) {
         <span>total value: {totalValue.toLocaleString("en-US")}$</span>
         <button onClick={refreshStockPrices}>Refresh Data</button>
       </div>
-      {stocksTree && (
-        <Treemap
+      {status === "pending" ? <TreeMapSkeleton></TreeMapSkeleton>: stocksTree && (
+        <Treemap 
           data={stocksTree}
           width={1000}
           height={600}
           deletestock={deleteStock}
           addStockShares={addStockShares}
           decreaseStockShares={decreaseStockShares}
-        ></Treemap>
-      )}
+        ></Treemap> )}
     </div>
   );
 }

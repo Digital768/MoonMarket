@@ -124,14 +124,23 @@ async def sell_stock_shares(id:str, request: Request, sale: Sale = Body(...)):
         raise HTTPException(status_code=404, detail = f"Stock with id {id} does not found")
     # need to add validations
     # TODO: make sure that quantity of shares sold isnt greater than quantity of overall shares
+    purchased_shares_quantity = sum(purchase['quantity'] for purchase in existing_stock['purchases'])
+    if sale.quantity > purchased_shares_quantity:
+        raise HTTPException(status_code=404, detail = "Can't sell more shares then what you own")
     # TODO: make sure that the price of a share is smaller than the last_price
+    # if sale.price > existing_stock['last_price']:
+    #     raise HTTPException(status_code=404, detail = "Can't buy for a higher price then auction price")
     existing_stock['sales'].append(sale.dict())  # Append the sale
     try:
         quantity = sum(purchase['quantity'] for purchase in existing_stock['purchases']) - sum(sale['quantity'] for sale in existing_stock['sales'])
-        existing_stock['value'] = existing_stock['last_price'] * quantity 
-        await request.app.mongodb_db["stock_collection"].update_one({"_id": id,}, {"$set": existing_stock})  # Update the stock document
+        if (quantity == 0):
+            # meaning no more shares left, need to delete the existing stock from the database
+            await delete_stock(id,request)
+        else:
+            existing_stock['value'] = existing_stock['last_price'] * quantity 
+            await request.app.mongodb_db["stock_collection"].update_one({"_id": id,}, {"$set": existing_stock})  # Update the stock document
     except Exception as e:
-        raise HTTPException(status_code=500, detail="An error occurred while updating the stock.") from e
+        raise HTTPException(status_code=500, detail=str(e)) from e
     return {"message": "Stock updated successfully", "stock": existing_stock}
     
         
@@ -139,6 +148,5 @@ async def sell_stock_shares(id:str, request: Request, sale: Sale = Body(...)):
 async def delete_stock(id:str, request: Request ):  
     delete_result = await request.app.mongodb_db["stock_collection"].delete_one({"_id":id})
     if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-    
+        return {"message": "Stock deleted successfully"}
     raise HTTPException(status_code=404, detail = f"Stock with id {id} does not exist")
