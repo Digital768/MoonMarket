@@ -9,6 +9,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import Portfolio from "./Portfolio.jsx";
+import {Link} from "react-router-dom"
 
 const queryClient = new QueryClient();
 
@@ -69,9 +70,9 @@ function App() {
     <div className="App">
       <QueryClientProvider client={queryClient}>
         <nav className="logo-row">
-          <a href="/" className="logo">
+          <Link to="/" className="logo">
             MoonMarket
-          </a>
+          </Link>
         </nav>
         <form onSubmit={handleSubmit}>
           <div className="search-bar">

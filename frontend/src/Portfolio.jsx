@@ -1,10 +1,10 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import "./portfolio.css";
 import { Treemap } from "./Treemap";
-import Skeleton from '@mui/material/Skeleton';
 import TreeMapSkeleton from "./TreeMapSkeleton";
+
 
 function Portfolio({ getStockData }) {
   const [totalValue, setTotalValue] = useState(0);
@@ -165,7 +165,6 @@ function Portfolio({ getStockData }) {
        setStocksTree(null)
        setTotalValue(0)
        }
-       console.log(status)
   }, [data,]);
 
   if (status === "error") {
@@ -188,6 +187,7 @@ function Portfolio({ getStockData }) {
           decreaseStockShares={decreaseStockShares}
         ></Treemap> )}
     </div>
+   
   );
 }
 

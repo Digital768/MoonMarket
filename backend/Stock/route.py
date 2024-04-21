@@ -32,9 +32,10 @@ async def list_stocks(request: Request ):
     # stocks= list_serial(collection_name.find())
     return stocks
 
-@Stocks_router.get("/{id}")
-async def get_stock(id:str, request: Request ):
-    if(stock := await request.app.mongodb_db["stock_collection"].find_one({"_id":id})) is not None:
+@Stocks_router.get("/{ticker}")
+async def get_stock(ticker:str, request: Request ):
+    symbol = ticker.upper()
+    if(stock := await request.app.mongodb_db["stock_collection"].find_one({"ticker":symbol})) is not None:
         stock["_id"] = str(stock["_id"])
         return stock
     
