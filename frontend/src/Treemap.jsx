@@ -1,10 +1,8 @@
 import { useMemo, useRef } from "react";
 import * as d3 from "d3";
-// import { FaPlus } from "react-icons/fa6";
 import "./Treemap.css";
-// import SharesDialog from "./SharesDialog.jsx";
-// import { FaMinus } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 
 const colors = {
@@ -12,23 +10,9 @@ const colors = {
   negative: "#e85252",
 };
 
-export const Treemap = ({ width, height, data, deletestock, addStockShares, decreaseStockShares }) => {
+export const Treemap = ({ width, height, data}) => {
   const navigate = useNavigate();
-  // const [leafDataId, setLeafDataId] = useState(null);
   const tooltipRef = useRef(null);
-  // const [dialogOpen, setdialogOpen] = useState(false);
-  // const [dialog, setDialog] = useState({
-  //   title: '',
-  //   text: '',
-  //   labelText: '',
-  //   function: '',
-  //   buttonText: '',
-  //   stock: {}
-  // });
-
-  // function handleClose () {
-  //   setdialogOpen(false)
-  // }
 
   const hierarchy = useMemo(() => {
     return d3.hierarchy(data).sum((d) => d.value);
@@ -96,59 +80,15 @@ export const Treemap = ({ width, height, data, deletestock, addStockShares, decr
     tooltip.style("visibility", "hidden");
   };
 
-  // const deleteStockWithConfirmation = (id) => {
-  //   if (window.confirm("Are you sure you want to delete this stock?")) {
-  //     deletestock(id);
-  //   }
-  // };
 
   const navigateToStockPage = (ticker) => {
-    navigate(`/stock/${ticker}`);
+    navigate(`/portfolio/${ticker}`);
   };
 
   const allShapes = root.leaves().map((leaf, i) => {
     const parentName = leaf.parent?.data.name;
     const centerX = (leaf.x0 + leaf.x1) / 2;
     const centerY = (leaf.y0 + leaf.y1) / 2;
-
-    // const handleDeleteClick = (event) => {
-    //   event.stopPropagation(); // Prevent the parent click event from firing
-    //   deleteStockWithConfirmation(leaf.data.id);
-    // };
-    // const handleAddClick = () => {
-    //   // event.stopPropagation(); // Prevent the parent
-    //   setLeafDataId(leaf.data.id)
-    //   setdialogOpen(true);
-    //   setDialog((prevDialog) => {
-    //     const newDialog = {
-    //       ...prevDialog,
-    //       title: 'Add shares',
-    //       text : 'To add shares of the stock, please enter how many shares of the stock you bought and at which price.',
-    //       labelText: 'Enter bought price',
-    //       function: addStockShares,
-    //       buttonText: 'Add',
-    //       stock: leaf.data
-    //     }
-    //     return newDialog
-    //   })
-    // };
-    // const handleDecreaseClick = () => {
-    //   // event.stopPropagation(); // Prevent the parent
-    //   setLeafDataId(leaf.data.id)
-    //   setdialogOpen(true);
-    //   setDialog((prevDialog) => {
-    //     const newDialog = {
-    //       ...prevDialog,
-    //       title: 'Sell shares',
-    //       text : 'To sell shares of the stock, please enter how many shares of the stock you sold and at which price.',
-    //       labelText: 'Enter sold price',
-    //       function: decreaseStockShares,
-    //       buttonText: 'Sell',
-    //       stock: leaf.data
-    //     }
-    //     return newDialog
-    //   })
-    // };
 
     return (
       <g
@@ -189,49 +129,7 @@ export const Treemap = ({ width, height, data, deletestock, addStockShares, decr
           className="font-light"
         >
           {leaf.data.priceChangePercentage}%
-        </text>
-        {/* {leaf.data.id === leaf.data.id && (
-          <text
-            x={leaf.x1 - 10}
-            y={leaf.y0 + 10}
-            fontSize={12}
-            textAnchor="end"
-            alignmentBaseline="hanging"
-            fill="white"
-            className="font-bold"
-            onClick={handleDeleteClick}
-            style={{ cursor: "pointer" }}
-          >
-            X
-          </text>
-          
-        )}
-        {leaf.data.id === leaf.data.id && (
-          <FaPlus
-            x={leaf.x1 - 35}
-            y={leaf.y0 + 10}
-            fontSize={12}
-            textAnchor="end"
-            alignmentBaseline="hanging"
-            fill="white"
-            className="font-bold"
-            onClick={handleAddClick}
-            style={{ cursor: "pointer" }}
-          />
-        )}
-        {leaf.data.id === leaf.data.id && (
-          <FaMinus
-            x={leaf.x1 - 55}
-            y={leaf.y0 + 10}
-            fontSize={12}
-            textAnchor="end"
-            alignmentBaseline="hanging"
-            fill="white"
-            className="font-bold"
-            onClick={handleDecreaseClick}
-            style={{ cursor: "pointer" }}
-          />
-        )} */}
+        </text> 
       </g>
     );
   });
@@ -242,9 +140,6 @@ export const Treemap = ({ width, height, data, deletestock, addStockShares, decr
       <svg width={width} height={height} className="container">
         {allShapes}
       </svg>
-      {/* {dialogOpen && (
-        <SharesDialog open ={dialogOpen} handleClose ={handleClose} dialog={dialog}  id={leafDataId}></SharesDialog>
-      )} */}
     </div>
   );
 };

@@ -1,20 +1,84 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import "./App.css";
+import { useParams } from 'react-router-dom'
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import AddStockDialog from "./AddStockDialog.jsx";
+import {Link} from "react-router-dom"
 
-function StockItem(props) {
-    return (
-      <div className="stockItem">
-        <h2>
-          Stock Symbol: {props.ticker} Stock Name: {props.name}
-        </h2>
-        <h3>Stock Price: {props.price}</h3>
-        <h3>Stock Exchange: {props.exchange}</h3>
-        <h3>Next Earnings date: {props.nextEarningsAnnouncement}</h3>
-        <h3>Avarage 50 days price: {props.priceAvg50}</h3>
-        <h3>Avarage 200 days price: {props.priceAvg200}</h3>
-        <h3>Stock's highest price this year: {props.yearHigh}</h3>
-        <h3>Stock's lowest price this year: {props.yearLow}</h3>
-      </div>
-    );
+function StockItem() {
+  const [stockData, setStockData] = useState(null)
+  const { stockTicker } = useParams();
+  const { data, status, refetch, error } = useQuery({
+    queryKey: [stockTicker], // include stockTicker in the queryKey
+    queryFn: () => getStockData(stockTicker), // wrap getStockData call in another function
+    refetchOnWindowFocus: false,
+    enabled: isValidStockTicker(stockTicker),
+  });
+  function isValidStockTicker(ticker) {
+    // Check if ticker is a string and has length between 1 and 5
+    if (typeof ticker === 'string' && ticker.length >= 1 && ticker.length <= 5) {
+      // Check if ticker contains only alphabetic characters
+      if (/^[A-Za-z]+$/.test(ticker)) {
+        // Convert ticker to uppercase
+        ticker = ticker.toUpperCase();
+        return true;
+      }
+    }
+    return false;
   }
+  async function getStockData(ticker) {
+    return axios.get(`http://localhost:8000/stocks/api/quote/${ticker}`);
+  }
+  useEffect(() => {
+    if (data && data.data && data.data[0]) {
+      const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+      const formattedDate = new Date(data.data[0].earningsAnnouncement).toLocaleDateString('en-GB', options);
+      
+      // Create a new object from data.data[0] with 'symbol' replaced by 'ticker'
+      const newData = { ...data.data[0], ticker: data.data[0].symbol };
+      delete newData.symbol;
   
-  export default StockItem;
+      setStockData({ ...newData, earningsAnnouncement: formattedDate });
+    }
+  }, [data]);
+
+  if (status === 'pending'){
+    return <div>Loading...</div>
+  }
+
+  return (
+    <div className="layout">
+      <nav className="logo-row">
+        <Link to="/" className="logo">
+          MoonMarket
+        </Link>
+      </nav>
+      <div className="stockItem">
+        {status === 'error' && <div>Error: {error.message}</div>}
+        {status === 'success' && stockData && (
+          <>
+            <h2>
+              Stock Symbol: {stockData.ticker} Stock Name: {stockData.name}
+            </h2>
+            <h3>Stock Price: {stockData.price}</h3>
+            <h3>Stock Exchange: {stockData.exchange}</h3>
+            <h3>Next Earnings date: {stockData.earningsAnnouncement}</h3>
+            <h3>Average 50 days price: {stockData.priceAvg50}</h3>
+            <h3>Average 200 days price: {stockData.priceAvg200}</h3>
+            <h3>Stock's highest price this year: {stockData.yearHigh}</h3>
+            <h3>Stock's lowest price this year: {stockData.yearLow}</h3>
+            <div className="addStockBox">
+            <AddStockDialog stock={stockData}></AddStockDialog>
+          </div>
+          </>
+        )}
+        {stockData == null && (
+          <p>stock ticker isnt valid</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default StockItem;

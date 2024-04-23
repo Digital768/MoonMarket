@@ -6,8 +6,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
-export default function AddStockDialog({ stock, setPortfolioVisible, setStockSearched }) {
+export default function AddStockDialog({ stock }) {
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [portfolioStock, setPortfolioStock] = useState({
         name: stock.name,
@@ -51,8 +53,7 @@ export default function AddStockDialog({ stock, setPortfolioVisible, setStockSea
             postApiStock(portfolioStock)
                 .then(() => {
                     handleClose();
-                    setStockSearched(false)
-                    setPortfolioVisible(true)
+                    navigate('/');
                 })
                 .catch(error => {
                     console.error("Error:", error);

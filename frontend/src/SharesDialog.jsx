@@ -7,7 +7,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 
-function SharesDialog({handleClose, open, id, dialog}) {
+function SharesDialog({handleClose, open, dialog}) {
   const [error, setError] = useState(""); // State variable to track form errors
   const [shares, setShares] = useState({
     price: 0,
@@ -38,7 +38,7 @@ function SharesDialog({handleClose, open, id, dialog}) {
 
   const handleSubmit = () => {
     if (shares.quantity > 0 && shares.price > 0) {
-      dialog.function(id, shares)
+      dialog.function(dialog.stock._id, shares)
             .then(() => {
                 handleClose();
             })

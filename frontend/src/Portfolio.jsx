@@ -6,15 +6,20 @@ import { Treemap } from "./Treemap";
 import TreeMapSkeleton from "./TreeMapSkeleton";
 
 
-function Portfolio({ getStockData }) {
+function Portfolio() {
   const [totalValue, setTotalValue] = useState(0);
   const [stocksTree, setStocksTree] = useState(null); // Define stocksTree state
+  const [prevData, setPrevData] = useState(null); // Add a new state variable
 
   const { data, status, refetch } = useQuery({
     queryKey: ["stocks"],
     queryFn: getStocksFromDb,
     refetchOnWindowFocus: false,
   });
+  async function getStockData(ticker) {
+    return axios.get(`http://localhost:8000/stocks/api/quote/${ticker}`);
+  }
+
 
   async function getStocksFromDb() {
     const dbStocks = await axios.get("http://localhost:8000/stocks/");
@@ -25,20 +30,6 @@ function Portfolio({ getStockData }) {
     await axios.put(`http://localhost:8000/stocks/update_price/${id}`, {
       last_price: new_price,
     });
-    refetch();
-  }
-  async function addStockShares(id, purchase) {
-    await axios.put(`http://localhost:8000/stocks/add_shares/${id}`, purchase);
-    refetch();
-  }
-
-  async function decreaseStockShares(id, sale) {
-    await axios.put(`http://localhost:8000/stocks/sell_shares/${id}`, sale);
-    refetch();
-  }
-
-  async function deleteStock(id) {
-    await axios.delete(`http://localhost:8000/stocks/${id}`);
     refetch();
   }
 
@@ -64,13 +55,11 @@ function Portfolio({ getStockData }) {
     return false;
   }
   function calculate_average_price(stock) {
-    // Step 2: Calculate the total amount spent on buying shares and the total amount earned from selling shares
+    // Step 1: Calculate the total amount spent on buying shares 
     const totalSpent = stock.purchases.reduce((total, purchase) => total + purchase.quantity * purchase.price, 0);
     // console.log("Total amount spent on buying shares " + totalSpent);
-    // const totalEarned = stock.sales.reduce((total, sale) => total + sale.quantity * sale.price, 0);
-    // console.log("total earned " + totalEarned);
     const remainingQuantity = total_purchased_shares(stock);
-    // Step 4: Calculate the average share price
+    // Step 2: Calculate the average share price
     const avgSharePrice = remainingQuantity > 0 ? totalSpent / remainingQuantity : 0;
     // console.log("average share price " + avgSharePrice);
     return avgSharePrice;
@@ -82,7 +71,7 @@ function Portfolio({ getStockData }) {
     // console.log("total quantity bought " + totalQuantityBought);
     const totalQuantitySold = stock.sales.reduce((total, sale) => total + sale.quantity, 0);
     // console.log("total quantity sold " + totalQuantitySold);
-    // Step 3: Calculate the remaining quantity of shares you own
+    // Step 2: Calculate the remaining quantity of shares you own
     const remainingQuantity = totalQuantityBought - totalQuantitySold;
     // console.log("remaining quantity " + remainingQuantity);
     return remainingQuantity;
@@ -92,7 +81,7 @@ function Portfolio({ getStockData }) {
     return totalQuantityBought;
   }
   useEffect(() => {
-    if (data?.data !== null && data?.data !== undefined && data?.data.length !== 0) {
+    if (Array.isArray(data?.data) && data.data.length !== 0) {
       const stockCollection = data.data;
       const sum = data.data.reduce((acc, stock) => acc + stock.value, 0);
       setTotalValue(Math.round(sum*100)/100)
@@ -165,7 +154,8 @@ function Portfolio({ getStockData }) {
        setStocksTree(null)
        setTotalValue(0)
        }
-  }, [data,]);
+       setPrevData(data);
+  }, [data]);
 
   if (status === "error") {
     return <p>Error</p>;
@@ -182,9 +172,6 @@ function Portfolio({ getStockData }) {
           data={stocksTree}
           width={1000}
           height={600}
-          deletestock={deleteStock}
-          addStockShares={addStockShares}
-          decreaseStockShares={decreaseStockShares}
         ></Treemap> )}
     </div>
    
