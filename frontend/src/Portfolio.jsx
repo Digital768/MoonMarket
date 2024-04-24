@@ -3,13 +3,12 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import "./portfolio.css";
 import { Treemap } from "./Treemap";
-import TreeMapSkeleton from "./TreeMapSkeleton";
+import TreeMapSkeleton from "./Skeletons/TreeMapSkeleton";
 
 
 function Portfolio() {
   const [totalValue, setTotalValue] = useState(0);
   const [stocksTree, setStocksTree] = useState(null); // Define stocksTree state
-  const [prevData, setPrevData] = useState(null); // Add a new state variable
 
   const { data, status, refetch } = useQuery({
     queryKey: ["stocks"],
@@ -154,7 +153,6 @@ function Portfolio() {
        setStocksTree(null)
        setTotalValue(0)
        }
-       setPrevData(data);
   }, [data]);
 
   if (status === "error") {

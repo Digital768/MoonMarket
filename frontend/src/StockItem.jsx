@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import AddStockDialog from "./AddStockDialog.jsx";
 import {Link} from "react-router-dom"
+import Box from "@mui/material/Box";
+import SearchStockSkeleton from "./Skeletons/SearchStockSkeleton";
 
 function StockItem() {
   const [stockData, setStockData] = useState(null)
@@ -44,7 +46,7 @@ function StockItem() {
   }, [data]);
 
   if (status === 'pending'){
-    return <div>Loading...</div>
+    return <SearchStockSkeleton></SearchStockSkeleton>
   }
 
   return (
@@ -54,7 +56,7 @@ function StockItem() {
           MoonMarket
         </Link>
       </nav>
-      <div className="stockItem">
+      <Box sx={{ width: 500, height: 500, bgcolor: "background.paper", p: 1, margin:'auto', padding: 20 }}>
         {status === 'error' && <div>Error: {error.message}</div>}
         {status === 'success' && stockData && (
           <>
@@ -76,7 +78,7 @@ function StockItem() {
         {stockData == null && (
           <p>stock ticker isnt valid</p>
         )}
-      </div>
+      </Box>
     </div>
   );
 }

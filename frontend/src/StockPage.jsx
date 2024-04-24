@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useEffect, useState, useContext } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import "./App.css";
 import SharesDialog from "./SharesDialog.jsx";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate } from "react-router-dom";
+import { Box } from "@mui/material";
+import PortfolioStockSkeleton from "./Skeletons/PortfolioStockSkeleton";
 
 function StockPage() {
   const navigate = useNavigate();
@@ -13,23 +14,25 @@ function StockPage() {
   const [dialogOpen, setdialogOpen] = useState(false);
   const [stockData, setStockData] = useState({});
   const [dialog, setDialog] = useState({
-    title: '',
-    text: '',
-    labelText: '',
-    function: '',
-    buttonText: '',
-    stock: stockData
+    title: "",
+    text: "",
+    labelText: "",
+    function: "",
+    buttonText: "",
+    stock: stockData,
   });
 
   const { data, status, refetch } = useQuery({
     queryKey: ["stock", stockTicker],
     queryFn: () => getStockFromDb(stockTicker),
     refetchOnWindowFocus: false,
-    retry: 0
+    retry: 0,
   });
 
   async function getStockFromDb(stockTicker) {
-    const dbStock = await axios.get(`http://localhost:8000/stocks/${stockTicker}`);
+    const dbStock = await axios.get(
+      `http://localhost:8000/stocks/${stockTicker}`
+    );
     return dbStock;
   }
   async function addStockShares(id, purchase) {
@@ -50,13 +53,12 @@ function StockPage() {
   const deleteStockWithConfirmation = (id) => {
     if (window.confirm("Are you sure you want to delete this stock?")) {
       deleteStock(id);
-      navigate('/');
+      navigate("/");
     }
   };
 
-
   function handleClose() {
-    setdialogOpen(false)
+    setdialogOpen(false);
   }
 
   const handleAddClick = () => {
@@ -65,15 +67,15 @@ function StockPage() {
     setDialog((prevDialog) => {
       const newDialog = {
         ...prevDialog,
-        title: 'Add shares',
-        text: 'To add shares of the stock, please enter how many shares of the stock you bought and at which price.',
-        labelText: 'Enter bought price',
+        title: "Add shares",
+        text: "To add shares of the stock, please enter how many shares of the stock you bought and at which price.",
+        labelText: "Enter bought price",
         function: addStockShares,
-        buttonText: 'Add',
-        stock: data.data
-      }
-      return newDialog
-    })
+        buttonText: "Add",
+        stock: data.data,
+      };
+      return newDialog;
+    });
   };
   const handleDecreaseClick = () => {
     // event.stopPropagation(); // Prevent the parent
@@ -82,26 +84,28 @@ function StockPage() {
     setDialog((prevDialog) => {
       const newDialog = {
         ...prevDialog,
-        title: 'Sell shares',
-        text: 'To sell shares of the stock, please enter how many shares of the stock you sold and at which price.',
-        labelText: 'Enter sold price',
+        title: "Sell shares",
+        text: "To sell shares of the stock, please enter how many shares of the stock you sold and at which price.",
+        labelText: "Enter sold price",
         function: decreaseStockShares,
-        buttonText: 'Sell',
-        stock: data.data
-      }
-      return newDialog
-    })
+        buttonText: "Sell",
+        stock: data.data,
+      };
+      return newDialog;
+    });
   };
   useEffect(() => {
     if (status === "success") {
       setStockData(data.data);
     }
-    if( status === "error") {
-      navigate('/');
+    if (status === "error") {
+      navigate("/");
     }
-    console.log(status)
-  }, [status, data])
+  }, [status, data]);
 
+  if (status === 'pending'){
+    return <PortfolioStockSkeleton></PortfolioStockSkeleton>
+  }
 
   return (
     <div>
@@ -110,12 +114,25 @@ function StockPage() {
           MoonMarket
         </a>
       </nav>
-      <button onClick={() => deleteStockWithConfirmation(data.data._id)}>delete stock</button>
-      <button onClick={handleAddClick}> add shares</button>
-      <button onClick={handleDecreaseClick}>decrease shares</button>
       {/* <p>stock name is {status === 'pending' ?'Loading...' : data.data.name}</p> */}
-      {status === 'success' ? (
-        <>
+      {status === "success" ? (
+        <Box
+          sx={{
+            width: 500,
+            height: 500,
+            bgcolor: "background.paper",
+            p: 1,
+            margin: "auto",
+            padding: 20,
+          }}
+        >
+          <Box sx ={{display:'flex', flexDirection:'row', justifyContent: 'space-between'}}>
+          <button onClick={() => deleteStockWithConfirmation(data.data._id)}>
+            delete stock
+          </button>
+          <button onClick={handleAddClick}> add shares</button>
+          <button onClick={handleDecreaseClick}>decrease shares</button>
+          </Box>
           <p>stock name is {stockData.name}</p>
           <p>stock ticker is {stockData.ticker}</p>
           <p>stock price is {stockData.last_price}</p>
@@ -143,18 +160,19 @@ function StockPage() {
           ) : (
             <p>No sales found.</p>
           )}
-          
-        </>
+        </Box>
       ) : (
         <p>loading</p>
       )}
       {dialogOpen && (
-        <SharesDialog open={dialogOpen} handleClose={handleClose} dialog={dialog} ></SharesDialog>
+        <SharesDialog
+          open={dialogOpen}
+          handleClose={handleClose}
+          dialog={dialog}
+        ></SharesDialog>
       )}
-
     </div>
-
-  )
+  );
 }
 
-export default StockPage
+export default StockPage;
