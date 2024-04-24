@@ -30,7 +30,9 @@ function StockItem() {
     return false;
   }
   async function getStockData(ticker) {
-    return axios.get(`http://localhost:8000/stocks/api/quote/${ticker}`);
+     const data = axios.get(`http://localhost:8000/stocks/api/quote/${ticker}`);
+     console.log(data)
+     return data
   }
   useEffect(() => {
     if (data && data.data && data.data[0]) {

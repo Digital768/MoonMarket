@@ -5,11 +5,13 @@ from Stock.models import Stock, UpdateStockPrice, Purchase, Sale
 from Stock.schemas import list_serial
 import requests
 from pymongo.errors import DuplicateKeyError
+import json
 
 Stocks_router = APIRouter()
 
 API_KEY = "qR1MOdNrEiVye4840mWjYFKrdBIf6wDx"
 BASE_URL = 'https://financialmodelingprep.com/api/v3'
+# TODO need to get Company information and create a new json made of both responses that i get and return that json object
 
 @Stocks_router.get("/api/quote/{symbol}")
 def get_quote(symbol: str):
@@ -17,6 +19,9 @@ def get_quote(symbol: str):
         endpoint = f'/quote/{symbol}?apikey={API_KEY}'
         url = BASE_URL + endpoint
         response = requests.get(url)
+        # company info request
+        companyInfoUrl = f'https://financialmodelingprep.com/api/v3/profile/{symbol}?apikey={API_KEY}'
+        companyInfoRes = requests.get(companyInfoUrl)
         return response.json()
     except Exception as e:
         return {"error": str(e)}
