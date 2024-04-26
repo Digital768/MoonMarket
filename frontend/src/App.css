@@ -50,3 +50,7 @@
   flex-direction: column;
   gap: 0.5em;
 }
+
+.stock-img{
+  background-color: #888888;
+}

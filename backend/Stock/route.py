@@ -10,22 +10,52 @@ import json
 Stocks_router = APIRouter()
 
 API_KEY = "qR1MOdNrEiVye4840mWjYFKrdBIf6wDx"
+SECOND_API_KEY ="FSCUqF7FY7DBmuG9cL06Z6w9K52DtfYn"
 BASE_URL = 'https://financialmodelingprep.com/api/v3'
 # TODO need to get Company information and create a new json made of both responses that i get and return that json object
 
 @Stocks_router.get("/api/quote/{symbol}")
 def get_quote(symbol: str):
     try:
+        # Try first API key for quote request
         endpoint = f'/quote/{symbol}?apikey={API_KEY}'
         url = BASE_URL + endpoint
         response = requests.get(url)
-        # company info request
+        data1 = response.json()[0]
+
+        # Try first API key for company info request
         companyInfoUrl = f'https://financialmodelingprep.com/api/v3/profile/{symbol}?apikey={API_KEY}'
         companyInfoRes = requests.get(companyInfoUrl)
-        return response.json()
+        data2 = companyInfoRes.json()[0]
+
+        # Combine the two JSON objects
+        combined_data = {**data1, **data2}
+        print("Using first API key.")
+        return combined_data
+
     except Exception as e:
-        return {"error": str(e)}
-    
+        # If the first API key fails, try the second API key
+        try:
+            print("First API key failed, trying second API key.")
+            # Try second API key for quote request
+            endpoint = f'/quote/{symbol}?apikey={SECOND_API_KEY}'
+            url = BASE_URL + endpoint
+            response = requests.get(url)
+            data1 = response.json()[0]
+
+            # Try second API key for company info request
+            companyInfoUrl = f'https://financialmodelingprep.com/api/v3/profile/{symbol}?apikey={SECOND_API_KEY}'
+            companyInfoRes = requests.get(companyInfoUrl)
+            data2 = companyInfoRes.json()[0]
+
+            # Combine the two JSON objects
+            combined_data = {**data1, **data2}
+            print("Using second API key.")
+            return combined_data
+
+        except Exception as e:
+            return {"error": str(e)}
+        
 #GET request Method
 @Stocks_router.get("/", response_description = "list of all stocks in portfolio")
 async def list_stocks(request: Request ):

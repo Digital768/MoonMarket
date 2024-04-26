@@ -13,7 +13,7 @@ function StockItem() {
   const { stockTicker } = useParams();
   const { data, status, refetch, error } = useQuery({
     queryKey: [stockTicker], // include stockTicker in the queryKey
-    queryFn: () => getStockData(stockTicker), // wrap getStockData call in another function
+    queryFn: () => getStockData(stockTicker), 
     refetchOnWindowFocus: false,
     enabled: isValidStockTicker(stockTicker),
   });
@@ -30,22 +30,34 @@ function StockItem() {
     return false;
   }
   async function getStockData(ticker) {
-     const data = axios.get(`http://localhost:8000/stocks/api/quote/${ticker}`);
-     console.log(data)
+     const data = await axios.get(`http://localhost:8000/stocks/api/quote/${ticker}`);
      return data
   }
   useEffect(() => {
-    if (data && data.data && data.data[0]) {
+    if (status === 'success' ) {
+      const res = data.data
       const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-      const formattedDate = new Date(data.data[0].earningsAnnouncement).toLocaleDateString('en-GB', options);
+      const formattedDate = new Date(res.earningsAnnouncement).toLocaleDateString('en-GB', options);
       
-      // Create a new object from data.data[0] with 'symbol' replaced by 'ticker'
-      const newData = { ...data.data[0], ticker: data.data[0].symbol };
-      delete newData.symbol;
+      const stockInfo = {
+        ticker: res.symbol,
+        name: res.name, 
+        price: res.price,
+        exchange: res.exchange,
+        earningsAnnouncement: formattedDate, // use the formattedDate variable here
+        priceAvg50: res.priceAvg50,
+        priceAvg200: res.priceAvg200,
+        yearHigh: res.yearHigh,
+        yearLow: res.yearLow,
+        imageUrl: res.image,
+        sector: res.sector,
+        ceo: res.ceo,
+        website: res.website,
+      }
   
-      setStockData({ ...newData, earningsAnnouncement: formattedDate });
+      setStockData(stockInfo);
     }
-  }, [data]);
+  }, [status]);
 
   if (status === 'pending'){
     return <SearchStockSkeleton></SearchStockSkeleton>
@@ -65,6 +77,7 @@ function StockItem() {
             <h2>
               Stock Symbol: {stockData.ticker} Stock Name: {stockData.name}
             </h2>
+            <img src ={stockData.imageUrl} alt ={stockData.ticker} width="100" height="100" className="stock-img"/>
             <h3>Stock Price: {stockData.price}</h3>
             <h3>Stock Exchange: {stockData.exchange}</h3>
             <h3>Next Earnings date: {stockData.earningsAnnouncement}</h3>

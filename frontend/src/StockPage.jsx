@@ -133,6 +133,7 @@ function StockPage() {
           <button onClick={handleAddClick}> add shares</button>
           <button onClick={handleDecreaseClick}>decrease shares</button>
           </Box>
+          <img src ={`https://financialmodelingprep.com/image-stock/${stockTicker}.png`} width='100' height='100' alt={stockTicker} className="stock-img"></img>
           <p>stock name is {stockData.name}</p>
           <p>stock ticker is {stockData.ticker}</p>
           <p>stock price is {stockData.last_price}</p>
