@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Body, HTTPException, Response
 from pydantic import EmailStr
 
-from models.user import User, UserAuth, UserOut
+from models.user import User, UserAuth, UserOut, UserRegister
 from jwt import access_security, user_from_token
 # from util.mail import send_password_reset_email
 from util.password import hash_password
@@ -13,14 +13,14 @@ router = APIRouter(prefix="/register", tags=["Register"])
 embed = Body(..., embed=True)
 
 
-@router.post("", response_model=UserOut)
-async def user_registration(user_auth: UserAuth):  # type: ignore[no-untyped-def]
+@router.post("", response_model=UserRegister)
+async def user_registration(user_register: UserRegister):  # type: ignore[no-untyped-def]
     """Create a new user."""
-    user = await User.by_email(user_auth.email)
+    user = await User.by_email(user_register.email)
     if user is not None:
         raise HTTPException(409, "User with that email already exists")
-    hashed = hash_password(user_auth.password)
-    user = User(email=user_auth.email, password=hashed)
+    hashed = hash_password(user_register.password)
+    user = User(email=user_register.email, password=hashed, deposit = user_register.deposit)
     await user.create()
     return user
 

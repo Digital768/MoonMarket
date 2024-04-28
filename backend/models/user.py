@@ -4,15 +4,68 @@ from datetime import datetime
 from typing import Annotated, Any, Optional
 from beanie import Document, Indexed
 from pydantic import BaseModel, EmailStr
+from typing import List
 
+class Purchase(BaseModel):
+    ticker: str
+    name:str
+    price: float
+    quantity: float
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "ticker": "AAPL",
+                "name": "Apple",
+                "price": 100.0,
+                "quantity": 10
+            }
+        }
+
+class Sale(BaseModel):
+    ticker: str
+    name:str
+    price: float
+    quantity: float
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "ticker": "AAPL",
+                "name": "Apple",
+                "price": 100.0,
+                "quantity": 10
+            }
+        }
+
+class Holding(BaseModel):
+    ticker: str
+    avg_bought_price: float
+    quantity: int
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "ticker": "AAPL",
+                "avg_bought_price": 150,
+                "quantity": 40
+            }
+        }
+        
 
 class UserAuth(BaseModel):
-    """User register and login auth."""
+    """User login auth."""
 
     email: EmailStr
     password: str
 
+class UserRegister(BaseModel):
+    """User register."""
 
+    email: EmailStr
+    password: str
+    deposit: float | None = 0
+        
 class UserUpdate(BaseModel):
     """Updatable user fields."""
 
@@ -21,6 +74,10 @@ class UserUpdate(BaseModel):
     # User information
     first_name: str | None = None
     last_name: str | None = None
+    deposit: float | None = 0
+    Purchases: List[Purchase] = []
+    sales: List[Sale] = []
+    holdings: List[Holding] = []
 
 
 class UserOut(UserUpdate):
@@ -28,7 +85,6 @@ class UserOut(UserUpdate):
 
     email: Annotated[str, Indexed(EmailStr, unique=True)]
     disabled: bool = False
-
 
 class User(Document, UserOut):
     """User DB representation."""
