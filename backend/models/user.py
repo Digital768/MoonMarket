@@ -34,7 +34,7 @@ class User(Document, UserOut):
     """User DB representation."""
 
     password: str
-    email_confirmed_at: datetime | None = None
+    # email_confirmed_at: datetime | None = None
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"
