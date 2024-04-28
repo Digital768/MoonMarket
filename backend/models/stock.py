@@ -1,6 +1,6 @@
-from typing import Optional, List
+from typing import List, Annotated
+from beanie import Document, Indexed
 from pydantic import BaseModel, Field
-import uuid
 
 class Purchase(BaseModel):
     price: float
@@ -17,7 +17,7 @@ class Purchase(BaseModel):
 class Sale(BaseModel):
     price: float
     quantity: float
-    
+
     class Config:
         json_schema_extra = {
             "example": {
@@ -26,35 +26,33 @@ class Sale(BaseModel):
             }
         }
 
-class Stock(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias='_id')  # Convert UUID to string
-    name:str = Field(...)
-    ticker:str = Field(...)
-    purchases: List[Purchase]  # List of purchases
-    sales:List[Sale]
-    last_price:float
-    value:float
-    
+class Stock(Document):
+    name: Annotated[str, Indexed(unique=True)]
+    ticker: Annotated[str, Indexed(unique=True)]
+    purchases: List[Purchase]
+    sales: List[Sale]
+    last_price: float
+    value: float
+
+
     class Config:
         json_schema_extra = {
             "example": {
-                "id": "60000000-0000-0000",
-                "name": "Apple",    
+                "name": "Apple",
                 "ticker": "AAPL",
-                "purchases": [{"price": 100.0, "quantity": 10}],  # List of purchases
-                "sales": [{"price": 100.0, "quantity": 5}],  # List of purchases
+                "purchases": [{"price": 100.0, "quantity": 10}],
+                "sales": [{"price": 100.0, "quantity": 5}],
                 "last_price": 100.0,
                 "value": 100.0
             }
         }
-    
+
 class UpdateStockPrice(BaseModel):
-    last_price:Optional[float]
-    
+    last_price: float | None = None
+
     class Config:
         json_schema_extra = {
             "example": {
                 "last_price": 100.0
             }
         }
-
