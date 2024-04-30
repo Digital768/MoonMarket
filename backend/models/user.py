@@ -11,6 +11,7 @@ class Purchase(BaseModel):
     name:str
     price: float
     quantity: float
+    purchased_date : datetime
 
     class Config:
         json_schema_extra = {
@@ -18,7 +19,8 @@ class Purchase(BaseModel):
                 "ticker": "AAPL",
                 "name": "Apple",
                 "price": 100.0,
-                "quantity": 10
+                "quantity": 10, 
+                "purchased_date":"2024-04-30T08:24:12"
             }
         }
 
@@ -27,6 +29,7 @@ class Sale(BaseModel):
     name:str
     price: float
     quantity: float
+    sale_date: datetime
 
     class Config:
         json_schema_extra = {
@@ -34,7 +37,8 @@ class Sale(BaseModel):
                 "ticker": "AAPL",
                 "name": "Apple",
                 "price": 100.0,
-                "quantity": 10
+                "quantity": 10,
+                "sale_date": "2024-04-30T08:24:12"
             }
         }
 
@@ -42,13 +46,15 @@ class Holding(BaseModel):
     ticker: str
     avg_bought_price: float
     quantity: int
+    position_started: datetime
     
     class Config:
         json_schema_extra = {
             "example": {
                 "ticker": "AAPL",
                 "avg_bought_price": 150,
-                "quantity": 40
+                "quantity": 40,
+                "position_started": "2024-04-30T08:24:12"
             }
         }
         
