@@ -7,6 +7,7 @@ from models.user import User, UserOut, UserUpdate,Holding, Purchase, Sale
 from models.stock import Stock
 from jwt import access_security
 from util.current_user import current_user
+from datetime import datetime
 
 router = APIRouter(prefix="/user", tags=["User"])
 
@@ -17,7 +18,7 @@ async def get_user(user: User = Depends(current_user)):  # type: ignore[no-untyp
     return user
 
 
-@router.patch("", response_model=UserOut)
+@router.patch("/update", response_model=UserOut)
 async def update_user(update: UserUpdate, user: User = Depends(current_user)):  # type: ignore[no-untyped-def]
     """Update allowed user fields."""
     fields = update.model_dump(exclude_unset=True)
@@ -49,7 +50,7 @@ async def buy_stock_shares(ticker: str, quantity: int, user: User = Depends(curr
     user.deposit -= total_cost
 
     # Create a new Purchase and add it to the user's purchases
-    purchase = Purchase(ticker=ticker, name=stock.name, price=stock.price, quantity=quantity)
+    purchase = Purchase(ticker=ticker, name=stock.name, price=stock.price, quantity=quantity, purchased_date = datetime.now() )
     if user.Purchases is None:
         user.Purchases = [purchase]
     else:
@@ -64,7 +65,7 @@ async def buy_stock_shares(ticker: str, quantity: int, user: User = Depends(curr
             break
     else:
         # If the user does not have a holding of this stock, create a new one
-        user.holdings.append(Holding(ticker=ticker, avg_bought_price=stock.price, quantity=quantity))
+        user.holdings.append(Holding(ticker=ticker, avg_bought_price=stock.price, quantity=quantity, position_started = datetime.now()))
 
     # Save the updated user document back to the database
     await user.save()
@@ -104,7 +105,7 @@ async def sell_stock_shares(ticker: str, quantity: int, user: User = Depends(cur
     user.deposit += profit
 
     # Create a new Sale and add it to the user's sales
-    sale = Sale(ticker=ticker, name=stock.name, price=stock.price, quantity=quantity)
+    sale = Sale(ticker=ticker, name=stock.name, price=stock.price, quantity=quantity, sale_date = datetime.now())
     if user.sales is None:
         user.sales = [sale]
     else:
@@ -116,7 +117,7 @@ async def sell_stock_shares(ticker: str, quantity: int, user: User = Depends(cur
     return {"message": "Stock sold successfully"}
 
 
-@router.delete("")
+@router.delete("/delete")
 async def delete_user(
     auth: JwtAuthorizationCredentials = Security(access_security)
 ) -> Response:

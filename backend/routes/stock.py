@@ -33,7 +33,7 @@ async def add_stock(stock_data: Stock):
     return {"message": "Stock added successfully"}
 
 
-@router.delete("/{ticker}", response_description="Delete stock")
+@router.delete("/delete/{ticker}", response_description="Delete stock")
 async def delete_stock(ticker: str, user: User = Depends(current_user)):
     existing_stock = await Stock.find_one(Stock.ticker == ticker)
     if existing_stock is None:

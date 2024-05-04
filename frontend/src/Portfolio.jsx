@@ -28,6 +28,13 @@ function Portfolio() {
     });
 
   }
+  async function getStockData(ticker) {
+    return await axios.get(`http://localhost:8000/stocks/${ticker}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+  }
 
 
   // async function refreshStockPrices() {
@@ -45,13 +52,68 @@ function Portfolio() {
   //   await Promise.all(updatePromises);
   //   refetch();
   // }
-
+  function isStockProfitable(avg_bought_price, stock_current_price) {
+    if (stock_current_price > avg_bought_price) return true;
+    return false;
+  }
 
   useEffect(() => {
-    // if (Array.isArray(data?.data) && data.data.length !== 0) {
-    //   setStocks(data.data.holdings)
-    // }
-    //   const stockCollection = data.data.holdings
+    if (status === 'success') {
+      if (data.data.length !== 0) {
+        const stockCollection = data.data.holdings
+        const positiveStocks = [];
+        const negativeStocks = [];
+        stockCollection.forEach((holding) => {
+          const res = getStockData(holding.ticker)
+          const stock_avg_price = holding.avg_bought_price
+          if (isStockProfitable(stock_avg_price, res.price)) {
+            positiveStocks.push(
+              {
+                name: res.name,
+                id: res.id,
+                ticker: holding.ticker,
+                value: holding.quantity * res.price,
+                avgSharePrice: stock_avg_price,
+                quantity: holding.quantity,
+                last_price: Math.round(res.price * 100) / 100,
+                priceChangePercentage: Math.round(
+                  ((res.price - stock_avg_price) / stock_avg_price) * 100
+                ),
+                percentageOfPortfolio: Math.round(
+                  (value / Math.round(sum)) * 100
+                ),
+
+              }
+            )
+          }
+          else {
+            negativeStocks.push(
+              {
+                name: res.name,
+                id: res.id,
+                ticker: holding.ticker,
+                value: holding.quantity * res.price,
+                avgSharePrice: stock_avg_price,
+                quantity: holding.quantity,
+                last_price: Math.round(res.price * 100) / 100,
+                priceChangePercentage: Math.round(
+                  ((res.price - stock_avg_price) / stock_avg_price) * 100
+                ),
+                percentageOfPortfolio: Math.round(
+                  (value / Math.round(sum)) * 100
+                ),
+              }
+            )
+          }
+          // setTotalValue(Math.round(sum * 100) / 100)
+        })
+      }
+}}, [status])
+
+  // if (Array.isArray(data?.data) && data.data.length !== 0) {
+  //   setStocks(data.data.holdings)
+  // }
+  //   
   //     const sum = data.data.reduce((acc, stock) => acc + stock.value, 0);
   //     setTotalValue(Math.round(sum*100)/100)
   //     const positiveStocks = [];
@@ -69,12 +131,12 @@ function Portfolio() {
   //           avgSharePrice: Math.round(stock_avg_price*100)/100,
   //           last_price: Math.round(stock.last_price*100)/100,
   //           quantity: quantity,
-  //           priceChangePercentage: Math.round(
-  //             ((stock.last_price - stock_avg_price) / stock_avg_price) * 100
-  //           ),  
-  //           percentageOfPortfolio: Math.round(
-  //             (stock.value / Math.round(sum)) * 100
-  //           ),
+  // priceChangePercentage: Math.round(
+  //   ((stock.last_price - stock_avg_price) / stock_avg_price) * 100
+  // ),  
+  // percentageOfPortfolio: Math.round(
+  //   (stock.value / Math.round(sum)) * 100
+  // ),
   //         });
   //       } else {
   //         negativeStocks.push({
@@ -123,27 +185,26 @@ function Portfolio() {
   //      setStocksTree(null)
   //      setTotalValue(0)
   //      }
-  }, [data]);
 
-  if (status === "error") {
-    return <p>Error</p>;
-  }
+if (status === "error") {
+  return <p>Error</p>;
+}
 
-  return (
-    <div className="portfolio">
-      <div className="navbar">
-        <span>total value: {totalValue.toLocaleString("en-US")}$</span>
-        {/* <button onClick={refreshStockPrices}>Refresh Data</button> */}
-      </div>
-      {status === "pending" ? <TreeMapSkeleton></TreeMapSkeleton>: stocksTree && (
-        <Treemap 
-          data={stocksTree}
-          width={1000}
-          height={600}
-        ></Treemap> )}
+return (
+  <div className="portfolio">
+    <div className="navbar">
+      <span>total value: {totalValue.toLocaleString("en-US")}$</span>
+      {/* <button onClick={refreshStockPrices}>Refresh Data</button> */}
     </div>
-   
-  );
+    {status === "pending" ? <TreeMapSkeleton></TreeMapSkeleton> : stocksTree && (
+      <Treemap
+        data={stocksTree}
+        width={1000}
+        height={600}
+      ></Treemap>)}
+  </div>
+
+);
 }
 
 export default Portfolio;

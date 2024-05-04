@@ -84,6 +84,7 @@ class UserUpdate(BaseModel):
     Purchases: List[Purchase] = []
     sales: List[Sale] = []
     holdings: List[Holding] = []
+    last_refresh: datetime | None = None
 
 
 class UserOut(UserUpdate):
