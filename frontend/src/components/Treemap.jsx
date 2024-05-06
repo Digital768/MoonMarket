@@ -1,8 +1,8 @@
 import { useMemo, useRef } from "react";
 import * as d3 from "d3";
-import "./Treemap.css";
+import "@/styles/Treemap.css";
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+
 
 
 const colors = {

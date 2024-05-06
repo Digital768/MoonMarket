@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import "./portfolio.css";
-import { Treemap } from "./Treemap";
-import TreeMapSkeleton from "./Skeletons/TreeMapSkeleton";
-import { useAuth } from "./AuthProvider";
+import "@/styles/portfolio.css"
+import { Treemap } from "@/components/Treemap";
+import TreeMapSkeleton from "@/Skeletons/TreeMapSkeleton";
+import { useAuth } from "@/pages/AuthProvider";
 
 
 function Portfolio() {

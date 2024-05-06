@@ -1,12 +1,12 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { useAuth } from "./AuthProvider";
-import { ProtectedRoute } from "./ProtectedRoute";
-import App from './App';
-import ErrorPage from './ErrorPage';
-import StockPage from './StockPage';
-import StockItem from './StockItem';
-import Login from "./Login";
-import Logout from "./Logout";
+import { useAuth } from "@/pages/AuthProvider";
+import { ProtectedRoute } from "@/pages/ProtectedRoute";
+import App from '@/pages/App';
+import ErrorPage from '@/pages/ErrorPage';
+import StockPage from '@/pages/StockPage';
+import StockItem from '@/pages/StockItem';
+import Login from "@/pages/Login";
+import Logout from "@/pages/Logout";
 
 const Routes = () => {
   const { token } = useAuth();

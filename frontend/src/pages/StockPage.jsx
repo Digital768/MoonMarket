@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import "./App.css";
-import SharesDialog from "./SharesDialog.jsx";
+import "@/styles/App.css";
+import SharesDialog from "@/components/SharesDialog.jsx";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
-import PortfolioStockSkeleton from "./Skeletons/PortfolioStockSkeleton";
+import PortfolioStockSkeleton from "@/Skeletons/PortfolioStockSkeleton.jsx";
 
 function StockPage() {
   const navigate = useNavigate();

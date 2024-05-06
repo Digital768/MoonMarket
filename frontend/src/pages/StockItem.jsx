@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import "./App.css";
+import "@/styles/App.css";
 import { useParams } from 'react-router-dom'
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import AddStockDialog from "./AddStockDialog.jsx";
+import AddStockDialog from "@/components/AddStockDialog.jsx";
 import {Link} from "react-router-dom"
 import Box from "@mui/material/Box";
-import SearchStockSkeleton from "./Skeletons/SearchStockSkeleton";
+import SearchStockSkeleton from "@/Skeletons/SearchStockSkeleton";
 
 function StockItem() {
   const [stockData, setStockData] = useState(null)
