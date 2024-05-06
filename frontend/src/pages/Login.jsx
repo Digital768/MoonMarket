@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "./AuthProvider";
 import { useState } from 'react';
-import axios from "axios";
+import {loginUser} from '@/api/user'
 
 const Login = () => {
     const { setToken } = useAuth();
@@ -20,11 +20,8 @@ const Login = () => {
       e.preventDefault();
   
       try {
-        const response = await axios.post('http://localhost:8000/auth/login', {
-          email,
-          password,
-        });
-  
+        const response =  await loginUser(email,password)
+        console.log(response)
         // Handle the response from the server
         const { access_token, refresh_token } = response.data;
         // Store the tokens or perform additional actions

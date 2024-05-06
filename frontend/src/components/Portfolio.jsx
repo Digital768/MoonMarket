@@ -5,6 +5,7 @@ import "@/styles/portfolio.css"
 import { Treemap } from "@/components/Treemap";
 import TreeMapSkeleton from "@/Skeletons/TreeMapSkeleton";
 import { useAuth } from "@/pages/AuthProvider";
+import {getUserData} from '@/api/user'
 
 
 function Portfolio() {
@@ -14,19 +15,10 @@ function Portfolio() {
 
   const { data, status, refetch } = useQuery({
     queryKey: [token],
-    queryFn: getUserData,
+    queryFn: getUserData(token),
     refetchOnWindowFocus: false,
   });
 
-
-  async function getUserData() {
-    const user = await axios.get('http://localhost:8000/user/', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    return  user
-  }
 
   async function getStockData(ticker) {
     const stock = await axios.get(`http://localhost:8000/stocks/${ticker}`, {

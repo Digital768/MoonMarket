@@ -32,7 +32,7 @@ async def update_user(update: UserUpdate, user: User = Depends(current_user)):  
     return user
 
 @router.post("/buy_stock")
-async def buy_stock_shares(ticker: str, quantity: int, user: User = Depends(current_user)):
+async def buy_stock_shares(price:float, ticker: str, quantity: int, user: User = Depends(current_user)):
     # Fetch the stock from the database
     stock = await Stock.find_one(Stock.ticker == ticker)
 
@@ -40,7 +40,7 @@ async def buy_stock_shares(ticker: str, quantity: int, user: User = Depends(curr
         raise HTTPException(status_code=404, detail="Stock not found")
 
     # Calculate the total cost of the purchase
-    total_cost = stock.price * quantity
+    total_cost = price * quantity
 
     # Check if the user has enough deposit to buy the stock
     if user.deposit < total_cost:
@@ -50,7 +50,7 @@ async def buy_stock_shares(ticker: str, quantity: int, user: User = Depends(curr
     user.deposit -= total_cost
 
     # Create a new Purchase and add it to the user's purchases
-    purchase = Purchase(ticker=ticker, name=stock.name, price=stock.price, quantity=quantity, purchased_date = datetime.now() )
+    purchase = Purchase(ticker=ticker, name=stock.name, price=price, quantity=quantity, purchased_date = datetime.now() )
     if user.Purchases is None:
         user.Purchases = [purchase]
     else:
@@ -60,12 +60,12 @@ async def buy_stock_shares(ticker: str, quantity: int, user: User = Depends(curr
     for holding in user.holdings:
         if holding.ticker == ticker:
             # Update the average bought price and quantity of the holding
-            holding.avg_bought_price = ((holding.avg_bought_price * holding.quantity) + (stock.price * quantity)) / (holding.quantity + quantity)
+            holding.avg_bought_price = ((holding.avg_bought_price * holding.quantity) + (price * quantity)) / (holding.quantity + quantity)
             holding.quantity += quantity
             break
     else:
         # If the user does not have a holding of this stock, create a new one
-        user.holdings.append(Holding(ticker=ticker, avg_bought_price=stock.price, quantity=quantity, position_started = datetime.now()))
+        user.holdings.append(Holding(ticker=ticker, avg_bought_price=price, quantity=quantity, position_started = datetime.now()))
 
     # Save the updated user document back to the database
     await user.save()
