@@ -1,9 +1,6 @@
 import { postApiStock } from "@/api/stock";
-import { addUserPurchase } from "@/api/user";
+import { addUserPurchase, addStockToPortfolio } from "@/api/user";
 import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
@@ -11,8 +8,21 @@ import DialogTitle from "@mui/material/DialogTitle";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import DialogActions from '@mui/material/DialogActions'
+import DialogActions from "@mui/material/DialogActions";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 export default function AddStockDialog({ stock, token }) {
+
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: addStockMutation } = useMutation({
+    mutationFn: ({ portfolioStock, price, quantity, token }) =>
+      addStockToPortfolio(portfolioStock, price, quantity, token),
+      onSuccess: () => {
+        queryClient.invalidateQueries(["user"])
+      }
+  });
+
   const {
     register,
     handleSubmit,
@@ -37,16 +47,18 @@ export default function AddStockDialog({ stock, token }) {
   };
 
   const onSubmit = async (data) => {
-    await postApiStock(portfolioStock)
-      .then(() => {
-        addUserPurchase(data.price, portfolioStock.ticker, data.quantity, token);
-        handleClose();
-        navigate("/");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        // Handle error, display error message to the user
+    try {
+      await addStockMutation({
+        portfolioStock,
+        price: data.price,
+        quantity: data.quantity,
+        token,
       });
+      handleClose();
+      navigate("/");
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -54,10 +66,7 @@ export default function AddStockDialog({ stock, token }) {
       <Button variant="contained" onClick={handleClickOpen}>
         Add stock
       </Button>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-      >
+      <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Add a stock</DialogTitle>
         <DialogContent className="addStockForm">
           <DialogContentText>
@@ -95,14 +104,6 @@ export default function AddStockDialog({ stock, token }) {
             </DialogActions>
           </form>
         </DialogContent>
-        {/* <DialogActions>
-          <Button variant="outlined" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button variant="contained" type="submit">
-            Add
-          </Button>
-        </DialogActions> */}
       </Dialog>
     </React.Fragment>
   );

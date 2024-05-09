@@ -67,7 +67,7 @@ function App() {
           </div>
         </div>
       </form>
-      <Portfolio></Portfolio>
+      <Portfolio />
     </div>
   );
 }

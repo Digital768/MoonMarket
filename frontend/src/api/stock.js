@@ -8,7 +8,21 @@ export async function postApiStock(portfolioStock, token) {
   });
 }
 
-export async function getStockData(ticker) {
-  const data = await axios.get(`http://localhost:8000/stocks/quote/${ticker}`);
-  return data
+export async function getStockData(ticker, token) {
+  const stock = await axios.get(`http://localhost:8000/stocks/quote/${ticker}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  return stock.data
 }
+
+export async function getStockFromPortfolio(ticker, token) {
+  const stock = await axios.get(`http://localhost:8000/stocks/${ticker}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  return stock.data
+}
+

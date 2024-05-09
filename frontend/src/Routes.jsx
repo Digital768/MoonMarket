@@ -28,12 +28,12 @@ const Routes = () => {
         {
           path: '/',
           element: <App /> ,
-          errorElement: <ErrorPage/>
+          // errorElement: <ErrorPage/>
         },
         {
           path: "portfolio/:stockTicker",
           element: <StockPage />,
-          errorElement: <ErrorPage/>
+          // errorElement: <ErrorPage/>
         },
         {
           path: "/logout",
@@ -42,7 +42,7 @@ const Routes = () => {
         {
           path: "stock/:stockTicker",
           element: <StockItem/>,
-          errorElement: <ErrorPage/>
+          // errorElement: <ErrorPage/>
         }
       ],
     },

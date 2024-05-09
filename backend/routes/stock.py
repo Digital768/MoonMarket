@@ -13,45 +13,23 @@ BASE_URL = 'https://financialmodelingprep.com/api/v3'
 # request from FMP API
 @router.get("/quote/{symbol}", response_description="stock details from api")
 def get_quote(symbol: str):
-    try:
-        # Try first API key for quote request
-        api_key = config("FMP_FIRST_API_KEY")
-        endpoint = f'/quote/{symbol}?apikey={api_key}'
-        url = BASE_URL + endpoint
-        response = requests.get(url)
-        data1 = response.json()[0]
-
-        # Try first API key for company info request
-        companyInfoUrl = f'https://financialmodelingprep.com/api/v3/profile/{symbol}?apikey={api_key}'
-        companyInfoRes = requests.get(companyInfoUrl)
-        data2 = companyInfoRes.json()[0]
-
-        # Combine the two JSON objects
-        combined_data = {**data1, **data2}
-        print("Using first API key.")
-        return combined_data
-
-    except Exception as e:
-        # If the first API key fails, try the second API key
+    
+    api_keys = [ config("FMP_FIRST_API_KEY"), config("FMP_SECOND_API_KEY")]
+    for key in api_keys:
         try:
-            print("First API key failed, trying second API key.")
-            # Try second API key for quote request
-            api_key = config("FMP_SECOND_API_KEY")
-            endpoint = f'/quote/{symbol}?apikey={api_key}'
+            endpoint = f'/quote/{symbol}?apikey={key}'
             url = BASE_URL + endpoint
             response = requests.get(url)
             data1 = response.json()[0]
 
-            # Try second API key for company info request
-            companyInfoUrl = f'https://financialmodelingprep.com/api/v3/profile/{symbol}?apikey={api_key}'
+            # Try first API key for company info request
+            companyInfoUrl = f'https://financialmodelingprep.com/api/v3/profile/{symbol}?apikey={key}'
             companyInfoRes = requests.get(companyInfoUrl)
             data2 = companyInfoRes.json()[0]
 
             # Combine the two JSON objects
             combined_data = {**data1, **data2}
-            print("Using second API key.")
             return combined_data
-
         except Exception as e:
             return {"error": str(e)}
         

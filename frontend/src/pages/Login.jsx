@@ -21,7 +21,6 @@ const Login = () => {
   
       try {
         const response =  await loginUser(email,password)
-        console.log(response)
         // Handle the response from the server
         const { access_token, refresh_token } = response.data;
         // Store the tokens or perform additional actions

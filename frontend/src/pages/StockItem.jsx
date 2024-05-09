@@ -16,7 +16,7 @@ function StockItem() {
   const { stockTicker } = useParams();
   const { data, status, refetch, error } = useQuery({
     queryKey: [stockTicker], // include stockTicker in the queryKey
-    queryFn: () => getStockData(stockTicker),
+    queryFn: () => getStockData(stockTicker, token),
     refetchOnWindowFocus: false,
     enabled: isValidStockTicker(stockTicker),
   });
@@ -40,7 +40,7 @@ function StockItem() {
 
   useEffect(() => {
     if (status === "success") {
-      const res = data.data;
+      const res = data;
       const options = { day: "2-digit", month: "2-digit", year: "numeric" };
       const formattedDate = new Date(
         res.earningsAnnouncement
@@ -101,7 +101,7 @@ function StockItem() {
             />
             <h3>Stock Price: {stockData.price}</h3>
             <h3>Stock Exchange: {stockData.exchange}</h3>
-            <h3>Next Earnings date: {stockData.earningsAnnouncement}</h3>
+            {/* <h3>Next Earnings date: {stockData.earningsAnnouncement}</h3> */}
             <h3>Average 50 days price: {stockData.priceAvg50}</h3>
             <h3>Stock's highest price this year: {stockData.yearHigh}</h3>
             <h3>Stock's lowest price this year: {stockData.yearLow}</h3>
