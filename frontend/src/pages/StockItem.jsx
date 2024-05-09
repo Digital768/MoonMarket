@@ -15,7 +15,7 @@ function StockItem() {
   const [stockData, setStockData] = useState(null);
   const { stockTicker } = useParams();
   const { data, status, refetch, error } = useQuery({
-    queryKey: [stockTicker], // include stockTicker in the queryKey
+    queryKey: [{stockTicker, token}], // include stockTicker in the queryKey
     queryFn: () => getStockData(stockTicker, token),
     refetchOnWindowFocus: false,
     enabled: isValidStockTicker(stockTicker),

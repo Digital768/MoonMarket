@@ -2,6 +2,7 @@ import axios from "axios";
 import { postApiStock } from "@/api/stock";
 
 export async function getUserData(token) {
+
   const user = await axios.get("http://localhost:8000/user/", {
     headers: {
       Authorization: `Bearer ${token}`,

@@ -7,17 +7,18 @@ import "@/styles/portfolio.css";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { useMemo } from 'react';
 
 function Portfolio() {
   const navigate = useNavigate();
-  const { token } = useAuth();
   const [totalValue, setTotalValue] = useState(0);
   const [deposit, setDeposit] = useState(0);
   const [updatedAt, setUpdatedAt] = useState(null);
   const [stocksTree, setStocksTree] = useState(null);
 
-  const { data, status, refetch } = useQuery({
-    queryKey: ["user"],
+  const { token } = useAuth();
+  const { data, status, refetch, fetchStatus } = useQuery({
+    queryKey: ["user",  token ],
     queryFn: () => getUserData(token),
     refetchOnWindowFocus: false,
   });
@@ -27,100 +28,102 @@ function Portfolio() {
     return false;
   }
 
+// todo : find a better way to change data rather than useEffect
+
   useEffect(() => {
     async function fetchDataAndProcess() {
-      await refetch();
       processStocks();
     }
     async function processStocks() {
       if (status === "success") {
-        if (data.data.length !== 0) {
-          if (data.data.holdings.length > 0) {
-            const stockCollection = data.data.holdings;
-            const positiveStocks = [];
-            const negativeStocks = [];
-            let sum = 0;
-            for (const holding of stockCollection) {
-              // get user holdings
-              const res = await getStockFromPortfolio(holding.ticker, token);
+        if (data.data.holdings.length > 0) {
+          const stockCollection = data.data.holdings;
+          const positiveStocks = [];
+          const negativeStocks = [];
+          let sum = 0;
+          let promises = stockCollection.map(holding => getStockFromPortfolio(holding.ticker, token));
+          let results = await Promise.all(promises);
 
-              const stock_avg_price = holding.avg_bought_price;
-              const value = holding.quantity * res.price;
-              sum += value;
+          for (let i = 0; i < results.length; i++) {
+            const res = results[i];
+            const holding = stockCollection[i];
+            // ... rest of your code ...
+            const stock_avg_price = holding.avg_bought_price;
+            const value = holding.quantity * res.price;
+            sum += value;
 
-              if (isStockProfitable(stock_avg_price, res.price)) {
-                positiveStocks.push({
-                  name: res.name,
-                  id: res.id,
-                  ticker: holding.ticker,
-                  value: value,
-                  avgSharePrice: stock_avg_price,
-                  quantity: holding.quantity,
-                  last_price: Math.round(res.price),
-                  priceChangePercentage: Math.round(
-                    ((res.price - stock_avg_price) / stock_avg_price) * 100
-                  ),
-                });
-              } else {
-                negativeStocks.push({
-                  name: res.name,
-                  id: res.id,
-                  ticker: holding.ticker,
-                  value: value,
-                  avgSharePrice: stock_avg_price,
-                  quantity: holding.quantity,
-                  last_price: Math.round(res.price * 100) / 100,
-                  priceChangePercentage: Math.round(
-                    ((res.price - stock_avg_price) / stock_avg_price) * 100
-                  ),
-                });
-              }
-            }
-
-            positiveStocks.forEach((stock) => {
-              stock.percentageOfPortfolio = Math.round(
-                (stock.value / sum) * 100
-              );
-            });
-            negativeStocks.forEach((stock) => {
-              stock.percentageOfPortfolio = Math.round(
-                (stock.value / sum) * 100
-              );
-            });
-
-            const newStocksTree = {
-              name: "Stocks",
-              value: 0,
-              children: [],
-            };
-            if (positiveStocks.length > 0) {
-              newStocksTree.children.push({
-                name: "Positive",
-                value: 0,
-                children: positiveStocks,
+            if (isStockProfitable(stock_avg_price, res.price)) {
+              positiveStocks.push({
+                name: res.name,
+                id: res.id,
+                ticker: holding.ticker,
+                value: value,
+                avgSharePrice: stock_avg_price,
+                quantity: holding.quantity,
+                last_price: Math.round(res.price),
+                priceChangePercentage: Math.round(
+                  ((res.price - stock_avg_price) / stock_avg_price) * 100
+                ),
+              });
+            } else {
+              negativeStocks.push({
+                name: res.name,
+                id: res.id,
+                ticker: holding.ticker,
+                value: value,
+                avgSharePrice: stock_avg_price,
+                quantity: holding.quantity,
+                last_price: Math.round(res.price * 100) / 100,
+                priceChangePercentage: Math.round(
+                  ((res.price - stock_avg_price) / stock_avg_price) * 100
+                ),
               });
             }
-            if (negativeStocks.length > 0) {
-              newStocksTree.children.push({
-                name: "Negative",
-                value: 0,
-                children: negativeStocks,
-              });
-            }
-
-            setStocksTree(newStocksTree);
-            setTotalValue(Math.round(sum * 100) / 100);
-          } else {
-            setStocksTree(null);
-            setTotalValue(0);
           }
-          setDeposit(data.data.deposit);
-          setUpdatedAt(data.data.last_refresh);
+
+          positiveStocks.forEach((stock) => {
+            stock.percentageOfPortfolio = Math.round(
+              (stock.value / sum) * 100
+            );
+          });
+          negativeStocks.forEach((stock) => {
+            stock.percentageOfPortfolio = Math.round(
+              (stock.value / sum) * 100
+            );
+          });
+
+          const newStocksTree = {
+            name: "Stocks",
+            value: 0,
+            children: [],
+          };
+          if (positiveStocks.length > 0) {
+            newStocksTree.children.push({
+              name: "Positive",
+              value: 0,
+              children: positiveStocks,
+            });
+          }
+          if (negativeStocks.length > 0) {
+            newStocksTree.children.push({
+              name: "Negative",
+              value: 0,
+              children: negativeStocks,
+            });
+          }
+
+          setStocksTree(newStocksTree);
+          setTotalValue(Math.round(sum * 100) / 100);
+        } else {
+          setStocksTree(null);
+          setTotalValue(0);
         }
+        setDeposit(data.data.deposit);
+        setUpdatedAt(data.data.last_refresh);
       }
     }
     fetchDataAndProcess()
-  }, [status]);
+  }, [data]);
 
   // #TODO: ADD UPDATE STOCK PRICES BY API
 
@@ -153,7 +156,7 @@ function Portfolio() {
         <span>last updated at: {updatedAt}</span>
         {/* <button onClick={refreshStockPrices}>Refresh Data</button> */}
       </div>
-      { !stocksTree ? (
+      {!stocksTree ? (
         <TreeMapSkeleton />
       ) : (
         <Treemap data={stocksTree} width={1000} height={600} />
