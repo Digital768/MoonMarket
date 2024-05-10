@@ -1,5 +1,5 @@
 import TreeMapSkeleton from "@/Skeletons/TreeMapSkeleton";
-import { getStockFromPortfolio } from "@/api/stock";
+import { getStockFromPortfolio, updateStockPrice } from "@/api/stock";
 import { getUserData } from "@/api/user";
 import { Treemap } from "@/components/Treemap";
 import { useAuth } from "@/pages/AuthProvider";
@@ -7,7 +7,7 @@ import "@/styles/portfolio.css";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { useMemo } from 'react';
+import Button from '@mui/material/Button';
 
 function Portfolio() {
   const navigate = useNavigate();
@@ -15,9 +15,10 @@ function Portfolio() {
   const [deposit, setDeposit] = useState(0);
   const [updatedAt, setUpdatedAt] = useState(null);
   const [stocksTree, setStocksTree] = useState(null);
+  const [tickers, setTickers] = useState([]);
 
   const { token } = useAuth();
-  const { data, status, refetch, fetchStatus } = useQuery({
+  const { data, status, refetch, } = useQuery({
     queryKey: ["user",  token ],
     queryFn: () => getUserData(token),
     refetchOnWindowFocus: false,
@@ -26,6 +27,13 @@ function Portfolio() {
   function isStockProfitable(avg_bought_price, stock_current_price) {
     if (stock_current_price > avg_bought_price) return true;
     return false;
+  }
+  async function refreshPrices(tickers){
+    let promises = tickers.map(ticker => updateStockPrice(ticker, token));
+    let results = await Promise.all(promises);
+    refetch()
+    return results;
+
   }
 
 // todo : find a better way to change data rather than useEffect
@@ -37,6 +45,7 @@ function Portfolio() {
     async function processStocks() {
       if (status === "success") {
         if (data.data.holdings.length > 0) {
+          console.log("test")
           const stockCollection = data.data.holdings;
           const positiveStocks = [];
           const negativeStocks = [];
@@ -51,12 +60,14 @@ function Portfolio() {
             const stock_avg_price = holding.avg_bought_price;
             const value = holding.quantity * res.price;
             sum += value;
+            const ticker = holding.ticker;
+            setTickers((prevState) => [...prevState, ticker]);
 
             if (isStockProfitable(stock_avg_price, res.price)) {
               positiveStocks.push({
                 name: res.name,
                 id: res.id,
-                ticker: holding.ticker,
+                ticker: ticker,
                 value: value,
                 avgSharePrice: stock_avg_price,
                 quantity: holding.quantity,
@@ -119,32 +130,17 @@ function Portfolio() {
           setTotalValue(0);
         }
         setDeposit(data.data.deposit);
-        setUpdatedAt(data.data.last_refresh);
+        let last_update_date = data.data.last_refresh
+        let date = new Date(last_update_date);
+        let formattedDate = date.toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+        setUpdatedAt(formattedDate);
       }
     }
     fetchDataAndProcess()
   }, [data]);
 
-  // #TODO: ADD UPDATE STOCK PRICES BY API
-
-  // async function refreshStockPrices() {
-  //   const response = await getStocksFromDb();
-  //   const stock_collection = response["data"];
-
-  //   const updatePromises = stock_collection.map(async (stock) => {
-  //     const ticker = stock.ticker;
-  //     const apiResponse = await getStockData(ticker);
-  //     const newPrice = apiResponse.data[0].price;
-  //     const StockId = stock._id;
-  //     return updateStockPrice(StockId, newPrice);
-  //   });
-
-  //   await Promise.all(updatePromises);
-  //   refetch();
-  // }
 
   if (status === "error") {
-    setToken();
     navigate("/logout", { replace: true });
   }
 
@@ -154,7 +150,7 @@ function Portfolio() {
         <span>total value: {totalValue.toLocaleString("en-US")}$</span>
         <span>deposit: {deposit.toLocaleString("en-US")}$</span>
         <span>last updated at: {updatedAt}</span>
-        {/* <button onClick={refreshStockPrices}>Refresh Data</button> */}
+        <Button variant="text" style={{"padding": 0}} onClick={() =>refreshPrices(tickers)}>Update prices</Button>
       </div>
       {!stocksTree ? (
         <TreeMapSkeleton />

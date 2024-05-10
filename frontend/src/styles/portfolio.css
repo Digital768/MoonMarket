@@ -58,7 +58,7 @@
 
 .navbar{
   display: flex;
-  width: 600px;
+  width: 800px;
   flex-direction: row;
   justify-content: space-between;
   padding-bottom: 20px;

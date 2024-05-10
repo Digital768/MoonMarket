@@ -26,3 +26,10 @@ export async function getStockFromPortfolio(ticker, token) {
   return stock.data
 }
 
+export async function updateStockPrice(ticker, token){
+  const stock = await axios.put(`http://localhost:8000/stocks/update_stock_price/${ticker}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+}

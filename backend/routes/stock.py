@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, Request, Body, HTTPException, status, Depends
 from fastapi.encoders import jsonable_encoder
 from models.stock import Stock, UpdateStockPrice
@@ -6,6 +7,7 @@ from util.current_user import current_user
 from models.user import User
 from decouple import config
 import requests
+from datetime import datetime
 
 router = APIRouter(prefix="/stocks", tags=["Stock"])
 BASE_URL = 'https://financialmodelingprep.com/api/v3'
@@ -59,6 +61,26 @@ async def add_stock(stock_data: Stock):
 
     return {"message": "Stock added successfully"}
 
+@router.put("/update_stock_price/{ticker}")
+async def update_stock_price(ticker: str, user: User = Depends(current_user)):
+    api_keys = [ config("FMP_FIRST_API_KEY"), config("FMP_SECOND_API_KEY")]
+    price = None
+    for key in api_keys:
+        try:
+            url = f"https://financialmodelingprep.com/api/v3/quote-short/{ticker}?apikey={key}"
+            response = requests.get(url).json()
+            price = response[0]['price']
+            break  # Exit the loop once you get the price
+        except Exception as e:
+            print(f"Error with API key {key}: {str(e)}")  # Print the error and continue with the next key
+    if price is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="All API keys failed")
+    try:
+        stock = await Stock.find_one(Stock.ticker == ticker)
+        await stock.set({Stock.price:price})
+        await user.set({User.last_refresh: datetime.now()})  
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 @router.delete("/delete/{ticker}", response_description="Delete stock")
 async def delete_stock(ticker: str, user: User = Depends(current_user)):

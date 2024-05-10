@@ -75,6 +75,7 @@ export default function AddStockDialog({ stock, token }) {
             the company you bought and at which price.
           </DialogContentText>
           <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="price-row" >
             <label>Enter bought price</label>
             <input
               {...register("price", {
@@ -83,8 +84,11 @@ export default function AddStockDialog({ stock, token }) {
                 valueAsNumber: true,
               })}
               type="number"
+              style={{marginLeft:'10px', marginRight:'10px'}}
             />
             {errors.price && <span>This field is required</span>}
+            </div>
+            <div className="quantity-row">
             <label>Enter quantity</label>
             <input
               {...register("quantity", {
@@ -93,8 +97,10 @@ export default function AddStockDialog({ stock, token }) {
                 valueAsNumber: true,
               })}
               type="number"
+              style={{marginLeft:'10px', marginRight:'10px'}}
             />
             {errors.price && <span>This field is required</span>}
+            </div>
             <DialogActions>
               <Button variant="outlined" onClick={handleClose}>
                 Cancel
