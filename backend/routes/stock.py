@@ -1,8 +1,6 @@
 
 from fastapi import APIRouter, Request, Body, HTTPException, status, Depends
-from fastapi.encoders import jsonable_encoder
-from models.stock import Stock, UpdateStockPrice
-from pymongo.errors import DuplicateKeyError
+from models.stock import Stock
 from util.current_user import current_user
 from models.user import User
 from decouple import config

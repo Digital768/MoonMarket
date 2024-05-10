@@ -20,12 +20,12 @@ class Stock(Document):
             }
         }
 
-class UpdateStockPrice(BaseModel):
-    last_price: float | None = None
+# class UpdateStockPrice(BaseModel):
+#     last_price: float | None = None
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "price": 100.0
-            }
-        }
+#     class Config:
+#         json_schema_extra = {
+#             "example": {
+#                 "price": 100.0
+#             }
+#         }
