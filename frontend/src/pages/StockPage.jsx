@@ -96,6 +96,7 @@ function StockPage() {
   };
   useEffect(() => {
     if (status === "success") {
+      console.log(data.data)
       setStockData(data.data);
     }
     if (status === "error") {
@@ -136,31 +137,8 @@ function StockPage() {
           <img src ={`https://financialmodelingprep.com/image-stock/${stockTicker}.png`} width='100' height='100' alt={stockTicker} className="stock-img"></img>
           <p>stock name is {stockData.name}</p>
           <p>stock ticker is {stockData.ticker}</p>
-          <p>stock price is {stockData.last_price}</p>
-          <p>Purchases:</p>
-          {stockData.purchases && stockData.purchases.length > 0 ? (
-            <ul>
-              {stockData.purchases.map((purchase, index) => (
-                <li key={index}>
-                  Quantity: {purchase.quantity}, Price: {purchase.price}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No purchases found.</p>
-          )}
-          <p>sales:</p>
-          {stockData.sales && stockData.sales.length > 0 ? (
-            <ul>
-              {stockData.sales.map((sale, index) => (
-                <li key={index}>
-                  Quantity: {sale.quantity}, Price: {sale.price}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No sales found.</p>
-          )}
+          <p>stock price is {stockData.price}</p>
+          <p>{stockData.description}</p>
         </Box>
       ) : (
         <p>loading</p>
