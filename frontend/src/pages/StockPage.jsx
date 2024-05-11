@@ -7,9 +7,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import PortfolioStockSkeleton from "@/Skeletons/PortfolioStockSkeleton.jsx";
+import { addUserPurchase, addUserSale } from '@/api/user'
+import { useAuth } from "@/pages/AuthProvider";
 
 function StockPage() {
   const navigate = useNavigate();
+  const { token } = useAuth();
   const { stockTicker } = useParams();
   const [dialogOpen, setdialogOpen] = useState(false);
   const [stockData, setStockData] = useState({});
@@ -20,6 +23,7 @@ function StockPage() {
     function: "",
     buttonText: "",
     stock: stockData,
+    token: token,
   });
 
   const { data, status, refetch } = useQuery({
@@ -34,15 +38,6 @@ function StockPage() {
       `http://localhost:8000/stocks/${stockTicker}`
     );
     return dbStock;
-  }
-  async function addStockShares(id, purchase) {
-    await axios.put(`http://localhost:8000/stocks/add_shares/${id}`, purchase);
-    refetch();
-  }
-
-  async function decreaseStockShares(id, sale) {
-    await axios.put(`http://localhost:8000/stocks/sell_shares/${id}`, sale);
-    refetch();
   }
 
   async function deleteStock(id) {
@@ -70,7 +65,7 @@ function StockPage() {
         title: "Add shares",
         text: "To add shares of the stock, please enter how many shares of the stock you bought and at which price.",
         labelText: "Enter bought price",
-        function: addStockShares,
+        function: addUserPurchase,
         buttonText: "Add",
         stock: data.data,
       };
@@ -87,7 +82,7 @@ function StockPage() {
         title: "Sell shares",
         text: "To sell shares of the stock, please enter how many shares of the stock you sold and at which price.",
         labelText: "Enter sold price",
-        function: decreaseStockShares,
+        function: addUserSale,
         buttonText: "Sell",
         stock: data.data,
       };
@@ -96,7 +91,6 @@ function StockPage() {
   };
   useEffect(() => {
     if (status === "success") {
-      console.log(data.data)
       setStockData(data.data);
     }
     if (status === "error") {
@@ -104,7 +98,7 @@ function StockPage() {
     }
   }, [status, data]);
 
-  if (status === 'pending'){
+  if (status === 'pending') {
     return <PortfolioStockSkeleton></PortfolioStockSkeleton>
   }
 
@@ -115,7 +109,6 @@ function StockPage() {
           MoonMarket
         </a>
       </nav>
-      {/* <p>stock name is {status === 'pending' ?'Loading...' : data.data.name}</p> */}
       {status === "success" ? (
         <Box
           sx={{
@@ -127,14 +120,14 @@ function StockPage() {
             padding: 20,
           }}
         >
-          <Box sx ={{display:'flex', flexDirection:'row', justifyContent: 'space-between'}}>
-          <button onClick={() => deleteStockWithConfirmation(data.data._id)}>
-            delete stock
-          </button>
-          <button onClick={handleAddClick}> add shares</button>
-          <button onClick={handleDecreaseClick}>decrease shares</button>
+          <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+            <button onClick={() => deleteStockWithConfirmation(data.data._id)}>
+              delete stock
+            </button>
+            <button onClick={handleAddClick}> add shares</button>
+            <button onClick={handleDecreaseClick}>decrease shares</button>
           </Box>
-          <img src ={`https://financialmodelingprep.com/image-stock/${stockTicker}.png`} width='100' height='100' alt={stockTicker} className="stock-img"></img>
+          <img src={`https://financialmodelingprep.com/image-stock/${stockTicker}.png`} width='100' height='100' alt={stockTicker} className="stock-img"></img>
           <p>stock name is {stockData.name}</p>
           <p>stock ticker is {stockData.ticker}</p>
           <p>stock price is {stockData.price}</p>
@@ -148,6 +141,8 @@ function StockPage() {
           open={dialogOpen}
           handleClose={handleClose}
           dialog={dialog}
+          addUserPurchase={addUserPurchase}
+          addUserSale={addUserSale}
         ></SharesDialog>
       )}
     </div>

@@ -45,7 +45,6 @@ function Portfolio() {
     async function processStocks() {
       if (status === "success") {
         if (data.data.holdings.length > 0) {
-          console.log("test")
           const stockCollection = data.data.holdings;
           const positiveStocks = [];
           const negativeStocks = [];

@@ -73,7 +73,7 @@ async def buy_stock_shares(price:float, ticker: str, quantity: int, user: User =
     return {"message": "Stock purchased successfully"}
 
 @router.post("/sell_stock")
-async def sell_stock_shares(ticker: str, quantity: int, user: User = Depends(current_user)):
+async def sell_stock_shares(ticker: str, quantity: int, price: float, user: User = Depends(current_user)):
     # Fetch the stock from the database
     stock = await Stock.find_one(Stock.ticker == ticker)
 
@@ -99,13 +99,13 @@ async def sell_stock_shares(ticker: str, quantity: int, user: User = Depends(cur
         raise HTTPException(status_code=404, detail="You can't sell a stock you don't own")
 
     # Calculate the total cost of the purchase
-    profit = stock.price * quantity
+    profit = price * quantity
 
     # add the profit to the user's deposit
     user.deposit += profit
 
     # Create a new Sale and add it to the user's sales
-    sale = Sale(ticker=ticker, name=stock.name, price=stock.price, quantity=quantity, sale_date = datetime.now())
+    sale = Sale(ticker=ticker, name=stock.name, price=price, quantity=quantity, sale_date = datetime.now())
     if user.sales is None:
         user.sales = [sale]
     else:
