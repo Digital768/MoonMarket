@@ -6,58 +6,17 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 
 function SharesDialog({ handleClose, open, dialog,addUserPurchase, addUserSale }) {
-  // const [shares, setShares] = useState({
-  //   price: 0,
-  //   quantity: 0,
-  // });
-
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-
-  // const handleInputChange = (event) => {
-  //   const { name, value } = event.target;
-  //   if (name === "quantity" || name === "price") {
-  //     if (parseFloat(value) > 0) {
-  //       setShares((prevState) => {
-  //         const newShares = {
-  //           ...prevState,
-  //           [name]: parseFloat(value),
-  //         };
-  //         return newShares
-  //       });
-  //       setError(""); // Clear error if value is valid
-  //     } else {
-  //       setError(
-  //         name.charAt(0).toUpperCase() +
-  //         name.slice(1) +
-  //         " must be greater than zero"
-  //       );
-  //     }
-  //   }
-  // };
-
-  //   const handleSubmit = () => {
-  //     if (shares.quantity > 0 && shares.price > 0) {
-  //       dialog.function(dialog.stock._id, shares)
-  //             .then(() => {
-  //                 handleClose();
-  //             })
-  //             .catch(error => {
-  //                 console.error("Error:", error);
-  //                 // Handle error, display error message to the user
-  //             });
-  //     } else {
-  //         setError("Quantity and price MUST be above 0");
-  //     }
-  // };
-  // useEffect(() => {console.log(dialog)},[]);
 
   const onSubmit = async (data,event) => {
     event.preventDefault();
@@ -70,6 +29,7 @@ function SharesDialog({ handleClose, open, dialog,addUserPurchase, addUserSale }
           await dialog.function(dialog.stock.ticker, data.quantity, data.price, dialog.token);
         }
         handleClose();
+        navigate("/");
       } else {
         console.error("Missing required properties in the dialog object.");
       }

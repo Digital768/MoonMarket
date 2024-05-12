@@ -20,7 +20,6 @@ export async function loginUser(email, password) {
 }
 
 export async function addUserPurchase(price, ticker, quantity, token) {
-  console.log("addUserPurchase called")
   const response = await axios.post(
     "http://localhost:8000/user/buy_stock",
     null, // Set the request body to null if your API doesn't expect a request body
@@ -35,7 +34,6 @@ export async function addUserPurchase(price, ticker, quantity, token) {
 }
 
 export async function addUserSale(ticker, quantity, price, token) {
-  console.log("addUserSale called")
   const response = await axios.post(
     "http://localhost:8000/user/sell_stock",
     null, // Set the request body to null if your API doesn't expect a request body

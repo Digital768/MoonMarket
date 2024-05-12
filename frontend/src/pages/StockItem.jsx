@@ -106,6 +106,7 @@ function StockItem() {
             <h3>Stock's highest price this year: {stockData.yearHigh}</h3>
             <h3>Stock's lowest price this year: {stockData.yearLow}</h3>
             <h3>Description: {stockData.description}</h3>
+            {/* todo: find a way to limit the description to X rows */}
             <div className="addStockBox">
               <AddStockDialog stock={stockData} token ={token}></AddStockDialog>
             </div>

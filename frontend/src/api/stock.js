@@ -33,3 +33,11 @@ export async function updateStockPrice(ticker, token){
     },
   });
 }
+
+export async function deleteStock(ticker, token) {
+  const stock = await axios.delete(`http://localhost:8000/stocks/delete/${ticker}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+}

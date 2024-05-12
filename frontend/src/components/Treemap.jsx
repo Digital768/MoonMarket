@@ -10,7 +10,7 @@ const colors = {
   negative: "#e85252",
 };
 
-export const Treemap = ({ width, height, data}) => {
+export const Treemap = ({ width, height, data }) => {
   const navigate = useNavigate();
   const tooltipRef = useRef(null);
 
@@ -41,9 +41,8 @@ export const Treemap = ({ width, height, data}) => {
     event.stopPropagation();
     const tooltip = d3.select(tooltipRef.current);
     tooltip.style("visibility", "visible").html(`
-        <div style="width: 200px;"><h4 style="margin: 2px">${
-          data.name
-        }</h4></div>
+        <div style="width: 200px;"><h4 style="margin: 2px">${data.name
+      }</h4></div>
         <hr>
         <div style="display: flex; flex-direction: row; width: fit-content; height: fit-content;">
           <ul style="list-style-type: none; margin: 0; padding: 0; width: 200px;">
@@ -81,8 +80,13 @@ export const Treemap = ({ width, height, data}) => {
   };
 
 
-  const navigateToStockPage = (ticker) => {
-    navigate(`/portfolio/${ticker}`);
+  const navigateToStockPage = (data) => {
+    navigate(`/portfolio/${data.ticker}`, {
+      state: {
+        quantity: data.quantity, percentageOfPortfolio
+          : data.percentageOfPortfolio
+      }
+    });
   };
 
   const allShapes = root.leaves().map((leaf, i) => {
@@ -106,7 +110,7 @@ export const Treemap = ({ width, height, data}) => {
           stroke="transparent"
           fill={colorScale(parentName)}
           className={"opacity-80 hover:opacity-100"}
-          onClick={() => navigateToStockPage(leaf.data.ticker)}
+          onClick={() => navigateToStockPage(leaf.data)}
         />
         <text
           x={centerX}
@@ -129,7 +133,7 @@ export const Treemap = ({ width, height, data}) => {
           className="font-light"
         >
           {leaf.data.priceChangePercentage}%
-        </text> 
+        </text>
       </g>
     );
   });

@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import "@/styles/App.css";
 import SharesDialog from "@/components/SharesDialog.jsx";
 import { useQuery } from "@tanstack/react-query";
@@ -8,10 +7,17 @@ import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import PortfolioStockSkeleton from "@/Skeletons/PortfolioStockSkeleton.jsx";
 import { addUserPurchase, addUserSale } from '@/api/user'
+import { getStockFromPortfolio } from '@/api/stock'
 import { useAuth } from "@/pages/AuthProvider";
+import { useLocation } from 'react-router-dom';
+import Card from '@mui/material/Card';
+import Button from '@mui/material/Button';
+
 
 function StockPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const { token } = useAuth();
   const { stockTicker } = useParams();
   const [dialogOpen, setdialogOpen] = useState(false);
@@ -26,31 +32,12 @@ function StockPage() {
     token: token,
   });
 
-  const { data, status, refetch } = useQuery({
+  const { data, status } = useQuery({
     queryKey: ["stock", stockTicker],
-    queryFn: () => getStockFromDb(stockTicker),
+    queryFn: () => getStockFromPortfolio(stockTicker, token),
     refetchOnWindowFocus: false,
     retry: 0,
   });
-
-  async function getStockFromDb(stockTicker) {
-    const dbStock = await axios.get(
-      `http://localhost:8000/stocks/${stockTicker}`
-    );
-    return dbStock;
-  }
-
-  async function deleteStock(id) {
-    await axios.delete(`http://localhost:8000/stocks/${id}`);
-    refetch();
-  }
-
-  const deleteStockWithConfirmation = (id) => {
-    if (window.confirm("Are you sure you want to delete this stock?")) {
-      deleteStock(id);
-      navigate("/");
-    }
-  };
 
   function handleClose() {
     setdialogOpen(false);
@@ -71,6 +58,7 @@ function StockPage() {
       };
       return newDialog;
     });
+
   };
   const handleDecreaseClick = () => {
     // event.stopPropagation(); // Prevent the parent
@@ -91,16 +79,13 @@ function StockPage() {
   };
   useEffect(() => {
     if (status === "success") {
-      setStockData(data.data);
+      setStockData(data);
     }
     if (status === "error") {
       navigate("/");
     }
   }, [status, data]);
 
-  if (status === 'pending') {
-    return <PortfolioStockSkeleton></PortfolioStockSkeleton>
-  }
 
   return (
     <div>
@@ -110,31 +95,35 @@ function StockPage() {
         </a>
       </nav>
       {status === "success" ? (
-        <Box
+        <Card elevation={8}
           sx={{
-            width: 500,
-            height: 500,
-            bgcolor: "background.paper",
+            width: 800,
             p: 1,
+            padding: 7,
             margin: "auto",
-            padding: 20,
+            marginTop: "70px"
           }}
         >
-          <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-            <button onClick={() => deleteStockWithConfirmation(data.data._id)}>
-              delete stock
-            </button>
-            <button onClick={handleAddClick}> add shares</button>
-            <button onClick={handleDecreaseClick}>decrease shares</button>
+          <div className="card-header" style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: '26px', margin: '0' }}>{stockData.name}</p>
+              <p style={{ fontSize: '18px', margin: '4px' }}> {stockData.ticker}</p>
+            </div>
+            <img src={`https://financialmodelingprep.com/image-stock/${stockTicker}.png`} width='100' height='100' alt={stockTicker} className="stock-img" style={{ marginLeft: 'auto' }}></img>
+          </div>
+
+          <Box sx={{ display: 'flex', flexDirection: 'row', gap: '2em', justifyContent:'center' }}>
+            <Button variant="contained" onClick={handleAddClick}> Buy</Button>
+            <Button style={{ background: 'red' }} variant="contained" onClick={handleDecreaseClick}>Sell</Button>
           </Box>
-          <img src={`https://financialmodelingprep.com/image-stock/${stockTicker}.png`} width='100' height='100' alt={stockTicker} className="stock-img"></img>
-          <p>stock name is {stockData.name}</p>
-          <p>stock ticker is {stockData.ticker}</p>
-          <p>stock price is {stockData.price}</p>
+          <p>stock price is {stockData.price}$</p>
+          <p>number of shares owned : {location.state.quantity}</p>
+          <p>Part of portfolio; {location.state.percentageOfPortfolio}%</p>
           <p>{stockData.description}</p>
-        </Box>
+          {/* todo: find a way to limit the description to X rows */}
+        </Card>
       ) : (
-        <p>loading</p>
+        <PortfolioStockSkeleton />
       )}
       {dialogOpen && (
         <SharesDialog
