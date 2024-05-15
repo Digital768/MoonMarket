@@ -12,11 +12,25 @@ import { useAuth } from "@/pages/AuthProvider";
 import { useLocation } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
+import { ellipsis } from 'polished';
+import styled from 'styled-components';
+
+
+const DescriptionText = styled.div`
+  font-size: 14px;
+  margin-top: 20px;
+  margin-bottom: 5px;
+  ${({ showMore }) => showMore && ellipsis(undefined, 3)}
+`;
+
+
 
 
 function StockPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isShowMore, setIsShowMore] = useState(true);
+  const toggleReadMore = () => setIsShowMore(show => !show);
 
   const { token } = useAuth();
   const { stockTicker } = useParams();
@@ -54,7 +68,7 @@ function StockPage() {
         labelText: "Enter bought price",
         function: addUserPurchase,
         buttonText: "Add",
-        stock: data.data,
+        stock: data,
       };
       return newDialog;
     });
@@ -72,7 +86,7 @@ function StockPage() {
         labelText: "Enter sold price",
         function: addUserSale,
         buttonText: "Sell",
-        stock: data.data,
+        stock: data,
       };
       return newDialog;
     });
@@ -112,14 +126,18 @@ function StockPage() {
             <img src={`https://financialmodelingprep.com/image-stock/${stockTicker}.png`} width='100' height='100' alt={stockTicker} className="stock-img" style={{ marginLeft: 'auto' }}></img>
           </div>
 
-          <Box sx={{ display: 'flex', flexDirection: 'row', gap: '2em', justifyContent:'center' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'row', gap: '2em', justifyContent: 'center' }}>
             <Button variant="contained" onClick={handleAddClick}> Buy</Button>
             <Button style={{ background: 'red' }} variant="contained" onClick={handleDecreaseClick}>Sell</Button>
           </Box>
           <p>stock price is {stockData.price}$</p>
           <p>number of shares owned : {location.state.quantity}</p>
           <p>Part of portfolio; {location.state.percentageOfPortfolio}%</p>
-          <p>{stockData.description}</p>
+          {/* <p>{stockData.description}</p> */}
+          <DescriptionText showMore={isShowMore}>Description: {stockData.description}</DescriptionText>
+          <button style={{ float: "right", borderRadius: '10px', border: 'none', marginTop: '10px', cursor: 'pointer' }} onClick={toggleReadMore}>
+            {isShowMore ? "Show more..." : "Show less"}
+          </button>
           {/* todo: find a way to limit the description to X rows */}
         </Card>
       ) : (

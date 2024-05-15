@@ -7,22 +7,29 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import "@/styles/portfolio.css";
 
 
 function SharesDialog({ handleClose, open, dialog,addUserPurchase, addUserSale }) {
   const navigate = useNavigate();
+  const [serverError, setServerError] = useState(null)
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm(
+    {
+      defaultValues: {
+        price: dialog.stock.price.toFixed(2)
+      }
+    }
+  );
 
 
   const onSubmit = async (data,event) => {
     event.preventDefault();
 
     try {
-      if (dialog && dialog.function && dialog.stock && dialog.stock.ticker && dialog.token) {
         if (dialog.function === addUserPurchase) {
           await dialog.function(data.price, dialog.stock.ticker, data.quantity, dialog.token);
         } else if (dialog.function === addUserSale) {
@@ -30,13 +37,17 @@ function SharesDialog({ handleClose, open, dialog,addUserPurchase, addUserSale }
         }
         handleClose();
         navigate("/");
-      } else {
-        console.error("Missing required properties in the dialog object.");
-      }
     } catch (error) {
+      if(error.response.data.detail === "Insufficient funds"){
+        setServerError("ERROR! " +error.response.data.detail)
+      }
       console.error("Error:", error);
     }
   };
+
+  // useEffect(() => {
+  //   console.log(dialog)
+  // },[])
 
 
   return (
@@ -59,7 +70,8 @@ function SharesDialog({ handleClose, open, dialog,addUserPurchase, addUserSale }
                   min: 1,
                   valueAsNumber: true,
                 })}
-                type="number"
+                type="number" step="any"
+                // value = {dialog.stock.price}
                 style={{ marginLeft: '10px', marginRight: '10px' }}
               />
               {errors.price && <span>This field is required</span>}
@@ -72,10 +84,11 @@ function SharesDialog({ handleClose, open, dialog,addUserPurchase, addUserSale }
                   min: 1,
                   valueAsNumber: true,
                 })}
-                type="number"
+                type="number" 
                 style={{ marginLeft: '10px', marginRight: '10px' }}
               />
               {errors.price && <span>This field is required</span>}
+              {serverError? <p>{serverError}</p>: null}
             </div>
             <DialogActions>
               <Button onClick={handleClose}>Cancel</Button>

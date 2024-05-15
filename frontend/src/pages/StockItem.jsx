@@ -9,13 +9,29 @@ import Card from "@mui/material/Card";
 import SearchStockSkeleton from "@/Skeletons/SearchStockSkeleton";
 import { getStockData } from "@/api/stock";
 import { useAuth } from "@/pages/AuthProvider";
+import { ellipsis } from 'polished';
+import styled from 'styled-components';
+
+
+const DescriptionText = styled.div`
+  font-size: 14px;
+  margin-top: 20px;
+  margin-bottom: 5px;
+  ${({ showMore }) => showMore && ellipsis(undefined, 3)}
+`;
+
+
 
 function StockItem() {
   const { token } = useAuth();
   const [stockData, setStockData] = useState(null);
   const { stockTicker } = useParams();
+
+  const [isShowMore, setIsShowMore] = useState(true);
+  const toggleReadMore = () => setIsShowMore(show => !show);
+
   const { data, status, refetch, error } = useQuery({
-    queryKey: [{stockTicker, token}], // include stockTicker in the queryKey
+    queryKey: [{ stockTicker, token }], // include stockTicker in the queryKey
     queryFn: () => getStockData(stockTicker, token),
     refetchOnWindowFocus: false,
     enabled: isValidStockTicker(stockTicker),
@@ -78,12 +94,13 @@ function StockItem() {
           MoonMarket
         </Link>
       </nav>
-      <Card elevation={10}
+      <Card elevation={8}
         sx={{
           width: 1300,
           p: 1,
           margin: "auto",
           padding: 4,
+          marginTop: "80px"
         }}
       >
         {status === "error" && <div>Error: {error.message}</div>}
@@ -105,10 +122,13 @@ function StockItem() {
             <h3>Average 50 days price: {stockData.priceAvg50}</h3>
             <h3>Stock's highest price this year: {stockData.yearHigh}</h3>
             <h3>Stock's lowest price this year: {stockData.yearLow}</h3>
-            <h3>Description: {stockData.description}</h3>
+            <DescriptionText showMore={isShowMore}>Description: {stockData.description}</DescriptionText>
+            <button style= {{float:"right", borderRadius:'10px', border:'none', marginTop:'10px', cursor:'pointer'}} onClick={toggleReadMore}>
+              {isShowMore ? "Show more..." : "Show less"}
+            </button>
             {/* todo: find a way to limit the description to X rows */}
-            <div className="addStockBox">
-              <AddStockDialog stock={stockData} token ={token}></AddStockDialog>
+            <div className="addStockBox" style={{marginTop:'20px'}}>
+              <AddStockDialog stock={stockData} token={token}></AddStockDialog>
             </div>
           </>
         )}

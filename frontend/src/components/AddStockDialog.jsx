@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import DialogActions from "@mui/material/DialogActions";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import "@/styles/portfolio.css";
 
 export default function AddStockDialog({ stock, token }) {
 
@@ -28,7 +29,11 @@ export default function AddStockDialog({ stock, token }) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      price: stock.price.toFixed(2)
+    }
+  });
 
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -38,6 +43,7 @@ export default function AddStockDialog({ stock, token }) {
     description: stock.description,
     price: stock.price,
   });
+  const [serverError, setServerError] = useState(null)
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -58,6 +64,9 @@ export default function AddStockDialog({ stock, token }) {
       handleClose();
       navigate("/");
     } catch (error) {
+      if(error.response.data.detail === "Insufficient funds"){
+        setServerError("ERROR! " +error.response.data.detail)
+      }
       console.error("Error:", error);
     }
   };
@@ -83,7 +92,9 @@ export default function AddStockDialog({ stock, token }) {
                 min: 1,
                 valueAsNumber: true,
               })}
-              type="number"
+              type="number" 
+              step="any"
+              // value = {portfolioStock.price}
               style={{marginLeft:'10px', marginRight:'10px'}}
             />
             {errors.price && <span>This field is required</span>}
@@ -100,6 +111,7 @@ export default function AddStockDialog({ stock, token }) {
               style={{marginLeft:'10px', marginRight:'10px'}}
             />
             {errors.price && <span>This field is required</span>}
+            {serverError? <p>{serverError}</p>: null}
             </div>
             <DialogActions>
               <Button variant="outlined" onClick={handleClose}>

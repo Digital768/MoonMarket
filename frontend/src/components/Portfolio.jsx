@@ -68,7 +68,7 @@ function Portfolio() {
                 id: res.id,
                 ticker: ticker,
                 value: value,
-                avgSharePrice: stock_avg_price,
+                avgSharePrice: stock_avg_price.toFixed(2),
                 quantity: holding.quantity,
                 last_price: Math.round(res.price),
                 priceChangePercentage: Math.round(
