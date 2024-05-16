@@ -35,7 +35,7 @@ export const Treemap = ({ width, height, data }) => {
   const root = useMemo(() => {
     const treeGenerator = d3.treemap().size([width, height]).padding(4);
     return treeGenerator(hierarchy);
-  }, [hierarchy, width, height]);
+  }, [hierarchy]);
 
   const showTooltip = (event, data) => {
     event.stopPropagation();
@@ -96,7 +96,7 @@ export const Treemap = ({ width, height, data }) => {
 
     return (
       <g
-        key={leaf.id}
+        key={i}
         className="rectangle"
         onMouseOver={(event) => showTooltip(event, leaf.data)}
         onMouseMove={(event) => mousemove(event, leaf.data)}

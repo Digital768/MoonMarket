@@ -1,34 +1,73 @@
 import axios from "axios";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useReducer } from "react";
 
+// Create the authentication context
 const AuthContext = createContext();
 
+// Define the possible actions for the authReducer
+const ACTIONS = {
+  setToken: "setToken",
+  clearToken: "clearToken",
+};
+
+// Reducer function to handle authentication state changes
+const authReducer = (state, action) => {
+  switch (action.type) {
+    case ACTIONS.setToken:
+      // Set the authentication token in axios headers and local storage
+      axios.defaults.headers.common["Authorization"] = "Bearer " + action.payload;
+      localStorage.setItem("token", action.payload);
+
+      // Update the state with the new token
+      return { ...state, token: action.payload };
+
+    case ACTIONS.clearToken:
+      // Clear the authentication token from axios headers and local storage
+      delete axios.defaults.headers.common["Authorization"];
+      localStorage.removeItem("token");
+
+      // Update the state by removing the token
+      return { ...state, token: null };
+
+    // Handle other actions (if any)
+
+    default:
+      console.error(
+        `You passed an action.type: ${action.type} which doesn't exist`
+      );
+  }
+};
+
+// Initial state for the authentication context
+const initialData = {
+  token: localStorage.getItem("token"),
+};
+
+// AuthProvider component to provide the authentication context to children
 const AuthProvider = ({ children }) => {
-  // State to hold the authentication token
-  const [token, setToken_] = useState(localStorage.getItem("token"));
+  // Use reducer to manage the authentication state
+  const [state, dispatch] = useReducer(authReducer, initialData);
 
   // Function to set the authentication token
   const setToken = (newToken) => {
-    setToken_(newToken);
+    // Dispatch the setToken action to update the state
+    dispatch({ type: ACTIONS.setToken, payload: newToken });
   };
 
-  useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-      localStorage.setItem('token',token);
-    } else {
-      delete axios.defaults.headers.common["Authorization"];
-      localStorage.removeItem('token')
-    }
-  }, [token]);
+  // Function to clear the authentication token
+  const clearToken = () => {
+    // Dispatch the clearToken action to update the state
+    dispatch({ type: ACTIONS.clearToken });
+  };
 
   // Memoized value of the authentication context
   const contextValue = useMemo(
     () => ({
-      token,
+      ...state,
       setToken,
+      clearToken,
     }),
-    [token]
+    [state]
   );
 
   // Provide the authentication context to the children components
@@ -37,6 +76,7 @@ const AuthProvider = ({ children }) => {
   );
 };
 
+// Custom hook to easily access the authentication context
 export const useAuth = () => {
   return useContext(AuthContext);
 };

@@ -1,18 +1,20 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthProvider";
+import { useAuth } from "@/pages/AuthProvider";
 
 const Logout = () => {
-  const { setToken } = useAuth();
+  const { clearToken } = useAuth();
   const navigate = useNavigate();
 
+  // Function to handle logout
   const handleLogout = () => {
-    setToken();
-    navigate("/", { replace: true });
+    clearToken(); // Clear the authentication token
+    navigate("/", { replace: true }); // Navigate to the home page ("/") with replace option set to true
   };
 
+  // Automatically logout after 3 seconds
   setTimeout(() => {
-    handleLogout();
-  }, 3 * 1000);
+    handleLogout(); // Invoke the logout action
+  }, 1000);
 
   return <>Logout Page</>;
 };
