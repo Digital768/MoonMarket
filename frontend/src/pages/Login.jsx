@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "./AuthProvider";
 import { useState } from 'react';
-import { loginUser } from '@/api/user'
+import { loginUser, refreshJwtKey } from '@/api/user'
 import { useForm } from "react-hook-form";
 
 const Login = () => {
@@ -17,9 +17,8 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  const handleLogin = (jwtToken, expiresIn) => {
+  const handleLogin = (jwtToken) => {
     setToken(jwtToken);
-    scheduleTokenRefresh(jwtToken, expiresIn);
     navigate("/", { replace: true });
   };
 
@@ -29,6 +28,7 @@ const Login = () => {
       const response = await loginUser(data.email, data.password);
       // Handle the response from the server
       const { access_token, refresh_token, access_token_expires } = response.data;
+      console.log('Access token: ' + access_token, "Refresh token: " + refresh_token);
 
       // Reset the form fields
       handleLogin(access_token, access_token_expires);
@@ -58,22 +58,21 @@ const Login = () => {
     // Convert the ISO 8601 duration to milliseconds
     const duration = parseISO8601Duration(expiresIn);
     const delay = duration - 5000; // 5000 ms = 5 seconds
+    console.log(delay)
 
     // Schedule the token refresh
     setTimeout(() => refreshToken(token), delay);
   }
 
   async function refreshToken(token) {
+    console.log("refreshing jwt key...");
     // Call your API to refresh the token
-    const response = await axios.post('http://localhost:8000/auth/refresh', {  headers: {
-      Authorization: `Bearer ${token}`,
-    },});
-    const { access_token, refresh_token } = response.data;
+    const response = await refreshJwtKey(token)
+    const { access_token } = response.data;
 
     // Update the tokens in your application
     setToken(access_token);
-    localStorage.setItem('refreshToken', refresh_token);
-
+    
     // Set up the next refresh
     scheduleTokenRefresh(access_token, response.data.access_token_expires);
   }

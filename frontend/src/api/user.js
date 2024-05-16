@@ -19,6 +19,19 @@ export async function loginUser(email, password) {
   return response;
 }
 
+export async function refreshJwtKey(token) {
+  const response = await axios.post(
+    'http://localhost:8000/auth/refresh',
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+  );
+  return response;
+}
+
 export async function addUserPurchase(price, ticker, quantity, token) {
   const response = await axios.post(
     "http://localhost:8000/user/buy_stock",
