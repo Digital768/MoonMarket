@@ -146,7 +146,7 @@ function Portfolio() {
   return (
     <div className="portfolio">
       <div className="navbar">
-        <span>total value: {totalValue.toLocaleString("en-US")}$</span>
+        <span>Portfolio value: {totalValue.toLocaleString("en-US")}$</span>
         <span>deposit: {deposit.toLocaleString("en-US")}$</span>
         <span>last updated at: {updatedAt}</span>
         <Button variant="text" style={{"padding": 0}} onClick={() =>refreshPrices(tickers)}>Update prices</Button>

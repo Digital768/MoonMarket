@@ -7,8 +7,6 @@ import { useForm } from "react-hook-form";
 const Login = () => {
   const { setToken } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const {
@@ -28,7 +26,7 @@ const Login = () => {
       const response = await loginUser(data.email, data.password);
       // Handle the response from the server
       const { access_token, refresh_token, access_token_expires } = response.data;
-      console.log('Access token: ' + access_token, "Refresh token: " + refresh_token);
+      // console.log('Access token: ' + access_token, "Refresh token: " + refresh_token);
 
       // Reset the form fields
       handleLogin(access_token, access_token_expires);
@@ -36,7 +34,7 @@ const Login = () => {
     } catch (error) {
       // Handle the error
       if (error.response && error.response.data) {
-        console.log(error.response.data.detail);
+        setError(error.response.data.detail);
       } else {
         console.log(error);
       }
@@ -58,8 +56,7 @@ const Login = () => {
     // Convert the ISO 8601 duration to milliseconds
     const duration = parseISO8601Duration(expiresIn);
     const delay = duration - 5000; // 5000 ms = 5 seconds
-    console.log(delay)
-
+    
     // Schedule the token refresh
     setTimeout(() => refreshToken(token), delay);
   }
