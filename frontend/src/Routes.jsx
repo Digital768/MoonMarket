@@ -7,6 +7,8 @@ import StockPage from '@/pages/StockPage';
 import StockItem from '@/pages/StockItem';
 import Login from "@/pages/Login";
 import Logout from "@/pages/Logout";
+import {getUserData} from '@/api/user'
+import {getStockFromPortfolio, getStockData} from '@/api/stock'
 
 const Routes = () => {
   const { token } = useAuth();
@@ -28,12 +30,18 @@ const Routes = () => {
         {
           path: '/',
           element: <App /> ,
-          // errorElement: <ErrorPage/>
+          errorElement: <ErrorPage/>,
+          loader: () => {
+            return getUserData(token)
+          }
         },
         {
           path: "portfolio/:stockTicker",
           element: <StockPage />,
-          // errorElement: <ErrorPage/>
+          errorElement: <ErrorPage/>,
+          loader: ({params}) => {
+            return getStockFromPortfolio(params.stockTicker, token)
+          }
         },
         {
           path: "/logout",
@@ -42,7 +50,10 @@ const Routes = () => {
         {
           path: "stock/:stockTicker",
           element: <StockItem/>,
-          // errorElement: <ErrorPage/>
+          errorElement: <ErrorPage/>,
+          loader: ({params}) => {
+            return getStockData(params.stockTicker, token)
+          }
         }
       ],
     },

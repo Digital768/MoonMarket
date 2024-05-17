@@ -19,7 +19,7 @@ function Portfolio() {
 
   const { token } = useAuth();
   const { data, status, refetch, } = useQuery({
-    queryKey: ["user",  token ],
+    queryKey: ["user", token],
     queryFn: () => getUserData(token),
     refetchOnWindowFocus: false,
   });
@@ -28,15 +28,14 @@ function Portfolio() {
     if (stock_current_price > avg_bought_price) return true;
     return false;
   }
-  async function refreshPrices(tickers){
+  async function refreshPrices(tickers) {
     let promises = tickers.map(ticker => updateStockPrice(ticker, token));
     let results = await Promise.all(promises);
     refetch()
     return results;
-
   }
 
-// todo : find a better way to change data rather than useEffect
+  // todo : find a better way to change data rather than useEffect
 
   useEffect(() => {
     async function fetchDataAndProcess() {
@@ -149,7 +148,7 @@ function Portfolio() {
         <span>Portfolio value: {totalValue.toLocaleString("en-US")}$</span>
         <span>deposit: {deposit.toLocaleString("en-US")}$</span>
         <span>last updated at: {updatedAt}</span>
-        <Button variant="text" style={{"padding": 0}} onClick={() =>refreshPrices(tickers)}>Update prices</Button>
+        <Button variant="text" style={{ "padding": 0 }} onClick={() => refreshPrices(tickers)}>Update prices</Button>
       </div>
       {!stocksTree ? (
         <TreeMapSkeleton />

@@ -61,7 +61,8 @@
   width: 800px;
   flex-direction: row;
   justify-content: space-between;
-  padding-bottom: 20px;
+  padding-top: 40px;
+  margin: auto;
 }
 
 .delete-stock-btn{

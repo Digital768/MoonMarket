@@ -7,23 +7,6 @@ import AuthProvider from "@/pages/AuthProvider.jsx";
 
 const queryClient = new QueryClient();
 
-// const router = createBrowserRouter([
-//   {
-//     path: '/',
-//     element: <App /> ,
-//     errorElement: <ErrorPage/>
-//   },
-//   {
-//     path: "portfolio/:stockTicker",
-//     element: <StockPage />,
-//     errorElement: <ErrorPage/>
-//   },
-//   {
-//     path: "stock/:stockTicker",
-//     element: <StockItem/>,
-//     errorElement: <ErrorPage/>
-//   }
-// ])
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
