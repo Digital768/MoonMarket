@@ -14,13 +14,12 @@ const Routes = () => {
   const { token } = useAuth();
 
 
-  // Define routes accessible only to authenticated users
-  const routesForNotAuthenticatedOnly = [
-    {
-      path: "/login",
-      element: <Login/>,
-    },
-  ];
+// Define the login route
+const loginRoute = {
+  path: '/login',
+  element: <Login/>,
+};
+
   
   const routesForAuthenticatedOnly = [
     {
@@ -28,7 +27,7 @@ const Routes = () => {
       element: <ProtectedRoute/>,
       children: [
         {
-          path: '/',
+          path: '/portfolio',
           element: <App /> ,
           errorElement: <ErrorPage/>,
           loader: () => {
@@ -61,7 +60,7 @@ const Routes = () => {
 
   // Combine and conditionally include routes based on authentication status
   const router = createBrowserRouter([
-    ...(!token ? routesForNotAuthenticatedOnly : []),
+    ...(!token ? [loginRoute] : []),
     ...routesForAuthenticatedOnly,
   ]);
 
@@ -70,3 +69,6 @@ const Routes = () => {
 };
 
 export default Routes;
+
+
+

@@ -3,39 +3,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 80vh;
-}
-.stock-container{
-  display: block;
-}
-.stock-grid {
-  display: flex;
-  background-color: #f2f2f2;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 1200px;
-  height: 500px;
-  overflow: hidden;
-  position: relative;
-  align-items: center;
-}
-.stock-cube {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: relative;
-  cursor: pointer;
-  flex-grow: 1;
-  margin: 3px;
-  height: 100%;
-}
-/* Set the width of each column in the grid to auto */
-.stock-grid > * {
-  width: auto;
+  height: 70vh;
 }
 
 .stock-ticker {
@@ -54,22 +22,4 @@
 
 .negative {
   background-color: #f28b82;
-}
-
-.navbar{
-  display: flex;
-  width: 800px;
-  flex-direction: row;
-  justify-content: space-between;
-  padding-top: 40px;
-  margin: auto;
-}
-
-.delete-stock-btn{
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin-top: 15px;
-  margin-right: 15px;
-  cursor: pointer;
 }

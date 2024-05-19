@@ -1,16 +1,42 @@
-import { useRouteError } from "react-router-dom";
+// ErrorPage.js
+import React from 'react';
+import { useNavigate, useRouteError } from 'react-router-dom';
+import { useAuth } from "@/pages/AuthProvider";
 
-export default function ErrorPage() {
+const ErrorPage = () => {
   const error = useRouteError();
+  const { clearToken } = useAuth();
+  const navigate = useNavigate();
 
+  // Log the error object to the console for debugging
+  console.error('Route Error:', error);
+
+  let errorMessage;
+  let isUnauthorized = false;
+
+  // Check if the error is an AxiosError with status 401
+  if (error?.response?.status === 401) {
+   
+    errorMessage = "Credentials are not provided.";
+    isUnauthorized = true;
+  } else {
+    errorMessage = "An unexpected error occurred.";
+  }
+
+  const handleLoginRedirect = () => {
+    clearToken(); // Clear the authentication token
+    navigate('/');
+  };
 
   return (
-    <div id="error-page">
-      <h1>Oops!</h1>
-      <p>Sorry, an unexpected error has occurred.</p>
-      <p>
-        <i>{error.statusText || error.message}</i>
-      </p>
+    <div>
+      <h1>Error</h1>
+      <p>{errorMessage}</p>
+      {isUnauthorized && (
+        <button onClick={handleLoginRedirect}>Go to Login</button>
+      )}
     </div>
   );
-}
+};
+
+export default ErrorPage;

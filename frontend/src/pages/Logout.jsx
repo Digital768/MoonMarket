@@ -8,7 +8,7 @@ const Logout = () => {
   // Function to handle logout
   const handleLogout = () => {
     clearToken(); // Clear the authentication token
-    navigate("/", { replace: true }); // Navigate to the home page ("/") with replace option set to true
+    navigate("/login", { replace: true }); // Navigate to the home page ("/") with replace option set to true
   };
 
   // Automatically logout after 3 seconds

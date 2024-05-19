@@ -2,18 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "@/styles/App.css";
 import SharesDialog from "@/components/SharesDialog.jsx";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import PortfolioStockSkeleton from "@/Skeletons/PortfolioStockSkeleton.jsx";
 import { addUserPurchase, addUserSale } from '@/api/user'
-import { getStockFromPortfolio } from '@/api/stock'
 import { useAuth } from "@/pages/AuthProvider";
 import { useLocation } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import { ellipsis } from 'polished';
 import styled from 'styled-components';
+import { useLoaderData } from "react-router-dom";
+
 
 
 const DescriptionText = styled.div`
@@ -22,8 +22,6 @@ const DescriptionText = styled.div`
   margin-bottom: 5px;
   ${({ showMore }) => showMore && ellipsis(undefined, 3)}
 `;
-
-
 
 
 function StockPage() {
@@ -46,12 +44,7 @@ function StockPage() {
     token: token,
   });
 
-  const { data, status } = useQuery({
-    queryKey: ["stock", stockTicker],
-    queryFn: () => getStockFromPortfolio(stockTicker, token),
-    refetchOnWindowFocus: false,
-    retry: 0,
-  });
+  const data = useLoaderData();
 
   function handleClose() {
     setdialogOpen(false);
@@ -92,52 +85,50 @@ function StockPage() {
     });
   };
   useEffect(() => {
-    if (status === "success") {
+    if (data) {
       setStockData(data);
     }
-    if (status === "error") {
-      navigate("/");
-    }
-  }, [status, data]);
+  }, [data]);
 
 
   return (
     <div>
-      {status === "success" ? (
         <Card elevation={8}
           sx={{
             width: 800,
             p: 1,
             padding: 7,
             margin: "auto",
-            marginTop: "70px"
+            marginTop: "70px",
+            bgcolor: "#423F3E"
           }}
         >
-          <div className="card-header" style={{ display: 'flex', alignItems: 'center' }}>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontSize: '26px', margin: '0' }}>{stockData.name}</p>
-              <p style={{ fontSize: '18px', margin: '4px' }}> {stockData.ticker}</p>
-            </div>
-            <img src={`https://financialmodelingprep.com/image-stock/${stockTicker}.png`} width='100' height='100' alt={stockTicker} className="stock-img" style={{ marginLeft: 'auto' }}></img>
-          </div>
+          <Box className="card-header" sx={{ display: 'flex', flexDirection: 'row',justifyContent:'space-between', alignItems: 'center', color: 'whitesmoke', width:'65%', margin:'auto'}}>
+            <Box className='card-title' >
+              <h2 style={{ marginBottom:'5px'}}>{stockData.name}</h2>
+              <h4 style={{marginTop:'0px', color:'#fff9'}}> {stockData.ticker}</h4>
+              <img src={`https://financialmodelingprep.com/image-stock/${stockTicker}.png`} width='100' height='100' alt={stockTicker} className="stock-img"></img>
+            </Box>
+            <Box className="card-details">
+              <h3>stock price is {stockData.price}$</h3>
+              <h3>number of shares owned : {location.state.quantity}</h3>
+              <h3>Part of portfolio; {location.state.percentageOfPortfolio}%</h3>
+            </Box>
+          </Box>
 
-          <Box sx={{ display: 'flex', flexDirection: 'row', gap: '2em', justifyContent: 'center' }}>
+          <Box className="buttons" sx={{ display: 'flex', flexDirection: 'row', gap: '2em', justifyContent: 'center', padding:'2em'}}>
             <Button variant="contained" onClick={handleAddClick}> Buy</Button>
             <Button style={{ background: 'red' }} variant="contained" onClick={handleDecreaseClick}>Sell</Button>
           </Box>
-          <p>stock price is {stockData.price}$</p>
-          <p>number of shares owned : {location.state.quantity}</p>
-          <p>Part of portfolio; {location.state.percentageOfPortfolio}%</p>
-          {/* <p>{stockData.description}</p> */}
-          <DescriptionText showMore={isShowMore}>Description: {stockData.description}</DescriptionText>
-          <button style={{ float: "right", borderRadius: '10px', border: 'none', marginTop: '10px', cursor: 'pointer' }} onClick={toggleReadMore}>
-            {isShowMore ? "Show more..." : "Show less"}
-          </button>
-          {/* todo: find a way to limit the description to X rows */}
+          <Box className="description" sx={{ color: 'whitesmoke' }}>
+            <DescriptionText showMore={isShowMore}>Description: {stockData.description}</DescriptionText>
+            <button style={{ float: "right", borderRadius: '10px', border: 'none', marginTop: '10px', cursor: 'pointer' }} onClick={toggleReadMore}>
+              {isShowMore ? "Show more..." : "Show less"}
+            </button>
+            {/* todo: find a way to limit the description to X rows */}
+          </Box>
         </Card>
-      ) : (
-        <PortfolioStockSkeleton />
-      )}
+
       {dialogOpen && (
         <SharesDialog
           open={dialogOpen}
@@ -152,3 +143,6 @@ function StockPage() {
 }
 
 export default StockPage;
+
+
+{/* <PortfolioStockSkeleton /> */}

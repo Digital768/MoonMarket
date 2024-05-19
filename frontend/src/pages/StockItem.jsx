@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "@/styles/App.css";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import AddStockDialog from "@/components/AddStockDialog.jsx";
 import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
 import SearchStockSkeleton from "@/Skeletons/SearchStockSkeleton";
-import { getStockData } from "@/api/stock";
 import { useAuth } from "@/pages/AuthProvider";
 import { ellipsis } from 'polished';
 import styled from 'styled-components';
+import { Box } from "@mui/material";
+import { useLoaderData } from "react-router-dom";
 
 
 const DescriptionText = styled.div`
@@ -24,38 +23,16 @@ const DescriptionText = styled.div`
 
 function StockItem() {
   const { token } = useAuth();
+  const data = useLoaderData();
   const [stockData, setStockData] = useState(null);
-  const { stockTicker } = useParams();
 
   const [isShowMore, setIsShowMore] = useState(true);
   const toggleReadMore = () => setIsShowMore(show => !show);
 
-  const { data, status, refetch, error } = useQuery({
-    queryKey: [{ stockTicker, token }], // include stockTicker in the queryKey
-    queryFn: () => getStockData(stockTicker, token),
-    refetchOnWindowFocus: false,
-    enabled: isValidStockTicker(stockTicker),
-  });
 
-  function isValidStockTicker(ticker) {
-    // Check if ticker is a string and has length between 1 and 5
-    if (
-      typeof ticker === "string" &&
-      ticker.length >= 1 &&
-      ticker.length <= 5
-    ) {
-      // Check if ticker contains only alphabetic characters
-      if (/^[A-Za-z]+$/.test(ticker)) {
-        // Convert ticker to uppercase
-        ticker = ticker.toUpperCase();
-        return true;
-      }
-    }
-    return false;
-  }
 
   useEffect(() => {
-    if (status === "success") {
+    if (data) {
       const res = data;
       const options = { day: "2-digit", month: "2-digit", year: "numeric" };
       const formattedDate = new Date(
@@ -81,11 +58,9 @@ function StockItem() {
 
       setStockData(stockInfo);
     }
-  }, [status]);
+  }, [data]);
 
-  if (status === "pending") {
-    return <SearchStockSkeleton></SearchStockSkeleton>;
-  }
+
 
   return (
     <div className="layout">
@@ -95,36 +70,49 @@ function StockItem() {
           p: 1,
           margin: "auto",
           padding: 4,
-          marginTop: "80px"
+          marginTop: "80px",
+          bgcolor: "#423F3E",
+          color: 'whitesmoke'
         }}
       >
-        {status === "error" && <div>Error: {error.message}</div>}
-        {status === "success" && stockData && (
+
+        {stockData && (
           <>
-            <h2>
-              Stock Symbol: {stockData.ticker} Stock Name: {stockData.name}
-            </h2>
-            <img
-              src={stockData.imageUrl}
-              alt={stockData.ticker}
-              width="100"
-              height="100"
-              className="stock-img"
-            />
-            <h3>Stock Price: {stockData.price}</h3>
-            <h3>Stock Exchange: {stockData.exchange}</h3>
-            {/* <h3>Next Earnings date: {stockData.earningsAnnouncement}</h3> */}
-            <h3>Average 50 days price: {stockData.priceAvg50}</h3>
-            <h3>Stock's highest price this year: {stockData.yearHigh}</h3>
-            <h3>Stock's lowest price this year: {stockData.yearLow}</h3>
-            <DescriptionText showMore={isShowMore}>Description: {stockData.description}</DescriptionText>
-            <button style= {{float:"right", borderRadius:'10px', border:'none', marginTop:'10px', cursor:'pointer'}} onClick={toggleReadMore}>
-              {isShowMore ? "Show more..." : "Show less"}
-            </button>
-            {/* todo: find a way to limit the description to X rows */}
-            <div className="addStockBox" style={{marginTop:'20px'}}>
-              <AddStockDialog stock={stockData} token={token}></AddStockDialog>
-            </div>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Box className="card-header" sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '80%', margin: 'auto' }} >
+                <Box className="card-title">
+                  <h2 style={{ marginBottom: '5px' }}>
+                    {stockData.name}
+                  </h2>
+                  <h4 style={{ marginTop: '0px', color: '#fff9' }}> {stockData.ticker}</h4>
+
+                  <img
+                    src={stockData.imageUrl}
+                    alt={stockData.ticker}
+                    width="100"
+                    height="100"
+                    className="stock-img"
+                  />
+                </Box>
+                <Box className="card-details" sx={{}}>
+                  <h3>Stock Price: {stockData.price}$</h3>
+                  <h3>Stock Exchange: {stockData.exchange}</h3>
+                  {/* <h3>Next Earnings date: {stockData.earningsAnnouncement}</h3> */}
+                  <h3>Average 50 days price: {stockData.priceAvg50}$</h3>
+                  <h3>Stock's highest price this year: {stockData.yearHigh}$</h3>
+                  <h3>Stock's lowest price this year: {stockData.yearLow}$</h3>
+                </Box>
+              </Box>
+              <Box className='description'>
+                <DescriptionText showMore={isShowMore}>{stockData.description}</DescriptionText>
+                <button style={{ float: "right", borderRadius: '10px', border: 'none', marginTop: '10px', cursor: 'pointer' }} onClick={toggleReadMore}>
+                  {isShowMore ? "Show more..." : "Show less"}
+                </button>
+                <div className="addStockBox" style={{ marginTop: '20px' }}>
+                  <AddStockDialog stock={stockData} token={token}></AddStockDialog>
+                </div>
+              </Box>
+            </Box>
           </>
         )}
         {stockData == null && <p>stock ticker isnt valid</p>}

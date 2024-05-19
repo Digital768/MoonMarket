@@ -5,7 +5,7 @@ import "@/styles/App.css";
 function Logo() {
   return (
     <nav className="logo-row">
-    <Link to="/" className="logo">
+    <Link to="/portfolio" className="logo">
       MoonMarket
     </Link>
   </nav>

@@ -62,7 +62,7 @@ export default function AddStockDialog({ stock, token }) {
         token,
       });
       handleClose();
-      navigate("/");
+      navigate("/portfolio");
     } catch (error) {
       if(error.response.data.detail === "Insufficient funds"){
         setServerError("ERROR! " +error.response.data.detail)
@@ -73,7 +73,7 @@ export default function AddStockDialog({ stock, token }) {
 
   return (
     <React.Fragment>
-      <Button variant="contained" onClick={handleClickOpen}>
+      <Button variant="contained" onClick={handleClickOpen} sx={{marginLeft:'10px'}}>
         Add stock
       </Button>
       <Dialog open={open} onClose={handleClose}>

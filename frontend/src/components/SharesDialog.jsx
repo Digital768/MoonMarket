@@ -36,7 +36,7 @@ function SharesDialog({ handleClose, open, dialog,addUserPurchase, addUserSale }
           await dialog.function(dialog.stock.ticker, data.quantity, data.price, dialog.token);
         }
         handleClose();
-        navigate("/");
+        navigate("/portfolio");
     } catch (error) {
       if(error.response.data.detail === "Insufficient funds"){
         setServerError("ERROR! " +error.response.data.detail)

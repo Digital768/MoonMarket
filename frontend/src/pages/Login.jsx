@@ -17,7 +17,7 @@ const Login = () => {
 
   const handleLogin = (jwtToken) => {
     setToken(jwtToken);
-    navigate("/", { replace: true });
+    navigate("/portfolio", { replace: true });
   };
 
 
@@ -76,7 +76,7 @@ const Login = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {error && <div>{error}</div>}
+      {error && <div style={{color:'white'}}>{error}</div>}
       <input
         {...register("email", {
           required: true

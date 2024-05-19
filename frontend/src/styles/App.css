@@ -2,47 +2,18 @@
   text-align: center;
 } */
 
-
-.logo-row{
-  padding-top: 15px;
-  text-align: right
+body{
+  background-color: #2B2B2B;
 }
 
-.logo{
-  margin-right: 40px;
-  font-size:30px;
-  cursor: pointer;
-  font-weight: 500;
-  font-family: fantasy;
-  text-decoration: none;
-}
-
-.logo:visited{
-  color: black
-}
-
-/* search-ticker-row */
-.search-bar{
+.navbar{
   display: flex;
+  width: 800px;
   flex-direction: row;
-  align-items: center;
-  justify-content: center;
-}
-.search-container{
-  position: relative;
-}
-.search-icon {
-  position: absolute;
-  top: 50%;
-  left: 10px;
-  transform: translateY(-50%);
-}
-.search-input{
-  padding-left: 30px;
-  border-radius: 30px;
-  border: 1px solid #ccc;
-  box-shadow: 5px 5px 5px #888888;
-  height: 40px;
+  justify-content: space-between;
+  padding-top: 30px;
+  margin: auto;
+  color: whitesmoke;
 }
 
 .addStockForm{
@@ -51,9 +22,6 @@
   gap: 0.5em;
 }
 
-.stock-img{
-  background-color: #888888;
-}
 
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 
