@@ -25,7 +25,7 @@ const Routes = () => {
   const routesForAuthenticatedOnly = [
     {
       path: "/",
-      element: <ProtectedRoute />,
+      element: <ProtectedRoute/>,
       children: [
         {
           path: '/',

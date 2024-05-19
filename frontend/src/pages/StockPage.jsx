@@ -103,11 +103,6 @@ function StockPage() {
 
   return (
     <div>
-      <nav className="logo-row">
-        <a href="/" className="logo">
-          MoonMarket
-        </a>
-      </nav>
       {status === "success" ? (
         <Card elevation={8}
           sx={{

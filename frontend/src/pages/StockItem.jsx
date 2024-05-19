@@ -89,11 +89,6 @@ function StockItem() {
 
   return (
     <div className="layout">
-      <nav className="logo-row">
-        <Link to="/" className="logo">
-          MoonMarket
-        </Link>
-      </nav>
       <Card elevation={8}
         sx={{
           width: 1300,

@@ -1,57 +1,42 @@
-import React, { useEffect, useState } from "react";
-import "@/styles/App.css";
-import { useLoaderData, } from "react-router-dom";
-import Logo from "@/components/Logo.jsx";
-import SearchBar from "@/components/SearchBar.jsx";
-import { useAuth } from "@/pages/AuthProvider";
-import { Treemap } from "@/components/Treemap";
-import { processTreemapData } from '@/utils/dataProcessing.js'
 import TreeMapSkeleton from "@/Skeletons/TreeMapSkeleton";
+import SearchBar from "@/components/SearchBar.jsx";
+import { Treemap } from "@/components/Treemap";
+import { useAuth } from "@/pages/AuthProvider";
+import "@/styles/App.css";
 import "@/styles/portfolio.css";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
+import { useLoaderData } from "react-router-dom";
+import useTreeMapData from "@/hooks/useTreeMapData";
+import {calculateUserInfo} from '@/utils/dataProcessing'
+import { useEffect } from "react";
 
 function App() {
   const data = useLoaderData();
-  const { token } = useAuth();
-  const [stockTickers, setStockTickers] = useState([]);
-  const [visualizationData, setVisualizationData] = useState(null);
-  const [deposit, setDeposit] = useState(0);
-  const [updatedAt, setUpdatedAt] = useState(null);
-  const [totalValue, setTotalValue] = useState(0);
+  const [stockTickers, visualizationData, sum] = useTreeMapData(data);
+  const { deposit, formattedDate} = calculateUserInfo(data);
 
-
-  useEffect(() => {
-    console.log(data)
-    if (data) {
-      async function processData() {
-        const { newStocksTree, tickers } = await processTreemapData(data.data, token);
-        setVisualizationData(newStocksTree);
-        setStockTickers(tickers);
-      }
-      processData()
-    }
-  }, [data])
-
+  // useEffect(()=>{
+  //   console.log(formattedDate)
+  // },[])
 
   return (
     <div className="App">
-      
-        <Logo />
-        <SearchBar />
-        <div className="navbar">
-          <span>Portfolio value: {totalValue.toLocaleString("en-US")}$</span>
-          <span>deposit: {deposit.toLocaleString("en-US")}$</span>
-          <span>last updated at: {updatedAt}</span>
-          {/* <Button variant="text" style={{ "padding": 0 }} onClick={() => refreshPrices(tickers)}>Update prices</Button> */}
-          <Button variant="text" style={{ "padding": 0 }}>Update prices</Button>
-        </div>
-        <div className="portfolio">
+      <SearchBar />
+      <div className="navbar">
+        <p>{" deposit is: "+deposit.toLocaleString("en-US")}$</p>
+        <p>{"last updated at:" +formattedDate}</p>
+        <p>{"total vlaue: "+sum.toLocaleString("en-US")}$</p>
+        {/* <Button variant="text" style={{ "padding": 0 }} onClick={() => refreshPrices(tickers)}>Update prices</Button> */}
+        <Button variant="text" style={{ padding: 0 }}>
+          Update prices
+        </Button>
+      </div>
+      <div className="portfolio">
         {!visualizationData ? (
           <TreeMapSkeleton />
         ) : (
           <Treemap data={visualizationData} width={1000} height={600} />
         )}
-        {/* <Portfolio /> */}
       </div>
     </div>
   );
