@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import {  redirect } from 'react-router-dom';
+import { useNavigate, Form } from 'react-router-dom';
 import { useAuth } from "./AuthProvider";
 import { useState } from 'react';
 import { loginUser, refreshJwtKey } from '@/api/user'
@@ -6,8 +7,8 @@ import { useForm } from "react-hook-form";
 
 const Login = () => {
   const { setToken } = useAuth();
-  const navigate = useNavigate();
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const {
     register,
@@ -15,8 +16,8 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  const handleLogin = (jwtToken) => {
-    setToken(jwtToken);
+  const handleLogin = async (jwtToken) => {
+    await setToken(jwtToken);
     navigate("/portfolio", { replace: true });
   };
 
@@ -27,10 +28,9 @@ const Login = () => {
       // Handle the response from the server
       const { access_token, refresh_token, access_token_expires } = response.data;
       // console.log('Access token: ' + access_token, "Refresh token: " + refresh_token);
-
-      // Reset the form fields
-      handleLogin(access_token, access_token_expires);
       scheduleTokenRefresh(refresh_token, access_token_expires);
+      // Reset the form fields
+      handleLogin(access_token);
     } catch (error) {
       // Handle the error
       if (error.response && error.response.data) {
@@ -43,7 +43,7 @@ const Login = () => {
 
 
   // Function to parse ISO 8601 durations
-  function parseISO8601Duration(duration) {
+  async function parseISO8601Duration(duration) {
     const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
     const hours = (match[1] ? parseInt(match[1]) : 0);
     const minutes = (match[2] ? parseInt(match[2]) : 0);
@@ -52,9 +52,9 @@ const Login = () => {
   }
 
   // Function to schedule the token refresh
-  function scheduleTokenRefresh(token, expiresIn) {
+  async function scheduleTokenRefresh(token, expiresIn) {
     // Convert the ISO 8601 duration to milliseconds
-    const duration = parseISO8601Duration(expiresIn);
+    const duration = await parseISO8601Duration(expiresIn);
     const delay = duration - 5000; // 5000 ms = 5 seconds
     
     // Schedule the token refresh
@@ -68,14 +68,14 @@ const Login = () => {
     const { access_token } = response.data;
 
     // Update the tokens in your application
-    setToken(access_token);
+    await setToken(access_token);
     
     // Set up the next refresh
-    scheduleTokenRefresh(access_token, response.data.access_token_expires);
+    await scheduleTokenRefresh(access_token, response.data.access_token_expires);
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <Form onSubmit={handleSubmit(onSubmit)} method='post' action='/login'>
       {error && <div style={{color:'white'}}>{error}</div>}
       <input
         {...register("email", {
@@ -94,8 +94,9 @@ const Login = () => {
       />
 
       <button type="submit">Login</button>
-    </form>
+    </Form>
   );
 };
 
 export default Login;
+

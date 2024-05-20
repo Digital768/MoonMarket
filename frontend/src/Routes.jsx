@@ -9,19 +9,15 @@ import Login from "@/pages/Login";
 import Logout from "@/pages/Logout";
 import {getUserData} from '@/api/user'
 import {getStockFromPortfolio, getStockData} from '@/api/stock'
+import {redirect} from 'react-router-dom';
+import {PublicRoute} from '@/pages/PublicRoute'
 
 const Routes = () => {
   const { token } = useAuth();
 
 
-// Define the login route
-const loginRoute = {
-  path: '/login',
-  element: <Login/>,
-};
-
-  
-  const routesForAuthenticatedOnly = [
+  // Combine and conditionally include routes based on authentication status
+  const router = createBrowserRouter([
     {
       path: "/",
       element: <ProtectedRoute/>,
@@ -54,14 +50,18 @@ const loginRoute = {
             return getStockData(params.stockTicker, token)
           }
         }
-      ],
+      ]
     },
-  ];
-
-  // Combine and conditionally include routes based on authentication status
-  const router = createBrowserRouter([
-    ...(!token ? [loginRoute] : []),
-    ...routesForAuthenticatedOnly,
+    {
+      path: '/login',
+      element: <PublicRoute />,
+      children: [
+        {
+          path: '/login',
+          element: <Login />
+        }
+      ]
+    }
   ]);
 
   // Provide the router configuration using RouterProvider

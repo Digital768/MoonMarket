@@ -16,6 +16,7 @@ function App() {
   const [stockTickers, visualizationData, value] = useTreeMapData(data);
   const { deposit, formattedDate } = calculateUserInfo(data);
 
+  useEffect(() => {if(data){console.log(data)}else{ console.log("no data")} }, [data])
   return (
     <div className="App">
       <SearchBar />
