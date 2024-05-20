@@ -47,12 +47,22 @@ export async function getStockFromPortfolio(ticker, token) {
   return stock.data
 }
 
-export async function updateStockPrice(ticker, token){
-  const stock = await axios.put(`http://localhost:8000/stocks/update_stock_price/${ticker}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
+export async function updateStockPrice(ticker, token) {
+  try {
+    const response = await axios.put(
+      `http://localhost:8000/stocks/update_stock_price/${ticker}`,
+      {}, // This is the data payload. Use an empty object if no data to send.
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data; // Return response data if needed
+  } catch (error) {
+    console.error(`Failed to update ${ticker}:`, error);
+    throw error; // Re-throw the error for further handling if necessary
+  }
 }
 
 export async function deleteStock(ticker, token) {

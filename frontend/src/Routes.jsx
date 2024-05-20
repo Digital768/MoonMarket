@@ -26,8 +26,11 @@ const Routes = () => {
           path: '/portfolio',
           element: <App /> ,
           errorElement: <ErrorPage/>,
-          loader: () => {
-            return getUserData(token)
+          loader: async () => {
+            console.log("loader activated")
+            const user = await getUserData(token)
+            // console.log("user: " , user.data)
+            return user
           }
         },
         {

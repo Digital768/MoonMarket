@@ -16,7 +16,8 @@ const ErrorPage = () => {
 
   // Check if the error is an AxiosError with status 401
   if (error?.response?.status === 401) {
-   
+    clearToken(); // Clear the authentication token
+    navigate('/login');
     errorMessage = "Credentials are not provided.";
     isUnauthorized = true;
   } else {
@@ -25,7 +26,7 @@ const ErrorPage = () => {
 
   const handleLoginRedirect = () => {
     clearToken(); // Clear the authentication token
-    navigate('/');
+    navigate('/login');
   };
 
   return (
