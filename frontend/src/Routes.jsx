@@ -1,7 +1,7 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { useAuth } from "@/pages/AuthProvider";
 import { ProtectedRoute } from "@/pages/ProtectedRoute";
-import App from '@/pages/App';
+import App, {action as appAction} from '@/pages/App';
 import ErrorPage from '@/pages/ErrorPage';
 import StockPage from '@/pages/StockPage';
 import StockItem from '@/pages/StockItem';
@@ -9,7 +9,6 @@ import Login from "@/pages/Login";
 import Logout from "@/pages/Logout";
 import {getUserData} from '@/api/user'
 import {getStockFromPortfolio, getStockData} from '@/api/stock'
-import {redirect} from 'react-router-dom';
 import {PublicRoute} from '@/pages/PublicRoute'
 
 const Routes = () => {
@@ -31,7 +30,8 @@ const Routes = () => {
             const user = await getUserData(token)
             // console.log("user: " , user.data)
             return user
-          }
+          }, 
+         action:appAction
         },
         {
           path: "portfolio/:stockTicker",
