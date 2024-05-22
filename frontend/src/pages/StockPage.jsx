@@ -162,15 +162,18 @@ function StockPage() {
           </DescriptionText>
           <button
             style={{
-              float: "right",
-              borderRadius: "10px",
+              float: "left",
+              borderRadius: "5px",
               border: "none",
-              marginTop: "10px",
+              marginTop: "5px",
               cursor: "pointer",
+              height:'1.5em',
+              backgroundColor:'transparent',
+              color:'whitesmoke'
             }}
             onClick={toggleReadMore}
           >
-            {isShowMore ? "Show more..." : "Show less"}
+            {isShowMore ? "SHOW MORE" : "SHOW LESS"}
           </button>
           {/* todo: find a way to limit the description to X rows */}
         </Box>
