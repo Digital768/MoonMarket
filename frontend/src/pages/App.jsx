@@ -9,7 +9,8 @@ import useTreeMapData from "@/hooks/useTreeMapData";
 import { calculateUserInfo } from '@/utils/dataProcessing'
 import { useEffect } from "react";
 import { useAuth } from "@/pages/AuthProvider";
-import {updateStockPrice} from '@/api/stock'
+import { updateStockPrice } from '@/api/stock'
+import {getUserData} from '@/api/user'
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -43,6 +44,13 @@ export const action = async ({ request }) => {
     console.error("Error updating stock prices:", error);
     return null;
   }
+}
+
+export const loader = (token) => async () => {
+  console.log("loader activated")
+  const user = await getUserData(token)
+  // console.log("user: " , user.data)
+  return user
 }
 
 function App() {
