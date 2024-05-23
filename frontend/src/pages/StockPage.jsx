@@ -5,16 +5,15 @@ import SharesDialog from "@/components/SharesDialog.jsx";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import PortfolioStockSkeleton from "@/Skeletons/PortfolioStockSkeleton.jsx";
-import { addUserPurchase, addUserSale } from '@/api/user'
+import { addUserPurchase, addUserSale } from "@/api/user";
 import { useAuth } from "@/pages/AuthProvider";
-import { useLocation } from 'react-router-dom';
-import Card from '@mui/material/Card';
-import Button from '@mui/material/Button';
-import { ellipsis } from 'polished';
-import styled from 'styled-components';
+import { useLocation } from "react-router-dom";
+import Card from "@mui/material/Card";
+import Button from "@mui/material/Button";
+import { ellipsis } from "polished";
+import styled from "styled-components";
 import { useLoaderData } from "react-router-dom";
-
-
+import LoadingImage from "@/components/LoadingImage";
 
 const DescriptionText = styled.div`
   font-size: 14px;
@@ -23,12 +22,11 @@ const DescriptionText = styled.div`
   ${({ showMore }) => showMore && ellipsis(undefined, 3)}
 `;
 
-
 function StockPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isShowMore, setIsShowMore] = useState(true);
-  const toggleReadMore = () => setIsShowMore(show => !show);
+  const toggleReadMore = () => setIsShowMore((show) => !show);
 
   const { token } = useAuth();
   const { stockTicker } = useParams();
@@ -65,7 +63,6 @@ function StockPage() {
       };
       return newDialog;
     });
-
   };
   const handleDecreaseClick = () => {
     // event.stopPropagation(); // Prevent the parent
@@ -90,44 +87,85 @@ function StockPage() {
     }
   }, [data]);
 
-
   return (
     <div>
-        <Card elevation={8}
+      <Card
+        elevation={8}
+        sx={{
+          width: 800,
+          p: 1,
+          padding: 7,
+          margin: "auto",
+          marginTop: "70px",
+          bgcolor: "#423F3E",
+        }}
+      >
+        <Box
+          className="card-header"
           sx={{
-            width: 800,
-            p: 1,
-            padding: 7,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            color: "whitesmoke",
+            width: "65%",
             margin: "auto",
-            marginTop: "70px",
-            bgcolor: "#423F3E"
           }}
         >
-          <Box className="card-header" sx={{ display: 'flex', flexDirection: 'row',justifyContent:'space-between', alignItems: 'center', color: 'whitesmoke', width:'65%', margin:'auto'}}>
-            <Box className='card-title' >
-              <h2 style={{ marginBottom:'5px'}}>{stockData.name}</h2>
-              <h4 style={{marginTop:'0px', color:'#fff9'}}> {stockData.ticker}</h4>
-              <img src={`https://financialmodelingprep.com/image-stock/${stockTicker}.png`} width='100' height='100' alt={stockTicker} className="stock-img"></img>
-            </Box>
-            <Box className="card-details">
-              <h3>stock price is {stockData.price}$</h3>
-              <h3>number of shares owned : {location.state.quantity}</h3>
-              <h3>Part of portfolio; {location.state.percentageOfPortfolio}%</h3>
-            </Box>
-          </Box>
+          <Box className="card-title">
+            <h2 style={{ marginBottom: "5px" }}>{stockData.name}</h2>
+            <h4 style={{ marginTop: "0px", color: "#fff9" }}>
+              {" "}
+              {stockData.ticker}
+            </h4>
 
-          <Box className="buttons" sx={{ display: 'flex', flexDirection: 'row', gap: '2em', justifyContent: 'center', padding:'2em'}}>
-            <Button variant="contained" onClick={handleAddClick}> Buy</Button>
-            <Button style={{ background: 'red' }} variant="contained" onClick={handleDecreaseClick}>Sell</Button>
+            <LoadingImage
+              src={`https://financialmodelingprep.com/image-stock/${stockTicker}.png`}
+              width="100"
+              height="100"
+              alt={stockTicker}
+              className="stock-img"
+            />
           </Box>
-          <Box className="description" sx={{ color: 'whitesmoke' }}>
-            <DescriptionText showMore={isShowMore}>Description: {stockData.description}</DescriptionText>
-            <button style={{ float: "right", borderRadius: '10px', border: 'none', marginTop: '10px', cursor: 'pointer' }} onClick={toggleReadMore}>
-              {isShowMore ? "Show more..." : "Show less"}
-            </button>
-            {/* todo: find a way to limit the description to X rows */}
+          <Box className="card-details">
+            <h4>stock price is {stockData.price}$</h4>
+            <h4>number of shares owned : {location.state.quantity}</h4>
+            <h4>Part of portfolio: {location.state.percentageOfPortfolio}%</h4>
           </Box>
-        </Card>
+        </Box>
+
+        <Box
+          className="buttons"
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            gap: "2em",
+            justifyContent: "center",
+            padding: "2em",
+          }}
+        >
+          <Button variant="contained" onClick={handleAddClick}>
+            {" "}
+            Buy
+          </Button>
+          <Button
+            style={{ background: "red" }}
+            variant="contained"
+            onClick={handleDecreaseClick}
+          >
+            Sell
+          </Button>
+        </Box>
+        <Box className="description" sx={{ color: "whitesmoke" }}>
+          <DescriptionText showMore={isShowMore}>
+            Description: {stockData.description}
+          </DescriptionText>
+          <Button variant="text" onClick={toggleReadMore}>
+            {isShowMore ? "SHOW MORE" : "SHOW LESS"}
+          </Button>
+          {/* todo: find a way to limit the description to X rows */}
+        </Box>
+      </Card>
 
       {dialogOpen && (
         <SharesDialog
@@ -144,5 +182,6 @@ function StockPage() {
 
 export default StockPage;
 
-
-{/* <PortfolioStockSkeleton /> */}
+{
+  /* <PortfolioStockSkeleton /> */
+}

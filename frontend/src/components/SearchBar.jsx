@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
 import '@/styles/searchBar.css';
-import { CiSearch } from "react-icons/ci";
+import SearchIcon from '@mui/icons-material/Search';
+import { TextField } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
 function SearchBar() {
-
   const [tickerInput, setTickerInput] = useState(""); // State to store the typed ticker input
   const navigate = useNavigate();
 
@@ -48,12 +49,19 @@ function SearchBar() {
     <div className="search-bar">
       <div className="search-container">
         <form onSubmit={handleSubmit}>
-          <CiSearch className="search-icon" />{" "}
+          {/* <CiSearch className="search-icon" />{" "} */}
           {/* Place CiSearch component before the input */}
-          <input
-            className="search-input"
+          <TextField
+            // className="search-input"
             type="text"
             name="ticker"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
             value={tickerInput}
             onChange={handleChange}
             placeholder="Enter ticker"

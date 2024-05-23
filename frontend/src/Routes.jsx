@@ -14,7 +14,6 @@ import { PublicRoute } from '@/pages/PublicRoute'
 const Routes = () => {
   const { token } = useAuth();
 
-
   // Combine and conditionally include routes based on authentication status
   const router = createBrowserRouter([
     {
@@ -38,7 +37,7 @@ const Routes = () => {
         },
         {
           path: "/logout",
-          element: <Logout />,
+          element: <Logout  />,
         },
         {
           path: "stock/:stockTicker",
@@ -51,15 +50,15 @@ const Routes = () => {
       ]
     },
     {
-      path: '/login',
+      path: "/login",
       element: <PublicRoute />,
       children: [
         {
-          path: '/login',
-          element: <Login />
-        }
-      ]
-    }
+          path: "/login",
+          element: <Login />,
+        },
+      ],
+    },
   ]);
 
   // Provide the router configuration using RouterProvider
@@ -67,6 +66,3 @@ const Routes = () => {
 };
 
 export default Routes;
-
-
-

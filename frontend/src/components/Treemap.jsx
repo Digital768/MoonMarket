@@ -1,19 +1,20 @@
-import { useMemo, useRef } from "react";
-import * as d3 from "d3";
 import "@/styles/Treemap.css";
-import { useNavigate } from 'react-router-dom';
-
-
-
-const colors = {
-  positive: "#a4c969",
-  negative: "#e85252",
-};
+import { useTheme } from "@mui/material";
+import * as d3 from "d3";
+import { useMemo, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+// import { Typography } from '@mui/material';
+import TreeMapTooltip from "@/components/TreeMapTooltip";
 
 export const Treemap = ({ width, height, data }) => {
   const navigate = useNavigate();
   const tooltipRef = useRef(null);
-
+  const theme = useTheme();
+  const colors = {
+    positive: theme.palette.success.main,
+    // positive: "#a4c969",
+    negative: theme.palette.error.main,
+  };
   const hierarchy = useMemo(() => {
     return d3.hierarchy(data).sum((d) => d.value);
   }, [data]);
@@ -37,55 +38,12 @@ export const Treemap = ({ width, height, data }) => {
     return treeGenerator(hierarchy);
   }, [hierarchy]);
 
-  const showTooltip = (event, data) => {
-    event.stopPropagation();
-    const tooltip = d3.select(tooltipRef.current);
-    tooltip.style("visibility", "visible").html(`
-        <div style="width: 200px;"><h4 style="margin: 2px">${data.name
-      }</h4></div>
-        <hr>
-        <div style="display: flex; flex-direction: row; width: fit-content; height: fit-content;">
-          <ul style="list-style-type: none; margin: 0; padding: 0; width: 200px;">
-            <li style="display: flex; justify-content: space-between; margin: 0; padding: 0; margin-bottom: 0;">
-              <p>In your portfolio</p>
-              <p>${data.percentageOfPortfolio}%</p>
-            </li>
-            <li style="display: flex; justify-content: space-between; margin: 0; padding: 0; margin-bottom: 0;">
-            <p>Avarage share price:</p>
-            <p>${data.avgSharePrice}$</p>
-          </li>
-            <li style="display: flex; justify-content: space-between; margin: 0; padding: 0; margin-bottom: 0;">
-              <p>Value (${data.quantity} shares)</p>
-              <p>${data.value.toLocaleString("en-US")}$</p>
-            </li>
-            <li style="display: flex; justify-content: space-between; margin: 0; padding: 0; margin-bottom: 0;">
-              <p>Last price</p>
-              <p>${data.last_price}$</p>
-            </li>
-          </ul>
-        </div>
-      `);
-  };
-
-  const mousemove = (event) => {
-    const tooltip = d3.select(tooltipRef.current);
-    tooltip
-      .style("top", `${event.pageY + 10}px`)
-      .style("left", `${event.pageX + 10}px`);
-  };
-
-  const hideTooltip = () => {
-    const tooltip = d3.select(tooltipRef.current);
-    tooltip.style("visibility", "hidden");
-  };
-
-
   const navigateToStockPage = (data) => {
     navigate(`/portfolio/${data.ticker}`, {
       state: {
-        quantity: data.quantity, percentageOfPortfolio
-          : data.percentageOfPortfolio
-      }
+        quantity: data.quantity,
+        percentageOfPortfolio: data.percentageOfPortfolio,
+      },
     });
   };
 
@@ -94,53 +52,64 @@ export const Treemap = ({ width, height, data }) => {
     const centerX = (leaf.x0 + leaf.x1) / 2;
     const centerY = (leaf.y0 + leaf.y1) / 2;
 
+    const {
+      ticker,
+      quantity,
+      percentageOfPortfolio,
+      avgSharePrice,
+      value,
+      last_price,
+    } = leaf.data;
+
     return (
-      <g
-        key={i}
-        className="rectangle"
-        onMouseOver={(event) => showTooltip(event, leaf.data)}
-        onMouseMove={(event) => mousemove(event, leaf.data)}
-        onMouseOut={hideTooltip}
+      <TreeMapTooltip
+        percentageOfPortfolio={percentageOfPortfolio}
+        quantity={quantity}
+        ticker={ticker}
+        last_price={last_price}
+        avgSharePrice={avgSharePrice}
+        value={value}
       >
-        <rect
-          x={leaf.x0}
-          y={leaf.y0}
-          width={leaf.x1 - leaf.x0}
-          height={leaf.y1 - leaf.y0}
-          stroke="transparent"
-          fill={colorScale(parentName)}
-          className={"opacity-80 hover:opacity-100"}
-          onClick={() => navigateToStockPage(leaf.data)}
-        />
-        <text
-          x={centerX}
-          y={centerY - 6}
-          fontSize={12}
-          textAnchor="middle"
-          alignmentBaseline="middle"
-          fill="white"
-          className="font-bold"
-        >
-          {leaf.data.ticker}
-        </text>
-        <text
-          x={centerX}
-          y={centerY + 6}
-          fontSize={12}
-          textAnchor="middle"
-          alignmentBaseline="middle"
-          fill="white"
-          className="font-light"
-        >
-          {leaf.data.priceChangePercentage}%
-        </text>
-      </g>
+        <g key={i} className="rectangle">
+          <rect
+            x={leaf.x0}
+            y={leaf.y0}
+            width={leaf.x1 - leaf.x0}
+            height={leaf.y1 - leaf.y0}
+            stroke="transparent"
+            fill={colorScale(parentName)}
+            className={"opacity-80 hover:opacity-100"}
+            onClick={() => navigateToStockPage(leaf.data)}
+          />
+          <text
+            x={centerX}
+            y={centerY - 6}
+            fontSize={12}
+            textAnchor="middle"
+            alignmentBaseline="middle"
+            fill="white"
+            className="font-bold"
+          >
+            {leaf.data.ticker}
+          </text>
+          <text
+            x={centerX}
+            y={centerY + 6}
+            fontSize={12}
+            textAnchor="middle"
+            alignmentBaseline="middle"
+            fill="white"
+            className="font-light"
+          >
+            {leaf.data.priceChangePercentage}%
+          </text>
+        </g>
+      </TreeMapTooltip>
     );
   });
 
   return (
     <div>
-      <div ref={tooltipRef} className="tooltip" />
       <svg width={width} height={height} className="container">
         {allShapes}
       </svg>
