@@ -56,7 +56,6 @@ export const Treemap = ({ width, height, data }) => {
       ticker,
       quantity,
       percentageOfPortfolio,
-      priceChangePercentage,
       avgSharePrice,
       value,
       last_price,
@@ -65,7 +64,6 @@ export const Treemap = ({ width, height, data }) => {
     return (
       <TreeMapTooltip
         percentageOfPortfolio={percentageOfPortfolio}
-        priceChangePercentage={priceChangePercentage}
         quantity={quantity}
         ticker={ticker}
         last_price={last_price}

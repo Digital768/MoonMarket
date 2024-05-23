@@ -6,7 +6,6 @@ function TreeMapTooltip({
   ticker,
   quantity,
   percentageOfPortfolio,
-  priceChangePercentage,
   value,
   last_price,
   avgSharePrice,
