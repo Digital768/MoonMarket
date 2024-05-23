@@ -1,12 +1,10 @@
-import { useMemo, useRef } from "react";
-import * as React from "react";
-import * as d3 from "d3";
 import "@/styles/Treemap.css";
-import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material";
-import Tooltip from "@mui/material/Tooltip";
+import * as d3 from "d3";
+import { useMemo, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 // import { Typography } from '@mui/material';
-import TooltipContent from "@/components/Tooltip";
+import TreeMapTooltip from "@/components/TreeMapTooltip";
 
 export const Treemap = ({ width, height, data }) => {
   const navigate = useNavigate();
@@ -54,22 +52,25 @@ export const Treemap = ({ width, height, data }) => {
     const centerX = (leaf.x0 + leaf.x1) / 2;
     const centerY = (leaf.y0 + leaf.y1) / 2;
 
+    const {
+      ticker,
+      quantity,
+      percentageOfPortfolio,
+      priceChangePercentage,
+      avgSharePrice,
+      value,
+      last_price,
+    } = leaf.data;
+
     return (
-      <Tooltip
-        followCursor
-        title={<TooltipContent data={leaf.data} />}
-        slotProps={{
-          popper: {
-            modifiers: [
-              {
-                name: "offset",
-                options: {
-                  offset: [0, 14],
-                },
-              },
-            ],
-          },
-        }}
+      <TreeMapTooltip
+        percentageOfPortfolio={percentageOfPortfolio}
+        priceChangePercentage={priceChangePercentage}
+        quantity={quantity}
+        ticker={ticker}
+        last_price={last_price}
+        avgSharePrice={avgSharePrice}
+        value={value}
       >
         <g key={i} className="rectangle">
           <rect
@@ -105,7 +106,7 @@ export const Treemap = ({ width, height, data }) => {
             {leaf.data.priceChangePercentage}%
           </text>
         </g>
-      </Tooltip>
+      </TreeMapTooltip>
     );
   });
 
