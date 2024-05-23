@@ -4,6 +4,8 @@ import "@/styles/index.css";
 import Routes from "./Routes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AuthProvider from "@/pages/AuthProvider.jsx";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { darkTheme } from "./theme";
 
 const queryClient = new QueryClient();
 
@@ -11,9 +13,12 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Routes />
-      </AuthProvider>
+      <ThemeProvider theme={darkTheme}>
+        <AuthProvider>
+          <CssBaseline />
+          <Routes />
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );

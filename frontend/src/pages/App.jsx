@@ -54,14 +54,14 @@ function App() {
 
 
 
-  useEffect(() => {
-    console.log(fetcher.data)
-    if (data) {
-      console.log("Data updated:", data);
-    } else {
-      console.log("No data");
-    }
-  }, [data, fetcher.data]);
+  // useEffect(() => {
+  //   console.log(fetcher.data)
+  //   if (data) {
+  //     console.log("Data updated:", data);
+  //   } else {
+  //     console.log("No data");
+  //   }
+  // }, [data, fetcher.data]);
 
   return (
     <div className="App">

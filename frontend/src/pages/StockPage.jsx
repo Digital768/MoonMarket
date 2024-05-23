@@ -128,9 +128,9 @@ function StockPage() {
             />
           </Box>
           <Box className="card-details">
-            <h3>stock price is {stockData.price}$</h3>
-            <h3>number of shares owned : {location.state.quantity}</h3>
-            <h3>Part of portfolio; {location.state.percentageOfPortfolio}%</h3>
+            <h4>stock price is {stockData.price}$</h4>
+            <h4>number of shares owned : {location.state.quantity}</h4>
+            <h4>Part of portfolio: {location.state.percentageOfPortfolio}%</h4>
           </Box>
         </Box>
 
@@ -160,21 +160,9 @@ function StockPage() {
           <DescriptionText showMore={isShowMore}>
             Description: {stockData.description}
           </DescriptionText>
-          <button
-            style={{
-              float: "left",
-              borderRadius: "5px",
-              border: "none",
-              marginTop: "5px",
-              cursor: "pointer",
-              height:'1.5em',
-              backgroundColor:'transparent',
-              color:'whitesmoke'
-            }}
-            onClick={toggleReadMore}
-          >
+          <Button variant="text" onClick={toggleReadMore}>
             {isShowMore ? "SHOW MORE" : "SHOW LESS"}
-          </button>
+          </Button>
           {/* todo: find a way to limit the description to X rows */}
         </Box>
       </Card>
