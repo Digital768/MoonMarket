@@ -69,6 +69,7 @@ export const Treemap = ({ width, height, data }) => {
         last_price={last_price}
         avgSharePrice={avgSharePrice}
         value={value}
+        key={i}
       >
         <g key={i} className="rectangle">
           <rect

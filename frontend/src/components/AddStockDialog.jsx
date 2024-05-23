@@ -19,10 +19,6 @@ export default function AddStockDialog({ stock, token }) {
   const { mutateAsync: addStockMutation } = useMutation({
     mutationFn: ({ portfolioStock, price, quantity, token }) =>
       addStockToPortfolio(portfolioStock, price, quantity, token),
-    // onSuccess: () => {
-    //   queryClient.invalidateQueries({queryKey: ["user"]})
-    // }
-    //NOT SURE IF WORKING
   });
 
   const {

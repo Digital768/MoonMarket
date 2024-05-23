@@ -4,8 +4,8 @@ import "@/styles/App.css";
 import SharesDialog from "@/components/SharesDialog.jsx";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
-import PortfolioStockSkeleton from "@/Skeletons/PortfolioStockSkeleton.jsx";
 import { addUserPurchase, addUserSale } from "@/api/user";
+import {getStockFromPortfolio} from "@/api/stock";
 import { useAuth } from "@/pages/AuthProvider";
 import { useLocation } from "react-router-dom";
 import Card from "@mui/material/Card";
@@ -21,6 +21,12 @@ const DescriptionText = styled.div`
   margin-bottom: 5px;
   ${({ showMore }) => showMore && ellipsis(undefined, 3)}
 `;
+
+
+export async function loader(ticker, token) {
+  const stock = await getStockFromPortfolio(ticker, token);
+  return stock;
+}
 
 function StockPage() {
   const navigate = useNavigate();

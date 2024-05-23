@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "@/styles/App.css";
-import { useParams } from "react-router-dom";
 import AddStockDialog from "@/components/AddStockDialog.jsx";
-import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
-import SearchStockSkeleton from "@/Skeletons/SearchStockSkeleton";
 import { useAuth } from "@/pages/AuthProvider";
 import { ellipsis } from 'polished';
 import styled from 'styled-components';
 import { Box } from "@mui/material";
 import { useLoaderData } from "react-router-dom";
+import { getStockData } from '@/api/stock'
+import Button from '@mui/material/Button';
+
 
 
 const DescriptionText = styled.div`
@@ -19,7 +19,10 @@ const DescriptionText = styled.div`
   ${({ showMore }) => showMore && ellipsis(undefined, 3)}
 `;
 
-
+export async function loader(ticker, token) {
+  const stock = await getStockData(ticker, token);
+  return stock;
+}
 
 function StockItem() {
   const { token } = useAuth();
@@ -105,9 +108,9 @@ function StockItem() {
               </Box>
               <Box className='description'>
                 <DescriptionText showMore={isShowMore}>{stockData.description}</DescriptionText>
-                <button style={{ float: "right", borderRadius: '10px', border: 'none', marginTop: '10px', cursor: 'pointer' }} onClick={toggleReadMore}>
-                  {isShowMore ? "Show more..." : "Show less"}
-                </button>
+                <Button variant="text" onClick={toggleReadMore} sx={{float: "right"}}>
+                  {isShowMore ? "SHOW MORE" : "SHOW LESS"}
+                </Button>
                 <div className="addStockBox" style={{ marginTop: '20px' }}>
                   <AddStockDialog stock={stockData} token={token}></AddStockDialog>
                 </div>

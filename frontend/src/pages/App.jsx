@@ -4,8 +4,11 @@ import SearchBar from "@/components/SearchBar.jsx";
 import { Treemap } from "@/components/Treemap";
 import useTreeMapData from "@/hooks/useTreeMapData";
 import { useAuth } from "@/pages/AuthProvider";
-import { updateStockPrice } from '@/api/stock'
 import {getUserData} from '@/api/user'
+import { useFetcher, useLoaderData } from "react-router-dom";
+import {calculateUserInfo} from '@/utils/dataProcessing'
+import { Button } from "@mui/material";
+import ShowChartIcon from '@mui/icons-material/ShowChart';
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -28,7 +31,7 @@ export const action = async ({ request }) => {
 
     results.forEach((result, index) => {
       if (result.status === "fulfilled") {
-        console.log(`Successfully updated ${tickers[index]}:`, result.value);
+        // console.log(`Successfully updated ${tickers[index]}:`, result.value);
       } else {
         console.error(`Failed to update ${tickers[index]}:`, result.reason);
       }
@@ -42,7 +45,7 @@ export const action = async ({ request }) => {
 }
 
 export const loader = (token) => async () => {
-  console.log("loader activated")
+  // console.log("loader activated")
   const user = await getUserData(token)
   // console.log("user: " , user.data)
   return user
@@ -68,9 +71,9 @@ function App() {
     <div className="App">
       <SearchBar />
       <div className="navbar">
-        <p>{" deposit: " + deposit.toLocaleString("en-US")}$</p>
-        <p>{"total value: " + value.toLocaleString("en-US")}$</p>
-        <p>{"last updated at: " + formattedDate}</p>
+        <p>{" Deposit: " + deposit.toLocaleString("en-US")}$</p>
+        <p>{"Total Value: " + value.toLocaleString("en-US")}$</p>
+        <p>{"Last Updated at: " + formattedDate}</p>
         <fetcher.Form method="post">
           <input type="hidden" name="tickers" value={stockTickers.join(",")} />
           <input type="hidden" name="token" value={token} />

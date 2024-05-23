@@ -3,12 +3,10 @@ import { useAuth } from "@/pages/AuthProvider";
 import { ProtectedRoute } from "@/pages/ProtectedRoute";
 import App, { action as appAction, loader as appLoader } from '@/pages/App';
 import ErrorPage from '@/pages/ErrorPage';
-import StockPage from '@/pages/StockPage';
-import StockItem from '@/pages/StockItem';
+import StockPage, { loader as stockPageLoader } from '@/pages/StockPage';
+import StockItem, {loader as stockItemLoader} from '@/pages/StockItem';
 import Login from "@/pages/Login";
 import Logout from "@/pages/Logout";
-import { getUserData } from '@/api/user'
-import { getStockFromPortfolio, getStockData } from '@/api/stock'
 import { PublicRoute } from '@/pages/PublicRoute'
 
 const Routes = () => {
@@ -31,20 +29,18 @@ const Routes = () => {
           path: "portfolio/:stockTicker",
           element: <StockPage />,
           errorElement: <ErrorPage />,
-          loader: ({ params }) => {
-            return getStockFromPortfolio(params.stockTicker, token)
-          }
+          loader: async ({ params }) => { return stockPageLoader(params.stockTicker, token) }
         },
         {
           path: "/logout",
-          element: <Logout  />,
+          element: <Logout />,
         },
         {
           path: "stock/:stockTicker",
           element: <StockItem />,
           errorElement: <ErrorPage />,
           loader: ({ params }) => {
-            return getStockData(params.stockTicker, token)
+            return stockItemLoader(params.stockTicker, token)
           }
         }
       ]
