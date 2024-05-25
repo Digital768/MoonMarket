@@ -1,6 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { useAuth } from "@/pages/AuthProvider";
-import { ProtectedRoute } from "@/pages/ProtectedRoute";
+import { ProtectedRoute, loader as ProtectedRouteLoader } from "@/pages/ProtectedRoute";
 import App, { action as appAction, loader as appLoader } from '@/pages/App';
 import ErrorPage from '@/pages/ErrorPage';
 import StockPage, { loader as stockPageLoader } from '@/pages/StockPage';
@@ -17,6 +17,7 @@ const Routes = () => {
     {
       path: "/",
       element: <ProtectedRoute />,
+      loader: ProtectedRouteLoader(token),
       errorElement: <ErrorPage />,
       children: [
         {

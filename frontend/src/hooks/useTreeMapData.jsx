@@ -11,7 +11,7 @@ function useTreeMapData(data) {
   const [value, setValue] = useState(0)
 
   useEffect(() => {
-    if (data) {
+    if (data) { 
       async function processData() {
         const { newStocksTree, tickers, sum } = await processTreemapData(
           data.data,

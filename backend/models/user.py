@@ -71,15 +71,13 @@ class UserRegister(BaseModel):
     email: EmailStr
     password: str
     deposit: float | None = 0
+    first_name: str | None = None
+    last_name: str | None = None
         
 class UserUpdate(BaseModel):
     """Updatable user fields."""
 
     email: EmailStr | None = None
-
-    # User information
-    first_name: str | None = None
-    last_name: str | None = None
     deposit: float | None = 0
     Purchases: List[Purchase] = []
     sales: List[Sale] = []
@@ -92,6 +90,13 @@ class UserOut(UserUpdate):
 
     email: Annotated[str, Indexed(EmailStr, unique=True)]
     disabled: bool = False
+    first_name: str | None = None
+    last_name: str | None = None
+    deposit: float | None = 0
+    Purchases: List[Purchase] = []
+    sales: List[Sale] = []
+    holdings: List[Holding] = []
+    last_refresh: datetime | None = None
 
 class User(Document, UserOut):
     """User DB representation."""

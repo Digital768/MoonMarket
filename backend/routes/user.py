@@ -17,6 +17,11 @@ async def get_user(user: User = Depends(current_user)):  # type: ignore[no-untyp
     """Return the current user."""
     return user
 
+@router.get("/name")
+async def get_user_name(user: User = Depends(current_user)): 
+    """Return the current user first name."""
+    return user.first_name
+
 
 @router.patch("/update", response_model=UserOut)
 async def update_user(update: UserUpdate, user: User = Depends(current_user)):  # type: ignore[no-untyped-def]

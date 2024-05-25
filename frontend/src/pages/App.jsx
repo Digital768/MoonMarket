@@ -4,11 +4,12 @@ import SearchBar from "@/components/SearchBar.jsx";
 import { Treemap } from "@/components/Treemap";
 import useTreeMapData from "@/hooks/useTreeMapData";
 import { useAuth } from "@/pages/AuthProvider";
-import {getUserData} from '@/api/user'
+import { getUserData } from '@/api/user'
 import { useFetcher, useLoaderData } from "react-router-dom";
-import {calculateUserInfo} from '@/utils/dataProcessing'
+import { calculateUserInfo } from '@/utils/dataProcessing'
 import { Button } from "@mui/material";
 import ShowChartIcon from '@mui/icons-material/ShowChart';
+import { useEffect } from "react";
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -59,13 +60,8 @@ function App() {
   const { deposit, formattedDate } = calculateUserInfo(data);
 
   // useEffect(() => {
-  //   console.log(fetcher.data)
-  //   if (data) {
-  //     console.log("Data updated:", data);
-  //   } else {
-  //     console.log("No data");
-  //   }
-  // }, [data, fetcher.data]);
+  //   console.log("visualizationData is: ", visualizationData)
+  // }, [data, visualizationData]);
 
   return (
     <div className="App">
@@ -87,7 +83,7 @@ function App() {
         </fetcher.Form>
       </div>
       <div className="portfolio">
-        {!visualizationData ? (
+        {!visualizationData || visualizationData.children.length === 0 ? (
           <TreeMapSkeleton />
         ) : (
           <Treemap data={visualizationData} width={1000} height={600} />

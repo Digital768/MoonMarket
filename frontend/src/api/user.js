@@ -11,6 +11,16 @@ export async function getUserData(token) {
   return user;
 }
 
+export async function getUserName(token) {
+  
+  const userName = await axios.get("http://localhost:8000/user/name", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return userName;
+}
+
 export async function loginUser(email, password) {
   const response = await axios.post("http://localhost:8000/auth/login", {
     email,

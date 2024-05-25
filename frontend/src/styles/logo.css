@@ -1,6 +1,11 @@
 .logo-row{
     padding-top: 25px;
-    text-align: right
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin: auto;
   }
   
   .logo{
@@ -16,3 +21,4 @@
   .logo:visited{
     color: whitesmoke;
   }
+
