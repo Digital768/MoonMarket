@@ -17,6 +17,7 @@ const Routes = () => {
     {
       path: "/",
       element: <ProtectedRoute />,
+      errorElement: <ErrorPage />,
       children: [
         {
           path: '/portfolio',
@@ -48,10 +49,12 @@ const Routes = () => {
     {
       path: "/login",
       element: <PublicRoute />,
+      errorElement: <ErrorPage />,
       children: [
         {
           path: "/login",
           element: <Login />,
+          errorElement: <ErrorPage />,
         },
       ],
     },
