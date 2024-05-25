@@ -154,7 +154,7 @@ function StockPage() {
           className={`break-words text-xl ${!isShowingMore && "line-clamp-3"}`}
           sx={{ color: "whitesmoke" }}
         >
-          Description: {stockData.description}
+         {stockData.description}
         </Box>
         {isTruncated && (
           <Button onClick={toggleIsShowingMore} variant="text">
