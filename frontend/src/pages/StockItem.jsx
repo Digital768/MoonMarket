@@ -1,23 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "@/styles/App.css";
 import AddStockDialog from "@/components/AddStockDialog.jsx";
 import Card from "@mui/material/Card";
 import { useAuth } from "@/pages/AuthProvider";
-import { ellipsis } from 'polished';
-import styled from 'styled-components';
 import { Box } from "@mui/material";
 import { useLoaderData } from "react-router-dom";
 import { getStockData } from '@/api/stock'
 import Button from '@mui/material/Button';
+import useTruncatedElement from '@/hooks/showMoreText'
 
 
 
-const DescriptionText = styled.div`
-  font-size: 14px;
-  margin-top: 20px;
-  margin-bottom: 5px;
-  ${({ showMore }) => showMore && ellipsis(undefined, 3)}
-`;
 
 export async function loader(ticker, token) {
   const stock = await getStockData(ticker, token);
@@ -28,11 +21,13 @@ function StockItem() {
   const { token } = useAuth();
   const data = useLoaderData();
   const [stockData, setStockData] = useState(null);
-
-  const [isShowMore, setIsShowMore] = useState(true);
-  const toggleReadMore = () => setIsShowMore(show => !show);
+  const ref = useRef(null);
 
 
+  const { isTruncated, isShowingMore, toggleIsShowingMore } = useTruncatedElement({
+    ref,
+    dependency: stockData?.description
+  });
 
   useEffect(() => {
     if (data) {
@@ -107,10 +102,18 @@ function StockItem() {
                 </Box>
               </Box>
               <Box className='description'>
-                <DescriptionText showMore={isShowMore}>{stockData.description}</DescriptionText>
-                <Button variant="text" onClick={toggleReadMore} sx={{float: "right"}}>
-                  {isShowMore ? "SHOW MORE" : "SHOW LESS"}
-                </Button>
+                <Box
+                  ref={ref}
+                  className={`break-words text-xl ${!isShowingMore && "line-clamp-3"}`}
+                  sx={{ color: "whitesmoke" }}
+                >
+                  Description: {stockData.description}
+                </Box>
+                {isTruncated && (
+                  <Button onClick={toggleIsShowingMore} variant="text" sx={{float:'right'}}>
+                    {isShowingMore ? "Show less" : "Show more"}
+                  </Button>
+                )}  
                 <div className="addStockBox" style={{ marginTop: '20px' }}>
                   <AddStockDialog stock={stockData} token={token}></AddStockDialog>
                 </div>

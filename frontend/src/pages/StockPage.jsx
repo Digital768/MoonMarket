@@ -1,42 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { useParams } from "react-router-dom";
 import "@/styles/App.css";
 import SharesDialog from "@/components/SharesDialog.jsx";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import { addUserPurchase, addUserSale } from "@/api/user";
-import {getStockFromPortfolio} from "@/api/stock";
+import { getStockFromPortfolio } from "@/api/stock";
 import { useAuth } from "@/pages/AuthProvider";
 import { useLocation } from "react-router-dom";
 import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
-import { ellipsis } from "polished";
-import styled from "styled-components";
 import { useLoaderData } from "react-router-dom";
 import LoadingImage from "@/components/LoadingImage";
-
-const DescriptionText = styled.div`
-  font-size: 14px;
-  margin-top: 20px;
-  margin-bottom: 5px;
-  ${({ showMore }) => showMore && ellipsis(undefined, 3)}
-`;
-
+import useTruncatedElement from '@/hooks/showMoreText'
 
 export async function loader(ticker, token) {
   const stock = await getStockFromPortfolio(ticker, token);
   return stock;
 }
 
+
 function StockPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isShowMore, setIsShowMore] = useState(true);
-  const toggleReadMore = () => setIsShowMore((show) => !show);
-
+  const ref = useRef(null);
   const { token } = useAuth();
   const { stockTicker } = useParams();
-  const [dialogOpen, setdialogOpen] = useState(false);
+  const data = useLoaderData();
+
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [stockData, setStockData] = useState({});
   const [dialog, setDialog] = useState({
     title: "",
@@ -48,50 +40,47 @@ function StockPage() {
     token: token,
   });
 
-  const data = useLoaderData();
+  const { isTruncated, isShowingMore, toggleIsShowingMore } = useTruncatedElement({
+    ref,
+    dependency: stockData.description
+  });
 
-  function handleClose() {
-    setdialogOpen(false);
-  }
-
-  const handleAddClick = () => {
-    // event.stopPropagation(); // Prevent the parent
-    setdialogOpen(true);
-    setDialog((prevDialog) => {
-      const newDialog = {
-        ...prevDialog,
-        title: "Add shares",
-        text: "To add shares of the stock, please enter how many shares of the stock you bought and at which price.",
-        labelText: "Enter bought price",
-        function: addUserPurchase,
-        buttonText: "Add",
-        stock: data,
-      };
-      return newDialog;
-    });
-  };
-  const handleDecreaseClick = () => {
-    // event.stopPropagation(); // Prevent the parent
-    //TODO if the stock fully sold, navigate to portfolio page
-    setdialogOpen(true);
-    setDialog((prevDialog) => {
-      const newDialog = {
-        ...prevDialog,
-        title: "Sell shares",
-        text: "To sell shares of the stock, please enter how many shares of the stock you sold and at which price.",
-        labelText: "Enter sold price",
-        function: addUserSale,
-        buttonText: "Sell",
-        stock: data,
-      };
-      return newDialog;
-    });
-  };
   useEffect(() => {
     if (data) {
       setStockData(data);
     }
-  }, [data]);
+    console.log("isTruncated", isTruncated, "isShowingMore: " + isShowingMore);
+  }, [data, isTruncated, isShowingMore]);
+
+  function handleClose() {
+    setDialogOpen(false);
+  }
+
+  const handleAddClick = () => {
+    setDialogOpen(true);
+    setDialog((prevDialog) => ({
+      ...prevDialog,
+      title: "Add shares",
+      text: "To add shares of the stock, please enter how many shares of the stock you bought and at which price.",
+      labelText: "Enter bought price",
+      function: addUserPurchase,
+      buttonText: "Add",
+      stock: data,
+    }));
+  };
+
+  const handleDecreaseClick = () => {
+    setDialogOpen(true);
+    setDialog((prevDialog) => ({
+      ...prevDialog,
+      title: "Sell shares",
+      text: "To sell shares of the stock, please enter how many shares of the stock you sold and at which price.",
+      labelText: "Enter sold price",
+      function: addUserSale,
+      buttonText: "Sell",
+      stock: data,
+    }));
+  };
 
   return (
     <div>
@@ -121,10 +110,8 @@ function StockPage() {
           <Box className="card-title">
             <h2 style={{ marginBottom: "5px" }}>{stockData.name}</h2>
             <h4 style={{ marginTop: "0px", color: "#fff9" }}>
-              {" "}
               {stockData.ticker}
             </h4>
-
             <LoadingImage
               src={`https://financialmodelingprep.com/image-stock/${stockTicker}.png`}
               width="100"
@@ -134,9 +121,9 @@ function StockPage() {
             />
           </Box>
           <Box className="card-details">
-            <h4>stock price is {stockData.price}$</h4>
-            <h4>number of shares owned : {location.state.quantity}</h4>
-            <h4>Part of portfolio: {location.state.percentageOfPortfolio}%</h4>
+            <h4>Stock price: ${stockData.price}</h4>
+            <h4>Shares owned: {location.state.quantity}</h4>
+            <h4>Portfolio share: {location.state.percentageOfPortfolio}%</h4>
           </Box>
         </Box>
 
@@ -151,7 +138,6 @@ function StockPage() {
           }}
         >
           <Button variant="contained" onClick={handleAddClick}>
-            {" "}
             Buy
           </Button>
           <Button
@@ -162,15 +148,19 @@ function StockPage() {
             Sell
           </Button>
         </Box>
-        <Box className="description" sx={{ color: "whitesmoke" }}>
-          <DescriptionText showMore={isShowMore}>
-            Description: {stockData.description}
-          </DescriptionText>
-          <Button variant="text" onClick={toggleReadMore}>
-            {isShowMore ? "SHOW MORE" : "SHOW LESS"}
-          </Button>
-          {/* todo: find a way to limit the description to X rows */}
+
+        <Box
+          ref={ref}
+          className={`break-words text-xl ${!isShowingMore && "line-clamp-3"}`}
+          sx={{ color: "whitesmoke" }}
+        >
+          Description: {stockData.description}
         </Box>
+        {isTruncated && (
+          <Button onClick={toggleIsShowingMore} variant="text">
+            {isShowingMore ? "Show less" : "Show more"}
+          </Button>
+        )}
       </Card>
 
       {dialogOpen && (
@@ -180,14 +170,10 @@ function StockPage() {
           dialog={dialog}
           addUserPurchase={addUserPurchase}
           addUserSale={addUserSale}
-        ></SharesDialog>
+        />
       )}
     </div>
   );
 }
 
 export default StockPage;
-
-{
-  /* <PortfolioStockSkeleton /> */
-}
