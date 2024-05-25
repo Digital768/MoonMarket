@@ -8,6 +8,7 @@ import StockItem, {loader as stockItemLoader} from '@/pages/StockItem';
 import Login from "@/pages/Login";
 import Logout from "@/pages/Logout";
 import { PublicRoute } from '@/pages/PublicRoute'
+import Profile from "@/pages/Profile";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -26,6 +27,11 @@ const Routes = () => {
           errorElement: <ErrorPage />,
           loader: appLoader(token),
           action: appAction
+        },
+        {
+          path:'/profile',
+          element:<Profile/>,
+          errorElement: <ErrorPage />,
         },
         {
           path: "portfolio/:stockTicker",
