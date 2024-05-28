@@ -5,7 +5,13 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors:{
+        customTurquoise:{
+          400: '#049985',
+        }
+      }
+    },
   },
   plugins: [
  ],

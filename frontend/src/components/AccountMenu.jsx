@@ -12,8 +12,10 @@ import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/pages/AuthProvider";
 
 export default function AccountMenu({Letter}) {
+  const { clearToken } = useAuth();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -23,6 +25,12 @@ export default function AccountMenu({Letter}) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+    // Function to handle logout
+    const handleLogout = () => {
+      clearToken(); // Clear the authentication token
+      navigate("/login", { replace: true }); // Navigate to the home page ("/") with replace option set to true
+    };
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -80,7 +88,7 @@ export default function AccountMenu({Letter}) {
           <Avatar /> Profile
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

@@ -13,8 +13,8 @@ const ErrorPage = () => {
   console.error('Route Error:', error);
 
 
-  const handleClick = async () => {
-    await clearToken(); // Clear the authentication token
+  const handleClick =  () => {
+    clearToken(); // Clear the authentication token
     navigate('/login', { replace: true });
   };
   return (
