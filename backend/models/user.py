@@ -6,41 +6,7 @@ from beanie import Document, Indexed
 from pydantic import BaseModel, EmailStr
 from typing import List
 
-class Purchase(BaseModel):
-    ticker: str
-    name:str
-    price: float
-    quantity: float
-    purchased_date : datetime
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "ticker": "AAPL",
-                "name": "Apple",
-                "price": 100.0,
-                "quantity": 10, 
-                "purchased_date":"2024-04-30T08:24:12"
-            }
-        }
-
-class Sale(BaseModel):
-    ticker: str
-    name:str
-    price: float
-    quantity: float
-    sale_date: datetime
-
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "ticker": "AAPL",
-                "name": "Apple",
-                "price": 100.0,
-                "quantity": 10,
-                "sale_date": "2024-04-30T08:24:12"
-            }
-        }
 
 class Holding(BaseModel):
     ticker: str
@@ -79,8 +45,6 @@ class UserUpdate(BaseModel):
 
     email: EmailStr | None = None
     deposit: float | None = 0
-    Purchases: List[Purchase] = []
-    sales: List[Sale] = []
     holdings: List[Holding] = []
     last_refresh: datetime | None = None
 
@@ -93,8 +57,6 @@ class UserOut(UserUpdate):
     first_name: str | None = None
     last_name: str | None = None
     deposit: float | None = 0
-    Purchases: List[Purchase] = []
-    sales: List[Sale] = []
     holdings: List[Holding] = []
     last_refresh: datetime | None = None
 
