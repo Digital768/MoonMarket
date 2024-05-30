@@ -9,7 +9,11 @@ module.exports = {
       colors:{
         customTurquoise:{
           400: '#049985',
-        }
+        },
+        background: '#2B2B2B', // example background color
+        foreground: 'white', // example text color
+        primary: 'white',
+        secondary: 'black',
       }
     },
   },

@@ -19,9 +19,10 @@ import {
 export function TabsDemo() {
   return (
     <Tabs defaultValue="account" className="w-[400px]">
-      <TabsList className="grid w-full grid-cols-2">
+      <TabsList className="grid w-full grid-cols-3 bg-zinc-700">
         <TabsTrigger value="account">Account</TabsTrigger>
-        <TabsTrigger value="password">Password</TabsTrigger>
+        <TabsTrigger value="password">Settings</TabsTrigger>
+        <TabsTrigger value="activity">Activity</TabsTrigger>
       </TabsList>
       <TabsContent value="account">
         <Card>
@@ -42,7 +43,7 @@ export function TabsDemo() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button>Save changes</Button>
+            <Button variant="blackText">Save changes</Button>
           </CardFooter>
         </Card>
       </TabsContent>
@@ -65,8 +66,18 @@ export function TabsDemo() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button>Save password</Button>
+          <Button variant="blackText">Save changes</Button>
           </CardFooter>
+        </Card>
+      </TabsContent>
+      <TabsContent value="activity">
+        <Card>
+          <CardHeader>
+            <CardTitle>Logs</CardTitle>
+            <CardDescription>
+              see the logs of your actions in the account
+            </CardDescription>
+          </CardHeader>
         </Card>
       </TabsContent>
     </Tabs>
