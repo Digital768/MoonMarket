@@ -1,3 +1,5 @@
+from typing import List
+from bson import ObjectId
 from beanie import Document, Link
 from datetime import datetime
 from pydantic import BaseModel
@@ -47,11 +49,23 @@ class Transaction(Document):
         return log
 
     @classmethod
-    async def get_Transactions_by_user(cls, user_id: str) -> list["Transaction"]:
+    async def get_Transactions_by_user(cls, user_id: str) -> List["Transaction"]:
         """Retrieve all logs for a specific user."""
-        return await cls.find(cls.user_id == user_id).to_list()
+        user_object_id = ObjectId(user_id)
+        transactions = await cls.find(cls.user_id.id == user_object_id).to_list()
+        print(f"Found transactions for user {user_id}: {transactions}")
+        return transactions
+
 
     @classmethod
-    async def get_Transactions_by_type_and_user(cls, log_type: str, user_id: str) -> list["Transaction"]:
+    async def get_Transactions_by_type_and_user(cls, log_type: str, user_id: str) -> List["Transaction"]:
         """Retrieve all transactions of a specific type for a given user."""
-        return await cls.find((cls.type == log_type) & (cls.user_id == user_id)).to_list()
+        user_dbref = {"$ref": "User", "$id": ObjectId(user_id)}
+        transactions = await cls.find(
+            {"$and": [
+                {"type": log_type},
+                {"user_id": user_dbref}
+            ]}
+        ).to_list()
+        print(f"Found transactions for user {user_id} and type {log_type}: {transactions}")
+        return transactions

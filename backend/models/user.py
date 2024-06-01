@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Annotated, Any, Optional
 from beanie import Document, Indexed
 from pydantic import BaseModel, EmailStr
-from typing import List
+
 
 
 
@@ -45,7 +45,7 @@ class UserUpdate(BaseModel):
 
     email: EmailStr | None = None
     deposit: float | None = 0
-    holdings: List[Holding] = []
+    holdings: list[Holding] = []
     last_refresh: datetime | None = None
 
 
@@ -57,7 +57,7 @@ class UserOut(UserUpdate):
     first_name: str | None = None
     last_name: str | None = None
     deposit: float | None = 0
-    holdings: List[Holding] = []
+    holdings: list[Holding] = []
     last_refresh: datetime | None = None
 
 class User(Document, UserOut):
@@ -68,7 +68,7 @@ class User(Document, UserOut):
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"
-
+    
     def __str__(self) -> str:
         return self.email
 

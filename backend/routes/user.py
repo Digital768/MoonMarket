@@ -12,26 +12,24 @@ from models.transaction import Transaction
 router = APIRouter(prefix="/user", tags=["User"])
 
 
-@router.get("", response_model=UserOut)
+@router.get("", response_model=UserOut, operation_id="retrieve_user")
 async def get_user(user: User = Depends(current_user)):  # type: ignore[no-untyped-def]
     """Return the current user."""
     return user
 
-@router.get("/name")
+@router.get("/name", operation_id="retrieve_user_name")
 async def get_user_name(user: User = Depends(current_user)): 
     """Return the current user first name."""
     return user.first_name
 
-@router.get("/user_transactions")
+@router.get("/user_transactions", operation_id="retrieve_user_transactions")
 async def get_user_transactions(current_user: User = Depends(current_user)):
-
     # Retrieve transactions for the specified user ID
     transactions = await Transaction.get_Transactions_by_user(current_user.id)
-
     # Return the list of transactions
     return transactions
 
-@router.get("/user_transactions/{type}")
+@router.get("/user_transactions/{type}", operation_id="retrieve_user_transactions_by_type")
 async def get_user_transactions_by_type(type: str, current_user: User = Depends(current_user)):
 
     # Retrieve transactions for the specified user ID
@@ -40,8 +38,7 @@ async def get_user_transactions_by_type(type: str, current_user: User = Depends(
     return transactions
 
 
-
-@router.patch("/update", response_model=UserOut)
+@router.patch("/update", response_model=UserOut, operation_id="update_user_details")
 async def update_user(update: UserUpdate, user: User = Depends(current_user)):  # type: ignore[no-untyped-def]
     """Update allowed user fields."""
     fields = update.model_dump(exclude_unset=True)
@@ -55,7 +52,7 @@ async def update_user(update: UserUpdate, user: User = Depends(current_user)):  
     return user
 
 
-@router.delete("/delete")
+@router.delete("/delete", operation_id="delete_user_account")
 async def delete_user(
     auth: JwtAuthorizationCredentials = Security(access_security)
 ) -> Response:

@@ -30,7 +30,7 @@ router = APIRouter(prefix="/mail", tags=["Mail"])
 #     return Response(status_code=200)
 
 
-@router.post("/verify/{token}")
+@router.post("/verify/{token}", operation_id="verify_email_with_token")
 async def verify_email(token: str) -> Response:
     """Verify the user's email with the supplied token."""
     user = await user_from_token(token)
