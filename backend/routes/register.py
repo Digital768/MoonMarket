@@ -20,7 +20,7 @@ async def user_registration(user_register: UserRegister):  # type: ignore[no-unt
     if user is not None:
         raise HTTPException(409, "User with that email already exists")
     hashed = hash_password(user_register.password)
-    user = User(email=user_register.email, password=hashed, deposit = user_register.deposit, first_name=user_register.first_name, last_name=user_register.last_name)
+    user = User(email=user_register.email, password=hashed, deposit = user_register.deposit, username=user_register.username)
     await user.create()
     return user
 

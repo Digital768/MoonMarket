@@ -1,4 +1,4 @@
-from typing import List, Annotated
+from typing import  Annotated, List
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field
 

@@ -1,9 +1,10 @@
 """User models."""
 
 from datetime import datetime
-from typing import Annotated, Any, Optional
-from beanie import Document, Indexed
+from typing import Annotated, Any, Optional, List
+from beanie import Document, Indexed, PydanticObjectId
 from pydantic import BaseModel, EmailStr
+from bson import ObjectId
 
 
 
@@ -37,15 +38,15 @@ class UserRegister(BaseModel):
     email: EmailStr
     password: str
     deposit: float | None = 0
-    first_name: str | None = None
-    last_name: str | None = None
+    username: str 
         
 class UserUpdate(BaseModel):
     """Updatable user fields."""
 
     email: EmailStr | None = None
     deposit: float | None = 0
-    holdings: list[Holding] = []
+    holdings: List[Holding] = []
+    transactions: List[PydanticObjectId] = []  # Use PydanticObjectId for transactions
     last_refresh: datetime | None = None
 
 
@@ -54,10 +55,9 @@ class UserOut(UserUpdate):
 
     email: Annotated[str, Indexed(EmailStr, unique=True)]
     disabled: bool = False
-    first_name: str | None = None
-    last_name: str | None = None
+    username: str
     deposit: float | None = 0
-    holdings: list[Holding] = []
+    holdings: List[Holding] = []
     last_refresh: datetime | None = None
 
 class User(Document, UserOut):

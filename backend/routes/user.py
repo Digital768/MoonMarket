@@ -20,20 +20,21 @@ async def get_user(user: User = Depends(current_user)):  # type: ignore[no-untyp
 @router.get("/name", operation_id="retrieve_user_name")
 async def get_user_name(user: User = Depends(current_user)): 
     """Return the current user first name."""
-    return user.first_name
+    return user.username
 
 @router.get("/user_transactions", operation_id="retrieve_user_transactions")
 async def get_user_transactions(current_user: User = Depends(current_user)):
     # Retrieve transactions for the specified user ID
-    transactions = await Transaction.get_Transactions_by_user(current_user.id)
+    # transactions = await Transaction.get_Transactions_by_user(current_user.id)
+    transactions = await Transaction.find(Transaction.user_id.id == current_user.id).to_list()
     # Return the list of transactions
     return transactions
 
 @router.get("/user_transactions/{type}", operation_id="retrieve_user_transactions_by_type")
 async def get_user_transactions_by_type(type: str, current_user: User = Depends(current_user)):
-
     # Retrieve transactions for the specified user ID
-    transactions = await Transaction.get_Transactions_by_type_and_user(type, current_user.id)
+    # transactions = await Transaction.get_Transactions_by_type_and_user(type, current_user.id)
+    transactions = await Transaction.find(Transaction.user_id.id == current_user.id, Transaction.type == type).to_list()
     # Return the list of transactions
     return transactions
 

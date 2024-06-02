@@ -1,6 +1,7 @@
 import { postApiStock } from "@/api/stock";
 import { addUserPurchase, addStockToPortfolio } from "@/api/user";
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
@@ -13,7 +14,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import "@/styles/portfolio.css";
 
 export default function AddStockDialog({ stock, token }) {
-
   const queryClient = useQueryClient();
 
   const { mutateAsync: addStockMutation } = useMutation({
@@ -27,8 +27,8 @@ export default function AddStockDialog({ stock, token }) {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      price: stock.price.toFixed(2)
-    }
+      price: stock.price.toFixed(2),
+    },
   });
 
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ export default function AddStockDialog({ stock, token }) {
     description: stock.description,
     price: stock.price,
   });
-  const [serverError, setServerError] = useState(null)
+  const [serverError, setServerError] = useState(null);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -60,8 +60,8 @@ export default function AddStockDialog({ stock, token }) {
       handleClose();
       navigate("/portfolio");
     } catch (error) {
-      if(error.response.data.detail === "Insufficient funds"){
-        setServerError("ERROR! " +error.response.data.detail)
+      if (error.response.data.detail === "Insufficient funds") {
+        setServerError("ERROR! " + error.response.data.detail);
       }
       console.error("Error:", error);
     }
@@ -69,7 +69,11 @@ export default function AddStockDialog({ stock, token }) {
 
   return (
     <React.Fragment>
-      <Button variant="contained" onClick={handleClickOpen} sx={{marginLeft:'10px'}}>
+      <Button
+        variant="contained"
+        onClick={handleClickOpen}
+        sx={{ marginLeft: "10px" }}
+      >
         Add stock
       </Button>
       <Dialog open={open} onClose={handleClose}>
@@ -80,34 +84,31 @@ export default function AddStockDialog({ stock, token }) {
             the company you bought and at which price.
           </DialogContentText>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="price-row" >
-            <label>Enter bought price</label>
-            <input
-              {...register("price", {
-                required: "must be greater than 0",
-                min: 1,
-                valueAsNumber: true,
-              })}
-              type="number" 
-              step="any"
-              // value = {portfolioStock.price}
-              style={{marginLeft:'10px', marginRight:'10px'}}
-            />
-            {errors.price && <span>This field is required</span>}
+            <div className="price-row">
+              <label>Enter bought price</label>
+              <TextField
+                {...register("price", {
+                  required: "must be greater than 0",
+                  min: 1,
+                  valueAsNumber: true,
+                })}
+                type="number"
+                step="any"
+              />
+              {errors.price && <span>This field is required</span>}
             </div>
             <div className="quantity-row">
-            <label>Enter quantity</label>
-            <input
-              {...register("quantity", {
-                required: "must be greater than 0",
-                min: 1,
-                valueAsNumber: true,
-              })}
-              type="number"
-              style={{marginLeft:'10px', marginRight:'10px'}}
-            />
-            {errors.price && <span>This field is required</span>}
-            {serverError? <p>{serverError}</p>: null}
+              <label>Enter quantity</label>
+              <TextField
+                {...register("quantity", {
+                  required: "must be greater than 0",
+                  min: 1,
+                  valueAsNumber: true,
+                })}
+                type="number"
+              />
+              {errors.price && <span>This field is required</span>}
+              {serverError ? <p>{serverError}</p> : null}
             </div>
             <DialogActions>
               <Button variant="outlined" onClick={handleClose}>

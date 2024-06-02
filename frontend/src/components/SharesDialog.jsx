@@ -8,6 +8,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import "@/styles/portfolio.css";
+import TextField from "@mui/material/TextField";
 
 
 function SharesDialog({ handleClose, open, dialog,addUserPurchase, addUserSale }) {
@@ -64,7 +65,7 @@ function SharesDialog({ handleClose, open, dialog,addUserPurchase, addUserSale }
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="price-row" >
               <label>{dialog.labelText}</label>
-              <input
+              <TextField
                 {...register("price", {
                   required: "must be greater than 0",
                   min: 1,
@@ -78,7 +79,7 @@ function SharesDialog({ handleClose, open, dialog,addUserPurchase, addUserSale }
             </div>
             <div className="quantity-row">
               <label>Enter quantity of shares</label>
-              <input
+              <TextField
                 {...register("quantity", {
                   required: "must be greater than 0",
                   min: 1,
