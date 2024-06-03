@@ -93,11 +93,11 @@ function SharesDialog({
               </Typography>
             </Box>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
-              <Button variant="contained" type="submit">
-                {dialog.buttonText}
-              </Button>
               <Button variant="outlined" onClick={handleClose}>
                 Cancel
+              </Button>
+              <Button variant="contained" type="submit">
+                {dialog.buttonText}
               </Button>
             </Box>
           </Box>

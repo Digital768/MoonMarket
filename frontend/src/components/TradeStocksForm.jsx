@@ -78,11 +78,11 @@ function TradeStocksForm({ stock, token, cancelAction }) {
         </Typography>
       </Box>
       <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
-        <Button variant="contained" type="submit">
-          Add
-        </Button>
         <Button variant="outlined" onClick={cancelAction}>
           Cancel
+        </Button>
+        <Button variant="contained" type="submit">
+          Add
         </Button>
       </Box>
     </Box>
