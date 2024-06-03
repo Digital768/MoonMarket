@@ -15,10 +15,11 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
+import { DataTableDemo } from "./TransactionsTable"
 
-export function TabsDemo() {
+export function TabsDemo({data}) {
   return (
-    <Tabs defaultValue="account" className="w-[400px]">
+    <Tabs defaultValue="account" className="w-[1000px]">
       <TabsList className="grid w-full grid-cols-3 bg-zinc-700">
         <TabsTrigger value="account">Account</TabsTrigger>
         <TabsTrigger value="password">Settings</TabsTrigger>
@@ -78,6 +79,7 @@ export function TabsDemo() {
               see the logs of your actions in the account
             </CardDescription>
           </CardHeader>
+          <DataTableDemo data={data}/>
         </Card>
       </TabsContent>
     </Tabs>
