@@ -13,7 +13,7 @@ function LoadingImage({ ...props }) {
       {loading && <Skeleton variant="rounded" height={120} width={120} />}
       <img
         {...props}
-        style={{ display: loading ? "none" : "block", ...props.style }}
+        style={{ display: loading ? "none" : "block", ...props.style, marginTop:'5px' }}
         onLoad={handleImageLoad}
       />
     </>

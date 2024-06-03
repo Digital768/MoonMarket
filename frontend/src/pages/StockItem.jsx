@@ -5,29 +5,26 @@ import Card from "@mui/material/Card";
 import { useAuth } from "@/pages/AuthProvider";
 import { Box } from "@mui/material";
 import { useLoaderData } from "react-router-dom";
-import { getStockData } from '@/api/stock'
-import Button from '@mui/material/Button';
-import useTruncatedElement from '@/hooks/showMoreText'
-
-
-
+import { getStockData } from "@/api/stock";
+import Button from "@mui/material/Button";
+import useTruncatedElement from "@/hooks/showMoreText";
+import LoadingImage from "@/components/LoadingImage";
 
 export async function loader(ticker, token) {
   const stock = await getStockData(ticker, token);
   return stock;
 }
-
 function StockItem() {
   const { token } = useAuth();
   const data = useLoaderData();
   const [stockData, setStockData] = useState(null);
   const ref = useRef(null);
 
-
-  const { isTruncated, isShowingMore, toggleIsShowingMore } = useTruncatedElement({
-    ref,
-    dependency: stockData?.description
-  });
+  const { isTruncated, isShowingMore, toggleIsShowingMore } =
+    useTruncatedElement({
+      ref,
+      dependency: stockData?.description,
+    });
 
   useEffect(() => {
     if (data) {
@@ -58,11 +55,10 @@ function StockItem() {
     }
   }, [data]);
 
-
-
   return (
     <div className="layout">
-      <Card elevation={8}
+      <Card
+        elevation={8}
         sx={{
           width: 1300,
           p: 1,
@@ -70,52 +66,75 @@ function StockItem() {
           padding: 4,
           marginTop: "80px",
           bgcolor: "#423F3E",
-          color: 'whitesmoke'
+          color: "whitesmoke",
         }}
       >
-
         {stockData && (
           <>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Box className="card-header" sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '80%', margin: 'auto' }} >
-                <Box className="card-title">
-                  <h2 style={{ marginBottom: '5px' }}>
-                    {stockData.name}
-                  </h2>
-                  <h4 style={{ marginTop: '0px', color: '#fff9' }}> {stockData.ticker}</h4>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Box
+                className="card-header"
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  width: "60%",
+                  margin: "auto",
+                  marginBottom:'4em',
+                  alignItems: "center",
+                }}
+              >
+                <Box
+                  className="card-title"
+                  sx={{ display: "flex", flexDirection: "column", gap:1 }}
+                >
+                  <h2>{stockData.name}</h2>
+                  <h4 style={{color: "#fff9" }}>
+                    {stockData.ticker}
+                  </h4>
 
-                  <img
+                  <LoadingImage
                     src={stockData.imageUrl}
                     alt={stockData.ticker}
                     width="100"
                     height="100"
-                    className="stock-img"
                   />
                 </Box>
-                <Box className="card-details" sx={{}}>
+                <Box className="card-details">
                   <h3>Stock Price: {stockData.price}$</h3>
                   <h3>Stock Exchange: {stockData.exchange}</h3>
                   {/* <h3>Next Earnings date: {stockData.earningsAnnouncement}</h3> */}
                   <h3>Average 50 days price: {stockData.priceAvg50}$</h3>
-                  <h3>Stock's highest price this year: {stockData.yearHigh}$</h3>
+                  <h3>
+                    Stock's highest price this year: {stockData.yearHigh}$
+                  </h3>
                   <h3>Stock's lowest price this year: {stockData.yearLow}$</h3>
                 </Box>
               </Box>
-              <Box className='description'>
+              <Box className="description">
                 <Box
                   ref={ref}
-                  className={`break-words text-xl ${!isShowingMore && "line-clamp-3"}`}
+                  className={`break-words text-l ${
+                    !isShowingMore && "line-clamp-3"
+                  }`}
                   sx={{ color: "whitesmoke" }}
                 >
                   {stockData.description}
                 </Box>
                 {isTruncated && (
-                  <Button onClick={toggleIsShowingMore} variant="text" sx={{float:'right'}}>
+                  <Button
+                    onClick={toggleIsShowingMore}
+                    variant="text"
+                    sx={{ float: "right" }}
+                  >
                     {isShowingMore ? "Show less" : "Show more"}
                   </Button>
-                )}  
-                <div className="addStockBox" style={{ marginTop: '20px' }}>
-                  <AddStockDialog stock={stockData} token={token}></AddStockDialog>
+                )}
+                <div className="addStockBox" style={{ marginTop: "20px" }}>
+                  <AddStockDialog
+                    stock={stockData}
+                    token={token}
+                  ></AddStockDialog>
                 </div>
               </Box>
             </Box>

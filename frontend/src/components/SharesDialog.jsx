@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -9,38 +10,53 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import "@/styles/portfolio.css";
 import TextField from "@mui/material/TextField";
+import { transactionSchema } from "@/schemas/transaction";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-
-function SharesDialog({ handleClose, open, dialog,addUserPurchase, addUserSale }) {
+function SharesDialog({
+  handleClose,
+  open,
+  dialog,
+  addUserPurchase,
+  addUserSale,
+}) {
   const navigate = useNavigate();
-  const [serverError, setServerError] = useState(null)
+  const [serverError, setServerError] = useState(null);
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
-  } = useForm(
-    {
-      defaultValues: {
-        price: dialog.stock.price.toFixed(2)
-      }
-    }
-  );
+  } = useForm({
+    defaultValues: {
+      price: dialog.stock.price.toFixed(2),
+    },
+    resolver: zodResolver(transactionSchema),
+    criteriaMode: "all",
+  });
 
-
-  const onSubmit = async (data,event) => {
+  const onSubmit = async (data, event) => {
     event.preventDefault();
-
     try {
-        if (dialog.function === addUserPurchase) {
-          await dialog.function(data.price, dialog.stock.ticker, data.quantity, dialog.token);
-        } else if (dialog.function === addUserSale) {
-          await dialog.function(dialog.stock.ticker, data.quantity, data.price, dialog.token);
-        }
-        handleClose();
-        navigate("/portfolio");
+      if (dialog.function === addUserPurchase) {
+        const response = await dialog.function(
+          data.price,
+          dialog.stock.ticker,
+          data.quantity,
+          dialog.token
+        );
+      } else if (dialog.function === addUserSale) {
+        const response = await dialog.function(
+          dialog.stock.ticker,
+          data.quantity,
+          data.price,
+          dialog.token
+        );
+      }
+      navigate("/portfolio");
     } catch (error) {
-      if(error.response.data.detail === "Insufficient funds"){
-        setServerError("ERROR! " +error.response.data.detail)
+      if (error.response.status > 200) {
+        setServerError("ERROR! " + error.response.data.detail);
       }
       console.error("Error:", error);
     }
@@ -50,52 +66,41 @@ function SharesDialog({ handleClose, open, dialog,addUserPurchase, addUserSale }
   //   console.log(dialog)
   // },[])
 
-
   return (
     <React.Fragment>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-      >
+      <Dialog open={open} onClose={handleClose}>
         <DialogTitle>{dialog.title}</DialogTitle>
         <DialogContent className="addStockForm">
-          <DialogContentText>
-            {dialog.text}
-          </DialogContentText>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="price-row" >
+          <DialogContentText>{dialog.text}</DialogContentText>
+          <Box
+            component={"form"}
+            sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
               <label>{dialog.labelText}</label>
-              <TextField
-                {...register("price", {
-                  required: "must be greater than 0",
-                  min: 1,
-                  valueAsNumber: true,
-                })}
-                type="number" step="any"
-                // value = {dialog.stock.price}
-                style={{ marginLeft: '10px', marginRight: '10px' }}
-              />
-              {errors.price && <span>This field is required</span>}
-            </div>
-            <div className="quantity-row">
-              <label>Enter quantity of shares</label>
-              <TextField
-                {...register("quantity", {
-                  required: "must be greater than 0",
-                  min: 1,
-                  valueAsNumber: true,
-                })}
-                type="number" 
-                style={{ marginLeft: '10px', marginRight: '10px' }}
-              />
-              {errors.price && <span>This field is required</span>}
-              {serverError? <p>{serverError}</p>: null}
-            </div>
-            <DialogActions>
-              <Button onClick={handleClose}>Cancel</Button>
-              <Button variant="contained" type="submit">{dialog.buttonText}</Button>
-            </DialogActions>
-          </form>
+              <TextField {...register("price")} />
+              <Typography variant="body2" sx={{ color: "red" }}>
+                {errors.price?.message ?? null}
+              </Typography>
+            </Box>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <label>Enter quantity</label>
+              <TextField {...register("quantity")} />
+              <Typography variant="body2" sx={{ color: "red" }}>
+                {errors.quantity?.message ?? null}
+                {serverError}
+              </Typography>
+            </Box>
+            <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
+              <Button variant="contained" type="submit">
+                {dialog.buttonText}
+              </Button>
+              <Button variant="outlined" onClick={handleClose}>
+                Cancel
+              </Button>
+            </Box>
+          </Box>
         </DialogContent>
       </Dialog>
     </React.Fragment>

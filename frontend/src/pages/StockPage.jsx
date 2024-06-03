@@ -49,7 +49,7 @@ function StockPage() {
     if (data) {
       setStockData(data);
     }
-    console.log("isTruncated", isTruncated, "isShowingMore: " + isShowingMore);
+    // console.log("isTruncated", isTruncated, "isShowingMore: " + isShowingMore);
   }, [data, isTruncated, isShowingMore]);
 
   function handleClose() {
@@ -107,9 +107,9 @@ function StockPage() {
             margin: "auto",
           }}
         >
-          <Box className="card-title">
-            <h2 style={{ marginBottom: "5px" }}>{stockData.name}</h2>
-            <h4 style={{ marginTop: "0px", color: "#fff9" }}>
+          <Box className="card-title"  sx={{ display: "flex", flexDirection: "column", gap:1}}>
+            <h2>{stockData.name}</h2>
+            <h4 style={{  color: "#fff9" }}>
               {stockData.ticker}
             </h4>
             <LoadingImage
@@ -117,7 +117,6 @@ function StockPage() {
               width="100"
               height="100"
               alt={stockTicker}
-              className="stock-img"
             />
           </Box>
           <Box className="card-details">
@@ -151,7 +150,7 @@ function StockPage() {
 
         <Box
           ref={ref}
-          className={`break-words text-xl ${!isShowingMore && "line-clamp-3"}`}
+          className={`break-words text-l ${!isShowingMore && "line-clamp-3"}`}
           sx={{ color: "whitesmoke" }}
         >
          {stockData.description}

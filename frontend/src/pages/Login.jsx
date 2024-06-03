@@ -4,6 +4,7 @@ import { useAuth } from "./AuthProvider";
 import { useState } from 'react';
 import { loginUser, refreshJwtKey } from '@/api/user'
 import { useForm } from "react-hook-form";
+import { TextField } from '@mui/material';
 
 const Login = () => {
   const { setToken } = useAuth();
@@ -77,7 +78,7 @@ const Login = () => {
   return (
     <Form onSubmit={handleSubmit(onSubmit)} method='post' action='/login'>
       {error && <div style={{color:'white'}}>{error}</div>}
-      <input
+      <TextField
         {...register("email", {
           required: true
         })}
@@ -85,7 +86,7 @@ const Login = () => {
         placeholder="Email"
       />
 
-      <input
+      <TextField
         {...register("password", {
           required: true
         })}
