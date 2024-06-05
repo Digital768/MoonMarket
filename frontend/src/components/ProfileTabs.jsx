@@ -15,15 +15,20 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { DataTableDemo } from "./TransactionsTable"
+import { useEffect } from "react"
 
-export function TabsDemo({data}) {
+
+export function TabsDemo({username}) {
+
+  useEffect(()=>{
+    console.log(username)
+  },[])
+  
   return (
-    <Tabs defaultValue="account" className="w-[1000px]">
-      <TabsList className="grid w-full grid-cols-3 bg-zinc-700">
+    <Tabs defaultValue="account" className="w-[400px]">
+      <TabsList className="grid w-full grid-cols-2 bg-zinc-700">
         <TabsTrigger value="account">Account</TabsTrigger>
         <TabsTrigger value="password">Settings</TabsTrigger>
-        <TabsTrigger value="activity">Activity</TabsTrigger>
       </TabsList>
       <TabsContent value="account">
         <Card>
@@ -35,12 +40,8 @@ export function TabsDemo({data}) {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="space-y-1">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" defaultValue="Pedro Duarte" />
-            </div>
-            <div className="space-y-1">
               <Label htmlFor="username">Username</Label>
-              <Input id="username" defaultValue="@peduarte" />
+              <Input id="username" defaultValue={username} />
             </div>
           </CardContent>
           <CardFooter>
@@ -69,17 +70,6 @@ export function TabsDemo({data}) {
           <CardFooter>
           <Button variant="blackText">Save changes</Button>
           </CardFooter>
-        </Card>
-      </TabsContent>
-      <TabsContent value="activity">
-        <Card>
-          <CardHeader>
-            <CardTitle>Logs</CardTitle>
-            <CardDescription>
-              see the logs of your actions in the account
-            </CardDescription>
-          </CardHeader>
-          <DataTableDemo data={data}/>
         </Card>
       </TabsContent>
     </Tabs>

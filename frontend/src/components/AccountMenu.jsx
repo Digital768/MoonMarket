@@ -6,11 +6,9 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-import PersonAdd from '@mui/icons-material/PersonAdd';
-import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/pages/AuthProvider";
 
@@ -88,6 +86,14 @@ export default function AccountMenu({Letter}) {
           <Avatar /> Profile
         </MenuItem>
         <Divider />
+        <MenuItem onClick={()=>{
+          navigate('/transactions')
+        }}>
+          <ListItemIcon>
+            <AccountBalanceWalletIcon fontSize="small" />
+          </ListItemIcon>
+          Transactions
+        </MenuItem>
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />

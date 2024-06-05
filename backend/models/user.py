@@ -1,7 +1,7 @@
 """User models."""
 
 from datetime import datetime
-from typing import Annotated, Any, Optional, List
+from typing import Annotated, Any, Optional, List, Optional
 from beanie import Document, Indexed, PydanticObjectId
 from pydantic import BaseModel, EmailStr
 from bson import ObjectId
@@ -48,8 +48,9 @@ class UserUpdate(BaseModel):
     holdings: List[Holding] = []
     transactions: List[PydanticObjectId] = []  # Use PydanticObjectId for transactions
     last_refresh: datetime | None = None
-
-
+    username: Optional[str] = None
+    password: Optional[str] = None
+    
 class UserOut(UserUpdate):
     """User fields returned to the client."""
 
@@ -59,6 +60,7 @@ class UserOut(UserUpdate):
     deposit: float | None = 0
     holdings: List[Holding] = []
     last_refresh: datetime | None = None
+    transactions: List[PydanticObjectId] = []  # Use PydanticObjectId for transactions
 
 class User(Document, UserOut):
     """User DB representation."""

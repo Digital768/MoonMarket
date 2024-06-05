@@ -18,6 +18,7 @@ export const loader = (token) => async () => {
 export const ProtectedRoute = () => {
     const { token } = useAuth();
     const data = useLoaderData();
+    const username = data.data
     const firstLetter = data.data.charAt(0);
   // todo: need to check if the token is acutally valid and not just exist
     // Check if the user is authenticated
@@ -26,7 +27,7 @@ export const ProtectedRoute = () => {
       return <Navigate to="/login" replace={true}/>;
     }
 
-    // useEffect(() => {console.log(data);}, 
+    // useEffect(() => {console.log(username);}, 
     // [data]);
   
     // If authenticated, render the child routes

@@ -7,6 +7,8 @@ from models.user import User, UserOut, UserUpdate
 from jwt import access_security
 from util.current_user import current_user
 from models.transaction import Transaction
+from util.password import hash_password
+from bson import DBRef
 
 
 router = APIRouter(prefix="/user", tags=["User"])
@@ -30,7 +32,7 @@ async def get_user_transactions(current_user: User = Depends(current_user)):
     # Return the list of transactions
     return transactions
 
-@router.get("/user_transactions/{type}", operation_id="retrieve_user_transactions_by_type")
+@router.get("/user_transactions/{type}",response_model=UserOut, operation_id="retrieve_user_transactions_by_type")
 async def get_user_transactions_by_type(type: str, current_user: User = Depends(current_user)):
     # Retrieve transactions for the specified user ID
     # transactions = await Transaction.get_Transactions_by_type_and_user(type, current_user.id)
@@ -43,6 +45,9 @@ async def get_user_transactions_by_type(type: str, current_user: User = Depends(
 async def update_user(update: UserUpdate, user: User = Depends(current_user)):  # type: ignore[no-untyped-def]
     """Update allowed user fields."""
     fields = update.model_dump(exclude_unset=True)
+     # Check and hash the password if it's being updated
+    if "password" in fields:
+        fields["password"] = hash_password(fields["password"])
     if new_email := fields.pop("email", None):
         if new_email != user.email:
             if await User.by_email(new_email) is not None:
@@ -58,5 +63,16 @@ async def delete_user(
     auth: JwtAuthorizationCredentials = Security(access_security)
 ) -> Response:
     """Delete current user."""
-    await User.find_one(User.email == auth.subject["username"]).delete()
+    # Delete all transactions associated with the user
+    # Find the user
+    user = await User.find_one(User.email == auth.subject["username"])
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+     # Create a DBRef for the user
+    user_dbref = DBRef(collection="User", id=user.id)
+     # Find and delete transactions associated with the user
+    await Transaction.delete_many({"user_id": user_dbref})
+
+    # Delete the user
+    await user.delete()
     return Response(status_code=204)

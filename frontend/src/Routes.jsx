@@ -1,15 +1,20 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { useAuth } from "@/pages/AuthProvider";
-import { ProtectedRoute, loader as ProtectedRouteLoader } from "@/pages/ProtectedRoute";
-import App, { action as appAction, loader as appLoader } from '@/pages/App';
-import ErrorPage from '@/pages/ErrorPage';
-import StockPage, { loader as stockPageLoader } from '@/pages/StockPage';
-import StockItem, {loader as stockItemLoader} from '@/pages/StockItem';
+import {
+  ProtectedRoute,
+  loader as ProtectedRouteLoader,
+} from "@/pages/ProtectedRoute";
+import App, { action as appAction, loader as appLoader } from "@/pages/App";
+import ErrorPage from "@/pages/ErrorPage";
+import StockPage, { loader as stockPageLoader } from "@/pages/StockPage";
+import StockItem, { loader as stockItemLoader } from "@/pages/StockItem";
 import Login from "@/pages/Login";
 import Logout from "@/pages/Logout";
-import { PublicRoute } from '@/pages/PublicRoute'
-import Profile, {loader as profileLoader} from "@/pages/Profile";
-
+import { PublicRoute } from "@/pages/PublicRoute";
+import Profile from "@/pages/Profile";
+import Transactions, {
+  loader as transactionsLoader,
+} from "@/pages/Transactions";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -23,23 +28,31 @@ const Routes = () => {
       errorElement: <ErrorPage />,
       children: [
         {
-          path: '/portfolio',
+          path: "/portfolio",
           element: <App />,
           errorElement: <ErrorPage />,
           loader: appLoader(token),
-          action: appAction
+          action: appAction,
         },
         {
-          path:'/profile',
-          element:<Profile/>,
+          path: "/profile",
+          element: <Profile />,
           errorElement: <ErrorPage />,
-          loader: profileLoader(token),
+          loader: ProtectedRouteLoader(token),
+        },
+        {
+          path: "/transactions",
+          element: <Transactions />,
+          errorElement: <ErrorPage />,
+          loader: transactionsLoader(token),
         },
         {
           path: "portfolio/:stockTicker",
           element: <StockPage />,
           errorElement: <ErrorPage />,
-          loader: async ({ params }) => { return stockPageLoader(params.stockTicker, token) }
+          loader: async ({ params }) => {
+            return stockPageLoader(params.stockTicker, token);
+          },
         },
         {
           path: "/logout",
@@ -50,10 +63,10 @@ const Routes = () => {
           element: <StockItem />,
           errorElement: <ErrorPage />,
           loader: ({ params }) => {
-            return stockItemLoader(params.stockTicker, token)
-          }
-        }
-      ]
+            return stockItemLoader(params.stockTicker, token);
+          },
+        },
+      ],
     },
     {
       path: "/login",
