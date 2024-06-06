@@ -19,12 +19,12 @@ async def buy_stock_shares(price: float, ticker: str, quantity: int, user: User 
     # Calculate the total cost of the purchase
     total_cost = price * quantity
 
-    # Check if the user has enough deposit to buy the stock
-    if user.deposit < total_cost:
+    # Check if the user has enough money in the current_balance to buy the stock
+    if user.current_balance < total_cost:
         raise HTTPException(status_code=400, detail="Insufficient funds")
 
-    # Deduct the cost of the purchase from the user's deposit
-    user.deposit -= total_cost
+    # Deduct the cost of the purchase from the user's current_balance
+    user.current_balance -= total_cost
 
 
     # Update the user's holdings
@@ -98,8 +98,8 @@ async def sell_stock_shares(ticker: str, quantity: int, price: float, user: User
     # Calculate the total cost of the purchase
     profit = price * quantity
 
-    # add the profit to the user's deposit
-    user.deposit += profit
+    # add the profit to the user's current_balance
+    user.current_balance += profit
 
     # Create a new Transaction for the sale
     transaction = Transaction( user_id=str(user.id),  # Assuming user_id is stored as a string

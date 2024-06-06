@@ -3,11 +3,13 @@
 from datetime import datetime
 from typing import Annotated, Any, Optional, List, Optional
 from beanie import Document, Indexed, PydanticObjectId
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from bson import ObjectId
 
 
-
+class Deposit(BaseModel):
+    amount: float
+    date: datetime
 
 class Holding(BaseModel):
     ticker: str
@@ -37,16 +39,17 @@ class UserRegister(BaseModel):
 
     email: EmailStr
     password: str
-    deposit: float | None = 0
+    deposits: List[Deposit] = Field(..., min_items=1)  # At least one deposit required
     username: str 
         
 class UserUpdate(BaseModel):
     """Updatable user fields."""
 
     email: EmailStr | None = None
-    deposit: float | None = 0
     holdings: List[Holding] = []
     transactions: List[PydanticObjectId] = []  # Use PydanticObjectId for transactions
+    deposits: List[Deposit] | None = []
+    current_balance: float | None = 0
     last_refresh: datetime | None = None
     username: Optional[str] = None
     password: Optional[str] = None
@@ -57,10 +60,11 @@ class UserOut(UserUpdate):
     email: Annotated[str, Indexed(EmailStr, unique=True)]
     disabled: bool = False
     username: str
-    deposit: float | None = 0
+    deposits: List[Deposit] 
+    current_balance: float 
     holdings: List[Holding] = []
     last_refresh: datetime | None = None
-    transactions: List[PydanticObjectId] = []  # Use PydanticObjectId for transactions
+    transactions: List[PydanticObjectId] = []  # Use PydanticObjectId for transactions  
 
 class User(Document, UserOut):
     """User DB representation."""

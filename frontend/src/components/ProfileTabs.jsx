@@ -11,8 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useRef } from "react";
-import { Form, useNavigation  } from "react-router-dom";
-import { updateUsername, changePassword } from "@/api/user";
+import { Form, useNavigation } from "react-router-dom";
+import { updateUsername, changePassword, addDeposit } from "@/api/user";
 
 export async function action({ request }, token) {
   let formData = await request.formData();
@@ -27,25 +27,35 @@ export async function action({ request }, token) {
     const changedPassword = changePassword(oldPassword, newPassword, token);
     return changedPassword;
   }
+  if (intent === "Deposit") {
+    let money = formData.get("money");
+    const deposit  = addDeposit(money, token);
+    return deposit;
+  }
 }
 
 export function TabsDemo({ username }) {
-  const passwordFromRef = useRef(null);
+  const password = useRef(null);
+  const money = useRef(null);
   const navigation = useNavigation();
   const { state } = navigation;
 
-    useEffect(()=>{
-    if (state==="idle" && passwordFromRef.current){
-      passwordFromRef.current.reset();
+  useEffect(() => {
+    if (state === "idle" && password.current) {
+      password.current.reset();
     }
-  },[state, passwordFromRef])
+    if(state === "idle" && money.current){
+      money.current.reset();
+    }
+  }, [state, password, money])
 
 
   return (
     <Tabs defaultValue="account" className="w-[400px]">
-      <TabsList className="grid w-full grid-cols-2 bg-zinc-700">
+      <TabsList className="grid w-full grid-cols-3 bg-zinc-700">
         <TabsTrigger value="account">Account</TabsTrigger>
         <TabsTrigger value="password">Settings</TabsTrigger>
+        <TabsTrigger value="money">Money</TabsTrigger>
       </TabsList>
       <TabsContent value="account">
         <Card>
@@ -83,7 +93,7 @@ export function TabsDemo({ username }) {
               Change your password here.
             </CardDescription>
           </CardHeader>
-          <Form method="patch" ref={passwordFromRef}>
+          <Form method="patch" ref={password}>
             <CardContent className="space-y-2">
               <div className="space-y-1">
                 <Label htmlFor="current">Current password</Label>
@@ -97,6 +107,29 @@ export function TabsDemo({ username }) {
             <CardFooter>
               <Button variant="blackText" name="intent" value="password">
                 Save changes
+              </Button>
+            </CardFooter>
+          </Form>
+        </Card>
+      </TabsContent>
+      <TabsContent value="money">
+        <Card>
+          <CardHeader>
+            <CardTitle>Money</CardTitle>
+            <CardDescription>
+              Add deposit to your current balance
+            </CardDescription>
+          </CardHeader>
+          <Form method="post" ref={money}>
+            <CardContent className="space-y-2">
+              <div className="space-y-1">
+                <Label htmlFor="new">Amount of money</Label>
+                <Input id="new" type="number" name="money" />
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button variant="blackText" name="intent" value="Deposit">
+                Add
               </Button>
             </CardFooter>
           </Form>

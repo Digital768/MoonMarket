@@ -12,7 +12,7 @@ export async function getUserData(token) {
 }
 
 export async function getUserName(token) {
-  
+
   const userName = await axios.get("http://localhost:8000/user/name", {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -99,11 +99,11 @@ export async function addStockToPortfolio(
   );
 }
 
-export async function updateUsername(newUsername, token){
+export async function updateUsername(newUsername, token) {
   const UpdatePayload = {
     username: newUsername
   }
-  const response = await axios.patch("http://localhost:8000/user/update",UpdatePayload,{
+  const response = await axios.patch("http://localhost:8000/user/update", UpdatePayload, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -111,15 +111,35 @@ export async function updateUsername(newUsername, token){
   return response
 }
 
-export async function changePassword(oldPassword, newPassword, token){
+export async function changePassword(oldPassword, newPassword, token) {
   const passwordPayload = {
     password: oldPassword,
     new_password: newPassword
   }
-  const response = await axios.patch("http://localhost:8000/user/change_password",passwordPayload,{
+  const response = await axios.patch("http://localhost:8000/user/change_password", passwordPayload, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
   return response
+}
+
+export async function addDeposit(money, token) {
+  const currentDate = new Date().toISOString();
+  const depositPayload = {
+    amount: money,
+    date: currentDate
+  };
+  
+  try {
+    const response = await axios.post("http://localhost:8000/user/add_deposit", depositPayload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error adding deposit:", error);
+    throw error;
+  }
 }

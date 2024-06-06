@@ -58,9 +58,9 @@ function App() {
   const fetcher = useFetcher();
   const data = useLoaderData();
   const [stockTickers, visualizationData, value, moneySpent] = useTreeMapData(data);
-  const { deposit, formattedDate } = calculateUserInfo(data);
-  const incrementalChange = (value-moneySpent).toFixed(2)
-  const percentageChange = ((incrementalChange / value) * 100).toFixed(2);
+  const { current_balance, formattedDate } = calculateUserInfo(data);
+  const incrementalChange = (value-moneySpent)
+  const percentageChange = ((incrementalChange / value) * 100)
   // useEffect(() => {
   //   console.log("visualizationData is: ", visualizationData)
   // }, [data, visualizationData]);
@@ -69,13 +69,13 @@ function App() {
     <div className="App">
       <SearchBar />
       <div className="navbar">
-        <p>{" Deposit: " + deposit.toLocaleString("en-US")}$</p>
+        <p>{" Current balance: " + current_balance.toLocaleString("en-US")}$</p>
         <p>{"Total Value: " + value.toLocaleString("en-US")}$</p>
         <Box sx={{display:'flex', gap:1}}>
         <p>Incremental change:</p>
         <Box sx={{display:'flex', flexDirection:'column'}}>
-        <p>{incrementalChange}$</p>
-        <span style={{textAlign:'right'}}>{percentageChange}%</span>
+        <p>{incrementalChange.toLocaleString("en-US")}$</p>
+        <span style={{textAlign:'right'}}>{percentageChange.toLocaleString("en-US")}%</span>
         </Box>
         </Box>
         <Box sx={{display:'flex', flexDirection:'column', gap:1}}>

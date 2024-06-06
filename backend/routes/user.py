@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, Security
 from fastapi_jwt import JwtAuthorizationCredentials
 
-from models.user import User, UserOut, UserUpdate, PasswordChangeRequest
+from models.user import User, UserOut, UserUpdate, PasswordChangeRequest, Deposit
 from jwt import access_security
 from util.current_user import current_user
 from models.transaction import Transaction
@@ -25,20 +25,28 @@ async def get_user_name(user: User = Depends(current_user)):
     return user.username
 
 @router.get("/user_transactions", operation_id="retrieve_user_transactions")
-async def get_user_transactions(current_user: User = Depends(current_user)):
+async def get_user_transactions(user: User = Depends(current_user)):
     # Retrieve transactions for the specified user ID
     # transactions = await Transaction.get_Transactions_by_user(current_user.id)
-    transactions = await Transaction.find(Transaction.user_id.id == current_user.id).to_list()
+    transactions = await Transaction.find(Transaction.user_id.id == user.id).to_list()
     # Return the list of transactions
     return transactions
 
 @router.get("/user_transactions/{type}",response_model=UserOut, operation_id="retrieve_user_transactions_by_type")
-async def get_user_transactions_by_type(type: str, current_user: User = Depends(current_user)):
+async def get_user_transactions_by_type(type: str, user: User = Depends(current_user)):
     # Retrieve transactions for the specified user ID
     # transactions = await Transaction.get_Transactions_by_type_and_user(type, current_user.id)
-    transactions = await Transaction.find(Transaction.user_id.id == current_user.id, Transaction.type == type).to_list()
+    transactions = await Transaction.find(Transaction.user_id.id == user.id, Transaction.type == type).to_list()
     # Return the list of transactions
     return transactions
+
+@router.post("/add_deposit")
+async def add_deposit(deposit:Deposit, user:User = Depends(current_user)):
+    """Add deposit to user account."""
+    user.deposits.append(deposit)
+    user.current_balance+=deposit.amount
+    await user.save()
+    return user
 
 
 @router.patch("/update", response_model=UserOut, operation_id="update_user_details")
@@ -70,21 +78,19 @@ async def update_password(request: PasswordChangeRequest, user:User = Depends(cu
     return user
         
 
-
+#todo fix this function
 @router.delete("/delete", operation_id="delete_user_account")
 async def delete_user(
     auth: JwtAuthorizationCredentials = Security(access_security)
 ) -> Response:
     """Delete current user."""
-    # Delete all transactions associated with the user
     # Find the user
     user = await User.find_one(User.email == auth.subject["username"])
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
-     # Create a DBRef for the user
-    user_dbref = DBRef(collection="User", id=user.id)
-     # Find and delete transactions associated with the user
-    await Transaction.delete_many({"user_id": user_dbref})
+    
+    # Find and delete transactions associated with the user
+    await Transaction.find({"user_id": user.id}).delete()
 
     # Delete the user
     await user.delete()

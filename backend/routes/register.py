@@ -19,8 +19,19 @@ async def user_registration(user_register: UserRegister):  # type: ignore[no-unt
     user = await User.by_email(user_register.email)
     if user is not None:
         raise HTTPException(409, "User with that email already exists")
+
+    if not user_register.deposits or len(user_register.deposits) == 0:
+        raise HTTPException(400, "At least one deposit is required")
+    
+    initial_balance = sum(deposit.amount for deposit in user_register.deposits)
     hashed = hash_password(user_register.password)
-    user = User(email=user_register.email, password=hashed, deposit = user_register.deposit, username=user_register.username)
+    user = User(
+        email=user_register.email, 
+        password=hashed, 
+        username=user_register.username,
+        deposits=user_register.deposits,
+        current_balance=initial_balance
+    )
     await user.create()
     return user
 
