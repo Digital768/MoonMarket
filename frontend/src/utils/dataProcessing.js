@@ -6,6 +6,7 @@ export async function processTreemapData(data, token) {
   const negativeStocks = [];
   let tickers = [];
   let sum = 0;
+  let totalSpent = 0;
 
   let promises = stockCollection.map((holding) =>
     getStockFromPortfolio(holding.ticker, token)
@@ -18,6 +19,7 @@ export async function processTreemapData(data, token) {
     const stock_avg_price = holding.avg_bought_price;
     const value = holding.quantity * res.price;
     sum += value;
+    totalSpent+= (holding.avg_bought_price*holding.quantity);
     const ticker = holding.ticker;
     tickers.push(ticker);
 
@@ -78,7 +80,7 @@ export async function processTreemapData(data, token) {
     });
   }
 
-  return { newStocksTree, tickers, sum };
+  return { newStocksTree, tickers, sum, totalSpent };
 }
 
 export function calculateUserInfo(data) {

@@ -80,7 +80,7 @@ export function TabsDemo({ username }) {
           <CardHeader>
             <CardTitle>Password</CardTitle>
             <CardDescription>
-              Change your password here. After saving, you'll be logged out.
+              Change your password here.
             </CardDescription>
           </CardHeader>
           <Form method="patch" ref={passwordFromRef}>

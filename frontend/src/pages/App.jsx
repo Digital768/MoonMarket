@@ -8,6 +8,7 @@ import { getUserData } from '@/api/user'
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { calculateUserInfo } from '@/utils/dataProcessing'
 import { Button } from "@mui/material";
+import { Box } from "@mui/material";
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import { useEffect } from "react";
 
@@ -56,9 +57,10 @@ function App() {
   const { token } = useAuth();
   const fetcher = useFetcher();
   const data = useLoaderData();
-  const [stockTickers, visualizationData, value] = useTreeMapData(data);
+  const [stockTickers, visualizationData, value, moneySpent] = useTreeMapData(data);
   const { deposit, formattedDate } = calculateUserInfo(data);
-
+  const incrementalChange = (value-moneySpent).toFixed(2)
+  const percentageChange = ((incrementalChange / value) * 100).toFixed(2);
   // useEffect(() => {
   //   console.log("visualizationData is: ", visualizationData)
   // }, [data, visualizationData]);
@@ -69,6 +71,14 @@ function App() {
       <div className="navbar">
         <p>{" Deposit: " + deposit.toLocaleString("en-US")}$</p>
         <p>{"Total Value: " + value.toLocaleString("en-US")}$</p>
+        <Box sx={{display:'flex', gap:1}}>
+        <p>Incremental change:</p>
+        <Box sx={{display:'flex', flexDirection:'column'}}>
+        <p>{incrementalChange}$</p>
+        <span style={{textAlign:'right'}}>{percentageChange}%</span>
+        </Box>
+        </Box>
+        <Box sx={{display:'flex', flexDirection:'column', gap:1}}>
         <p>{"Last Updated at: " + formattedDate}</p>
         <fetcher.Form method="post">
           <input type="hidden" name="tickers" value={stockTickers.join(",")} />
@@ -80,7 +90,8 @@ function App() {
           >
             Update prices
           </Button>
-        </fetcher.Form>
+        </fetcher.Form> 
+        </Box>
       </div>
       <div className="portfolio">
         {!visualizationData || visualizationData.children.length === 0 ? (
