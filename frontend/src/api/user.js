@@ -98,3 +98,28 @@ export async function addStockToPortfolio(
     }
   );
 }
+
+export async function updateUsername(newUsername, token){
+  const UpdatePayload = {
+    username: newUsername
+  }
+  const response = await axios.patch("http://localhost:8000/user/update",UpdatePayload,{
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return response
+}
+
+export async function changePassword(oldPassword, newPassword, token){
+  const passwordPayload = {
+    password: oldPassword,
+    new_password: newPassword
+  }
+  const response = await axios.patch("http://localhost:8000/user/change_password",passwordPayload,{
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return response
+}

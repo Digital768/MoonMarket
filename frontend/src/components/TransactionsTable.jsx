@@ -137,7 +137,7 @@ export default function CustomizedTables({ data }) {
             : rows
           ).map((transaction) => (
             <StyledTableRow key={transaction._id}>
-              <StyledTableCell component="th" scope="row">
+              <StyledTableCell component="th" scope="row" style={{ width: 160 }}>
                 {transaction.ticker}
               </StyledTableCell>
               <StyledTableCell style={{ width: 160 }} align="right">

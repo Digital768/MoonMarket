@@ -101,3 +101,7 @@ class User(Document, UserOut):
         """Update email logging and replace."""
         # Add any pre-checks here
         self.email = new_email
+
+class PasswordChangeRequest(BaseModel):
+    password: str
+    new_password: str

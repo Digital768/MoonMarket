@@ -12,7 +12,6 @@ function Profile() {
   const data = useLoaderData();
   const username = data.data;
   
-
   return (
     <div>
       <Divider />

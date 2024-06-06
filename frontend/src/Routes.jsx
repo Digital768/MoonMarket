@@ -15,9 +15,20 @@ import Profile from "@/pages/Profile";
 import Transactions, {
   loader as transactionsLoader,
 } from "@/pages/Transactions";
+import {action as profileAction} from '@/components/ProfileTabs'
 
 const Routes = () => {
   const { token } = useAuth();
+
+  const boundAction = async (args) => {
+    try {
+      const result = await profileAction(args, token);
+      return result;
+    } catch (error) {
+      console.error("Error in boundAction:", error);
+      throw error;
+    }
+  };
 
   // Combine and conditionally include routes based on authentication status
   const router = createBrowserRouter([
@@ -39,6 +50,7 @@ const Routes = () => {
           element: <Profile />,
           errorElement: <ErrorPage />,
           loader: ProtectedRouteLoader(token),
+          action: boundAction
         },
         {
           path: "/transactions",

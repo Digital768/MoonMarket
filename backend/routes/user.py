@@ -3,11 +3,11 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, Security
 from fastapi_jwt import JwtAuthorizationCredentials
 
-from models.user import User, UserOut, UserUpdate
+from models.user import User, UserOut, UserUpdate, PasswordChangeRequest
 from jwt import access_security
 from util.current_user import current_user
 from models.transaction import Transaction
-from util.password import hash_password
+from util.password import hash_password, verify_password
 from bson import DBRef
 
 
@@ -56,6 +56,19 @@ async def update_user(update: UserUpdate, user: User = Depends(current_user)):  
     user = user.model_copy(update=fields)
     await user.save()
     return user
+
+@router.patch("/change_password",response_model=UserOut, operation_id="change_password")
+async def update_password(request: PasswordChangeRequest, user:User = Depends(current_user)):
+    """change user password."""
+    if not verify_password(request.password, user.password):
+        raise HTTPException(400, "Passwords do not match")
+    # Hash the new password
+    hashed_new_password = hash_password(request.new_password)
+    # Update the user's password
+    user.password = hashed_new_password
+    await user.save()
+    return user
+        
 
 
 @router.delete("/delete", operation_id="delete_user_account")
