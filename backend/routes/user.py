@@ -90,8 +90,9 @@ async def delete_user(
         raise HTTPException(status_code=404, detail="User not found")
     
     # Find and delete transactions associated with the user
-    await Transaction.find({"user_id": user.id}).delete()
+    await Transaction.find(Transaction.user_id.id == user.id).delete()
 
     # Delete the user
     await user.delete()
     return Response(status_code=204)
+
