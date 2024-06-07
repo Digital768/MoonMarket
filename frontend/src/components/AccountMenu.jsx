@@ -83,7 +83,7 @@ export default function AccountMenu({Letter}) {
         <MenuItem onClick={()=>{
           navigate('/profile')
         }}>
-          <Avatar /> Profile
+          <Avatar /> Account
         </MenuItem>
         <Divider />
         <MenuItem onClick={()=>{

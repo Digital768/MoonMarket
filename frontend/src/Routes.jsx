@@ -11,7 +11,7 @@ import StockItem, { loader as stockItemLoader } from "@/pages/StockItem";
 import Login from "@/pages/Login";
 import Logout from "@/pages/Logout";
 import { PublicRoute } from "@/pages/PublicRoute";
-import Profile from "@/pages/Profile";
+import Profile, {loader as profileLoader} from "@/pages/Profile";
 import Transactions, {
   loader as transactionsLoader,
 } from "@/pages/Transactions";
@@ -49,7 +49,7 @@ const Routes = () => {
           path: "/profile",
           element: <Profile />,
           errorElement: <ErrorPage />,
-          loader: ProtectedRouteLoader(token),
+          loader: profileLoader(token),
           action: boundAction
         },
         {

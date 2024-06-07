@@ -83,8 +83,7 @@ export async function processTreemapData(data, token) {
   return { newStocksTree, tickers, sum, totalSpent };
 }
 
-export function calculateUserInfo(data) {
-  const current_balance = data.data.current_balance;
+export function lastUpdateDate(data) {
   let last_update_date = data.data.last_refresh;
   let date = new Date(last_update_date);
   let formattedDate = date.toLocaleString("en-GB", {
@@ -94,7 +93,7 @@ export function calculateUserInfo(data) {
     hour: "2-digit",
     minute: "2-digit",
   });
-  return {current_balance, formattedDate}
+  return { formattedDate}
 }
 //   // Add similar function for Cake graph data processing
 //   export async function processCakeGraphData(data, token) {

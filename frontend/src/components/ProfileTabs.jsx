@@ -34,7 +34,7 @@ export async function action({ request }, token) {
   }
 }
 
-export function TabsDemo({ username }) {
+export function TabsDemo({ username, current_balance }) {
   const password = useRef(null);
   const money = useRef(null);
   const navigation = useNavigation();
@@ -51,18 +51,18 @@ export function TabsDemo({ username }) {
 
 
   return (
-    <Tabs defaultValue="account" className="w-[400px]">
+    <Tabs defaultValue="profile" className="w-[400px]">
       <TabsList className="grid w-full grid-cols-3 bg-zinc-700">
-        <TabsTrigger value="account">Account</TabsTrigger>
+        <TabsTrigger value="profile">Profile</TabsTrigger>
         <TabsTrigger value="password">Settings</TabsTrigger>
         <TabsTrigger value="money">Money</TabsTrigger>
       </TabsList>
-      <TabsContent value="account">
+      <TabsContent value="profile">
         <Card>
           <CardHeader>
-            <CardTitle>Account</CardTitle>
+            <CardTitle>Profile</CardTitle>
             <CardDescription>
-              Make changes to your account here. Click save when you're done.
+              Make changes to your profile here. Click save when you're done.
             </CardDescription>
           </CardHeader>
           <Form method="patch">
@@ -117,7 +117,7 @@ export function TabsDemo({ username }) {
           <CardHeader>
             <CardTitle>Money</CardTitle>
             <CardDescription>
-              Add deposit to your current balance
+              you currently have {current_balance.toLocaleString("en-US")}$ in your account. if you wish to add more, you can deposit more below.
             </CardDescription>
           </CardHeader>
           <Form method="post" ref={money}>

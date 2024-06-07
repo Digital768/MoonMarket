@@ -6,7 +6,7 @@ import useTreeMapData from "@/hooks/useTreeMapData";
 import { useAuth } from "@/pages/AuthProvider";
 import { getUserData } from '@/api/user'
 import { useFetcher, useLoaderData } from "react-router-dom";
-import { calculateUserInfo } from '@/utils/dataProcessing'
+import { lastUpdateDate } from '@/utils/dataProcessing'
 import { Button } from "@mui/material";
 import { Box } from "@mui/material";
 import ShowChartIcon from '@mui/icons-material/ShowChart';
@@ -58,39 +58,43 @@ function App() {
   const fetcher = useFetcher();
   const data = useLoaderData();
   const [stockTickers, visualizationData, value, moneySpent] = useTreeMapData(data);
-  const { current_balance, formattedDate } = calculateUserInfo(data);
-  const incrementalChange = (value-moneySpent)
+  const { formattedDate } = lastUpdateDate(data);
+  const incrementalChange = (value - moneySpent)
   const percentageChange = ((incrementalChange / value) * 100)
-  // useEffect(() => {
-  //   console.log("visualizationData is: ", visualizationData)
-  // }, [data, visualizationData]);
+
+  useEffect(() => {
+    console.log(percentageChange)
+  }, [data]);
 
   return (
     <div className="App">
       <SearchBar />
       <div className="navbar">
-        <p>{" Current balance: " + current_balance.toLocaleString("en-US")}$</p>
         <p>{"Total Value: " + value.toLocaleString("en-US")}$</p>
-        <Box sx={{display:'flex', gap:1}}>
-        <p>Incremental change:</p>
-        <Box sx={{display:'flex', flexDirection:'column'}}>
-        <p>{incrementalChange.toLocaleString("en-US")}$</p>
-        <span style={{textAlign:'right'}}>{percentageChange.toLocaleString("en-US")}%</span>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <p>Incremental change:</p>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <p>{incrementalChange.toLocaleString("en-US")}$</p>
+            {percentageChange !== 0 && !isNaN(percentageChange) ? (
+              <span style={{ textAlign: 'right' }}>
+                {percentageChange.toLocaleString('en-US')}%
+              </span>
+            ) : null}
+          </Box>
         </Box>
-        </Box>
-        <Box sx={{display:'flex', flexDirection:'column', gap:1}}>
-        <p>{"Last Updated at: " + formattedDate}</p>
-        <fetcher.Form method="post">
-          <input type="hidden" name="tickers" value={stockTickers.join(",")} />
-          <input type="hidden" name="token" value={token} />
-          <Button
-            variant="outlined"
-            type="submit"
-            startIcon={<ShowChartIcon />}
-          >
-            Update prices
-          </Button>
-        </fetcher.Form> 
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <p>{"Last Updated at: " + formattedDate}</p>
+          <fetcher.Form method="post">
+            <input type="hidden" name="tickers" value={stockTickers.join(",")} />
+            <input type="hidden" name="token" value={token} />
+            <Button
+              variant="outlined"
+              type="submit"
+              startIcon={<ShowChartIcon />}
+            >
+              Update prices
+            </Button>
+          </fetcher.Form>
         </Box>
       </div>
       <div className="portfolio">
