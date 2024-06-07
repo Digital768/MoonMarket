@@ -78,7 +78,7 @@ async def update_password(request: PasswordChangeRequest, user:User = Depends(cu
     return user
         
 
-#todo fix this function
+
 @router.delete("/delete", operation_id="delete_user_account")
 async def delete_user(
     auth: JwtAuthorizationCredentials = Security(access_security)
