@@ -7,7 +7,7 @@ import { useAuth } from "@/pages/AuthProvider";
 import { getUserData } from '@/api/user'
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { lastUpdateDate } from '@/utils/dataProcessing'
-import { Button } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import { Box } from "@mui/material";
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import { useEffect } from "react";
@@ -67,7 +67,14 @@ function App() {
   }, [data]);
 
   return (
-    <div className="App">
+    <Box className="App" sx={{
+      display:'flex',
+      flexDirection:'row-reverse',
+      gap: 1
+    }}>
+      <Box sx={{
+        width:'25%'
+      }}>
       <SearchBar />
       <div className="navbar">
         <p>{"Total Value: " + value.toLocaleString("en-US")}$</p>
@@ -97,14 +104,19 @@ function App() {
           </fetcher.Form>
         </Box>
       </div>
-      <div className="portfolio">
+      </Box>
+      <Box sx={{
+        flexGrow: 1
+      }}>
+        <Container>
         {!visualizationData || visualizationData.children.length === 0 ? (
           <TreeMapSkeleton />
         ) : (
           <Treemap data={visualizationData} width={1000} height={600} />
         )}
-      </div>
-    </div>
+      </Container>
+      </Box>
+    </Box>
   );
 }
 

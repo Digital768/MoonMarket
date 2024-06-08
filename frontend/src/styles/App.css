@@ -5,9 +5,9 @@
 
 .navbar{
   display: flex;
-  width: 800px;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
   padding-top: 30px;
   margin: auto;
   color: whitesmoke;

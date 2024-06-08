@@ -2,12 +2,12 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 import Logo from "@/components/Logo";
 import '@/styles/logo.css'
-import {getUserName} from '@/api/user'
+import { getUserName } from '@/api/user'
 import { useLoaderData } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import { useEffect } from "react";
 import { Box } from "@mui/material";
-
+import Greetings from "@/components/Greetings";
 
 export const loader = (token) => async () => {
   // console.log("loader activated")
@@ -18,33 +18,36 @@ export const loader = (token) => async () => {
 
 
 export const ProtectedRoute = () => {
-    const { token } = useAuth();
-    const data = useLoaderData();
-    const username = data.data
-    const firstLetter = data.data.charAt(0);
+  const { token } = useAuth();
+  const data = useLoaderData();
+  const username = data.data
+  const firstLetter = data.data.charAt(0);
   // todo: need to check if the token is acutally valid and not just exist
-    // Check if the user is authenticated
-    if (!token) {
-      // If not authenticated, redirect to the login page
-      return <Navigate to="/login" replace={true}/>;
-    }
+  // Check if the user is authenticated
+  if (!token) {
+    // If not authenticated, redirect to the login page
+    return <Navigate to="/login" replace={true} />;
+  }
 
-    // useEffect(() => {console.log(username);}, 
-    // [data]);
-  
-    // If authenticated, render the child routes
-    return <>
+  // useEffect(() => {console.log(username);}, 
+  // [data]);
+
+  // If authenticated, render the child routes
+  return <>
     {/* <Logo firstLetter={firstLetter}/> */}
     <Box sx={{
-      display:'flex',
-      flexDirection:'row',
+      display: 'flex',
+      flexDirection: 'row',
     }}>
-    <Sidebar></Sidebar>
-    <Box sx={{
-      flex:1
-    }}>
-    <Outlet />
+      <Sidebar></Sidebar>
+      <Box sx={{
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+        <Greetings></Greetings>
+        <Outlet />
+      </Box>
     </Box>
-    </Box>
-    </>;
-  };
+  </>;
+};

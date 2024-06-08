@@ -11,8 +11,9 @@ import Logout from '@mui/icons-material/Logout';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/pages/AuthProvider";
+import SettingsIcon from '@mui/icons-material/Settings';
 
-export default function AccountMenu({Letter}) {
+export default function AccountMenu() {
   const { clearToken } = useAuth();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -24,11 +25,11 @@ export default function AccountMenu({Letter}) {
     setAnchorEl(null);
   };
 
-    // Function to handle logout
-    const handleLogout = () => {
-      clearToken(); // Clear the authentication token
-      navigate("/login", { replace: true }); // Navigate to the home page ("/") with replace option set to true
-    };
+  // Function to handle logout
+  const handleLogout = () => {
+    clearToken(); // Clear the authentication token
+    navigate("/login", { replace: true }); // Navigate to the home page ("/") with replace option set to true
+  };
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -41,7 +42,7 @@ export default function AccountMenu({Letter}) {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar sx={{ width: 40, height: 40, color: 'whitesmoke' }}>{Letter}</Avatar>
+            <SettingsIcon />
           </IconButton>
         </Tooltip>
       </Box>
@@ -80,13 +81,13 @@ export default function AccountMenu({Letter}) {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={()=>{
+        <MenuItem onClick={() => {
           navigate('/profile')
         }}>
           <Avatar /> Account
         </MenuItem>
         <Divider />
-        <MenuItem onClick={()=>{
+        <MenuItem onClick={() => {
           navigate('/transactions')
         }}>
           <ListItemIcon>
