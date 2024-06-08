@@ -4,7 +4,9 @@ import Logo from "@/components/Logo";
 import '@/styles/logo.css'
 import {getUserName} from '@/api/user'
 import { useLoaderData } from "react-router-dom";
+import Sidebar from "@/components/Sidebar";
 import { useEffect } from "react";
+import { Box } from "@mui/material";
 
 
 export const loader = (token) => async () => {
@@ -32,7 +34,17 @@ export const ProtectedRoute = () => {
   
     // If authenticated, render the child routes
     return <>
-    <Logo firstLetter={firstLetter}/>
+    {/* <Logo firstLetter={firstLetter}/> */}
+    <Box sx={{
+      display:'flex',
+      flexDirection:'row',
+    }}>
+    <Sidebar></Sidebar>
+    <Box sx={{
+      flex:1
+    }}>
     <Outlet />
+    </Box>
+    </Box>
     </>;
   };
