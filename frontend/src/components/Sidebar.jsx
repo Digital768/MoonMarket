@@ -40,7 +40,7 @@ function Sidebar() {
                         paddingTop: '30px',
                     }}>
                         <Link to="/portfolio" className="logo">
-                            <img src={mainlogo} style={{ height: '50px', width: '50px' }} />
+                            <img src={mainlogo} style={{ height: '40px', width: '40px' }} />
                         </Link>
                     </Box>
                     <Box className="Nav-views" sx={{

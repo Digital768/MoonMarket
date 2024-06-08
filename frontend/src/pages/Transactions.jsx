@@ -15,7 +15,6 @@ function Transactions() {
 
   return (
     <div>
-      <Divider />
       <div className="heading-text">
         <h2
           style={{

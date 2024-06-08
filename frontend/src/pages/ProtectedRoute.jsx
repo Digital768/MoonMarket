@@ -1,7 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
-import Logo from "@/components/Logo";
-import '@/styles/logo.css'
 import { getUserName } from '@/api/user'
 import { useLoaderData } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
@@ -21,7 +19,6 @@ export const ProtectedRoute = () => {
   const { token } = useAuth();
   const data = useLoaderData();
   const username = data.data
-  const firstLetter = data.data.charAt(0);
   // todo: need to check if the token is acutally valid and not just exist
   // Check if the user is authenticated
   if (!token) {
@@ -45,7 +42,7 @@ export const ProtectedRoute = () => {
         display: 'flex',
         flexDirection: 'column',
       }}>
-        <Greetings></Greetings>
+        <Greetings username ={username}/>
         <Outlet />
       </Box>
     </Box>

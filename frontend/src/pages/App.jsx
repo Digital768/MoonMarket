@@ -7,9 +7,10 @@ import { useAuth } from "@/pages/AuthProvider";
 import { getUserData } from '@/api/user'
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { lastUpdateDate } from '@/utils/dataProcessing'
-import { Button, Container } from "@mui/material";
+import { Button, Container, Typography } from "@mui/material";
 import { Box } from "@mui/material";
-import ShowChartIcon from '@mui/icons-material/ShowChart';
+import Tooltip from '@mui/material/Tooltip';  
+import SyncIcon from '@mui/icons-material/Sync';
 import { useEffect } from "react";
 
 export const action = async ({ request }) => {
@@ -68,53 +69,65 @@ function App() {
 
   return (
     <Box className="App" sx={{
-      display:'flex',
-      flexDirection:'row-reverse',
-      gap: 1
+      display: 'flex',
+      flexDirection: 'row-reverse',
+      height: '100%',
+      margin: 'auto'
     }}>
       <Box sx={{
-        width:'25%'
-      }}>
-      <SearchBar />
-      <div className="navbar">
-        <p>{"Total Value: " + value.toLocaleString("en-US")}$</p>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <p>Incremental change:</p>
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <p>{incrementalChange.toLocaleString("en-US")}$</p>
-            {percentageChange !== 0 && !isNaN(percentageChange) ? (
-              <span style={{ textAlign: 'right' }}>
-                {percentageChange.toLocaleString('en-US')}%
-              </span>
-            ) : null}
-          </Box>
-        </Box>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <p>{"Last Updated at: " + formattedDate}</p>
-          <fetcher.Form method="post">
-            <input type="hidden" name="tickers" value={stockTickers.join(",")} />
-            <input type="hidden" name="token" value={token} />
-            <Button
-              variant="outlined"
-              type="submit"
-              startIcon={<ShowChartIcon />}
-            >
-              Update prices
-            </Button>
-          </fetcher.Form>
-        </Box>
-      </div>
-      </Box>
-      <Box sx={{
-        flexGrow: 1
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 5,
+        alignItems: 'center',
+        paddingTop: '7rem',
+        paddingLeft: '5rem'
       }}>
         <Container>
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            marginBottom: '10em',
+          }}>
+            <Box className="portfolio-details" sx={{
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+              <Typography variant="h3">{value.toLocaleString("en-US")}$</Typography>
+              <Typography variant="body1" color={"#596ee7"} sx={{ paddingLeft: '1em' }}>{incrementalChange.toLocaleString("en-US")}$ ({percentageChange.toLocaleString('en-US')}%) Overall</Typography>
+
+            </Box>
+            <fetcher.Form method="post" >
+              <input type="hidden" name="tickers" value={stockTickers.join(",")} />
+              <input type="hidden" name="token" value={token} />
+              <Tooltip title="Click to refresh Stocks price" placement="right">
+              <Button sx={{
+              marginTop: '15px',
+              marginLeft: '25px',
+              justifyContent:'flex-end'
+            }}
+                variant="outlined"
+                type="submit"
+                startIcon={<SyncIcon />}
+              >
+              </Button>
+              </Tooltip>
+            </fetcher.Form>
+          </Box>
+          <SearchBar />
+        </Container>
+      </Box>
+      <Box sx={{
+        flexGrow: 1,
+        margin: 'auto',
+        padding: 0
+      }}>
+
         {!visualizationData || visualizationData.children.length === 0 ? (
           <TreeMapSkeleton />
         ) : (
           <Treemap data={visualizationData} width={1000} height={600} />
         )}
-      </Container>
+
       </Box>
     </Box>
   );

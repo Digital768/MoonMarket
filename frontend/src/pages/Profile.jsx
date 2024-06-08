@@ -25,7 +25,6 @@ function Profile() {
   
   return (
     <div>
-      <Divider />
       <div className="heading-text" >
         <h2 style={{ textAlign: 'center', margin: 'auto', cursor: 'pointer', color: '#049985', width: '200px' }} className='underline-effect'>ACCOUNT</h2>
       </div>

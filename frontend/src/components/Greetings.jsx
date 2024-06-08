@@ -1,14 +1,24 @@
-import { Box, Divider } from '@mui/material'
+import { Box, Divider, Typography } from '@mui/material'
 import AccountMenu from '@/components/AccountMenu';
 import React from 'react'
+import { useState } from 'react';
 
-function Greetings() {
+
+function Greetings({ username }) {
+
+    const [date,setDate] = useState(new Date());
+    const formattedDate = date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric'
+    });
+
     return (
         <Box sx={{
             width: '90%',
-            marginRight:'auto',
-            marginLeft:'auto',
-            paddingBottom:'20px'
+            marginRight: 'auto',
+            marginLeft: 'auto',
+            paddingBottom: '20px'
         }}>
             <Box sx={{
                 display: 'flex',
@@ -18,8 +28,8 @@ function Greetings() {
                 <Box className="Greetings" sx={{
                     padding: 5
                 }}>
-                    <h1>Hello, Ben</h1>
-                    <h4>Saturday, June 8    </h4>
+                    <Typography variant="h4">Hello, {username}</Typography>
+                    <Typography color={"#BDBDBD"} variant='subtitle1'>{formattedDate}</Typography>
                 </Box>
                 <AccountMenu />
             </Box>
