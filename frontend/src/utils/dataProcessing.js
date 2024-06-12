@@ -1,9 +1,8 @@
 import { getStockFromPortfolio } from "@/api/stock";
 
-export async function processTreemapData(data, token) {
+
+export async function getPortfolioStats(data, token) {
   const stockCollection = data.holdings;
-  const positiveStocks = [];
-  const negativeStocks = [];
   let tickers = [];
   let sum = 0;
   let totalSpent = 0;
@@ -19,9 +18,32 @@ export async function processTreemapData(data, token) {
     const stock_avg_price = holding.avg_bought_price;
     const value = holding.quantity * res.price;
     sum += value;
-    totalSpent+= (holding.avg_bought_price*holding.quantity);
+    totalSpent += (holding.avg_bought_price * holding.quantity);
     const ticker = holding.ticker;
     tickers.push(ticker);
+  }
+
+  return { tickers, sum, totalSpent };
+}
+
+export async function processTreemapData(data, token) {
+  const stockCollection = data.holdings;
+  const positiveStocks = [];
+  const negativeStocks = [];
+  let sum = 0;
+
+  let promises = stockCollection.map((holding) =>
+    getStockFromPortfolio(holding.ticker, token)
+  );
+  let results = await Promise.all(promises);
+
+  for (let i = 0; i < results.length; i++) {
+    const res = results[i];
+    const holding = stockCollection[i];
+    const stock_avg_price = holding.avg_bought_price;
+    const value = holding.quantity * res.price;
+    sum += value;
+    const ticker = holding.ticker;
 
     if (res.price > stock_avg_price) {
       positiveStocks.push({
@@ -80,8 +102,30 @@ export async function processTreemapData(data, token) {
     });
   }
 
-  return { newStocksTree, tickers, sum, totalSpent };
+  return newStocksTree;
 }
+
+export async function processDonutData(data, token) {
+  const stockCollection = data.holdings;
+  let stocks = [];
+  let promises = stockCollection.map((holding) =>
+    getStockFromPortfolio(holding.ticker, token)
+  );
+  let results = await Promise.all(promises);
+  
+  for (let i = 0; i < results.length; i++) {
+    const res = results[i];
+    const holding = stockCollection[i];
+    const value = holding.quantity * res.price;
+    const ticker = holding.ticker;
+    stocks.push({
+      name: ticker,
+      value: value
+    });
+  }
+  return stocks;
+}
+
 
 export function lastUpdateDate(data) {
   let last_update_date = data.data.last_refresh;

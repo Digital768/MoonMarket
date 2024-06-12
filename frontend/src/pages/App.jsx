@@ -2,16 +2,18 @@ import TreeMapSkeleton from "@/Skeletons/TreeMapSkeleton";
 import { updateStockPrice } from "@/api/stock";
 import SearchBar from "@/components/SearchBar.jsx";
 import { Treemap } from "@/components/Treemap";
-import useTreeMapData from "@/hooks/useTreeMapData";
+import useGraphData from "@/hooks/useGraphData";
 import { useAuth } from "@/pages/AuthProvider";
 import { getUserData } from '@/api/user'
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { lastUpdateDate } from '@/utils/dataProcessing'
 import { Button, Container, Typography } from "@mui/material";
 import { Box } from "@mui/material";
-import Tooltip from '@mui/material/Tooltip';  
+import Tooltip from '@mui/material/Tooltip';
 import SyncIcon from '@mui/icons-material/Sync';
-import { useEffect } from "react";
+import { GraphContext } from '@/pages/ProtectedRoute'
+import { useEffect, useContext, useState } from "react";
+import { DonutChart } from "@/components/DonutChart";
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -54,18 +56,63 @@ export const loader = (token) => async () => {
   return user
 }
 
+
 function App() {
+  const { selectedGraph } = useContext(GraphContext); // Move this line up
   const { token } = useAuth();
   const fetcher = useFetcher();
   const data = useLoaderData();
-  const [stockTickers, visualizationData, value, moneySpent] = useTreeMapData(data);
+  const [stockTickers, visualizationData, value, moneySpent] = useGraphData(data, selectedGraph);
   const { formattedDate } = lastUpdateDate(data);
   const incrementalChange = (value - moneySpent)
   const percentageChange = ((incrementalChange / value) * 100)
+  
 
   useEffect(() => {
-    console.log(percentageChange)
-  }, [data]);
+    console.log(visualizationData)
+  }, [data, visualizationData]);
+
+  const renderGraph = () => {
+    switch (selectedGraph) {
+      case "Treemap":
+        return (
+          !visualizationData || visualizationData.children.length === 0 ? (
+            <TreeMapSkeleton />
+          ) : (
+            <Treemap data={visualizationData} width={1000} height={600} />
+          )
+        );
+      case "DonutChart":
+        // todo- create DonutChart skeleton and DonutChart component
+        return (
+          !visualizationData ? (
+            <TreeMapSkeleton />
+          ) : (
+            <DonutChart data={visualizationData} width={1000} height={600} />
+          )
+        );
+      case "Circular":
+        //todo - create Circular skeleton and CircularChart component
+        return (
+          !visualizationData || visualizationData.children.length === 0 ? (
+            <TreeMapSkeleton />
+          ) : (
+            <Treemap data={visualizationData} width={1000} height={600} />
+          )
+        );
+      case "ListGraph":
+        //todo - create ListGraph skeleton and ListGraph component
+        return (
+          !visualizationData || visualizationData.children.length === 0 ? (
+            <TreeMapSkeleton />
+          ) : (
+            <Treemap data={visualizationData} width={1000} height={600} />
+          )
+        );
+
+
+    }
+  }
 
   return (
     <Box className="App" sx={{
@@ -99,17 +146,17 @@ function App() {
             <fetcher.Form method="post" >
               <input type="hidden" name="tickers" value={stockTickers.join(",")} />
               <input type="hidden" name="token" value={token} />
-              <Tooltip title="Click to refresh Stocks price" placement="right">
-              <Button sx={{
-              marginTop: '15px',
-              marginLeft: '25px',
-              justifyContent:'flex-end'
-            }}
-                variant="outlined"
-                type="submit"
-                startIcon={<SyncIcon />}
-              >
-              </Button>
+              <Tooltip title={`last updated at: ${formattedDate}. Click to refresh Stocks price`} placement="top">
+                <Button sx={{
+                  marginTop: '15px',
+                  marginLeft: '25px',
+                  justifyContent: 'flex-end'
+                }}
+                  variant="outlined"
+                  type="submit"
+                  startIcon={<SyncIcon />}
+                >
+                </Button>
               </Tooltip>
             </fetcher.Form>
           </Box>
@@ -121,13 +168,7 @@ function App() {
         margin: 'auto',
         padding: 0
       }}>
-
-        {!visualizationData || visualizationData.children.length === 0 ? (
-          <TreeMapSkeleton />
-        ) : (
-          <Treemap data={visualizationData} width={1000} height={600} />
-        )}
-
+        {renderGraph()}
       </Box>
     </Box>
   );

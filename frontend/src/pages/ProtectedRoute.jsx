@@ -3,7 +3,7 @@ import { useAuth } from "./AuthProvider";
 import { getUserName } from '@/api/user'
 import { useLoaderData } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
-import { useEffect } from "react";
+import { useEffect, useState, createContext } from "react";
 import { Box } from "@mui/material";
 import Greetings from "@/components/Greetings";
 
@@ -15,9 +15,12 @@ export const loader = (token) => async () => {
 }
 
 
+export const GraphContext = createContext();
+
 export const ProtectedRoute = () => {
   const { token } = useAuth();
   const data = useLoaderData();
+  const [selectedGraph, setSelectedGraph] = useState("Treemap");
   const username = data.data
   // todo: need to check if the token is acutally valid and not just exist
   // Check if the user is authenticated
@@ -26,25 +29,26 @@ export const ProtectedRoute = () => {
     return <Navigate to="/login" replace={true} />;
   }
 
-  // useEffect(() => {console.log(username);}, 
-  // [data]);
+  // useEffect(() => { console.log(selectedGraph); },
+  //   [selectedGraph]);
 
   // If authenticated, render the child routes
   return <>
-    {/* <Logo firstLetter={firstLetter}/> */}
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'row',
-    }}>
-      <Sidebar></Sidebar>
+    <GraphContext.Provider value={{ selectedGraph, setSelectedGraph }}>
       <Box sx={{
-        flexGrow: 1,
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
       }}>
-        <Greetings username ={username}/>
-        <Outlet />
+        <Sidebar></Sidebar>
+        <Box sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+        }}>
+          <Greetings username={username} />
+          <Outlet />
+        </Box>
       </Box>
-    </Box>
+    </GraphContext.Provider>
   </>;
 };
