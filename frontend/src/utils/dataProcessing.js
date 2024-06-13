@@ -108,21 +108,45 @@ export async function processTreemapData(data, token) {
 export async function processDonutData(data, token) {
   const stockCollection = data.holdings;
   let stocks = [];
+  let totalPortfolioValue = 0;
+
+  // Fetch stock prices and calculate total portfolio value
   let promises = stockCollection.map((holding) =>
     getStockFromPortfolio(holding.ticker, token)
   );
   let results = await Promise.all(promises);
-  
-  for (let i = 0; i < results.length; i++) {
-    const res = results[i];
+
+  results.forEach((res, i) => {
     const holding = stockCollection[i];
     const value = holding.quantity * res.price;
-    const ticker = holding.ticker;
+    totalPortfolioValue += value;
+  });
+
+  // Calculate percentage of portfolio for each stock
+  stockCollection.forEach((holding, i) => {
+    const res = results[i];
+    const value = holding.quantity * res.price;
+    const percentageOfPortfolio = (value / totalPortfolioValue) * 100;
+
     stocks.push({
-      name: ticker,
-      value: value
+      name: holding.ticker,
+      value: value,
+      quantity: holding.quantity,
+      percentageOfPortfolio: percentageOfPortfolio,
     });
+  });
+
+  // Sort stocks by value in descending order
+  stocks.sort((a, b) => b.value - a.value);
+
+  // If there are more than 8 stocks, combine the rest into "Others"
+  if (stocks.length > 8) {
+    const othersValue = stocks.slice(8).reduce((acc, curr) => acc + curr.value, 0);
+    const othersPercentage = stocks.slice(8).reduce((acc, curr) => acc + curr.percentageOfPortfolio, 0);
+    stocks = stocks.slice(0, 8);
+    stocks.push({ name: "Others", value: othersValue, percentageOfPortfolio: othersPercentage });
   }
+
   return stocks;
 }
 

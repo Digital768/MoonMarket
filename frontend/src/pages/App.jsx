@@ -1,18 +1,19 @@
 import TreeMapSkeleton from "@/Skeletons/TreeMapSkeleton";
+import DonutSkeleton from "@/Skeletons/DonutSkeleton";
 import { updateStockPrice } from "@/api/stock";
 import SearchBar from "@/components/SearchBar.jsx";
 import { Treemap } from "@/components/Treemap";
 import useGraphData from "@/hooks/useGraphData";
 import { useAuth } from "@/pages/AuthProvider";
-import { getUserData } from '@/api/user'
+import { getUserData } from '@/api/user';
 import { useFetcher, useLoaderData } from "react-router-dom";
-import { lastUpdateDate } from '@/utils/dataProcessing'
+import { lastUpdateDate } from '@/utils/dataProcessing';
 import { Button, Container, Typography } from "@mui/material";
 import { Box } from "@mui/material";
 import Tooltip from '@mui/material/Tooltip';
 import SyncIcon from '@mui/icons-material/Sync';
-import { GraphContext } from '@/pages/ProtectedRoute'
-import { useEffect, useContext, useState } from "react";
+import { GraphContext } from '@/pages/ProtectedRoute';
+import { useEffect, useContext } from "react";
 import { DonutChart } from "@/components/DonutChart";
 
 export const action = async ({ request }) => {
@@ -50,69 +51,74 @@ export const action = async ({ request }) => {
 }
 
 export const loader = (token) => async () => {
-  // console.log("loader activated")
-  const user = await getUserData(token)
-  // console.log("user: " , user.data)
-  return user
+  const user = await getUserData(token);
+  return user;
 }
 
-
 function App() {
-  const { selectedGraph } = useContext(GraphContext); // Move this line up
+  const { selectedGraph } = useContext(GraphContext);
   const { token } = useAuth();
   const fetcher = useFetcher();
   const data = useLoaderData();
-  const [stockTickers, visualizationData, value, moneySpent] = useGraphData(data, selectedGraph);
+  const [stockTickers, visualizationData, value, moneySpent, isDataProcessed] = useGraphData(data, selectedGraph);
   const { formattedDate } = lastUpdateDate(data);
-  const incrementalChange = (value - moneySpent)
-  const percentageChange = ((incrementalChange / value) * 100)
-  
+  const incrementalChange = (value - moneySpent);
+  const percentageChange = ((incrementalChange / value) * 100);
 
   useEffect(() => {
-    console.log(visualizationData)
+    console.log(visualizationData);
   }, [data, visualizationData]);
 
   const renderGraph = () => {
+    if (!isDataProcessed) {
+      switch (selectedGraph) {
+        case "DonutChart":
+          return <DonutSkeleton />;
+        case "Treemap":
+        case "Circular":
+        case "ListGraph":
+        default:
+          return <TreeMapSkeleton />;
+      }
+    }
+
     switch (selectedGraph) {
       case "Treemap":
         return (
-          !visualizationData || visualizationData.children.length === 0 ? (
+          !visualizationData || !visualizationData.children || visualizationData.children.length === 0 ? (
             <TreeMapSkeleton />
           ) : (
             <Treemap data={visualizationData} width={1000} height={600} />
           )
         );
       case "DonutChart":
-        // todo- create DonutChart skeleton and DonutChart component
         return (
           !visualizationData ? (
-            <TreeMapSkeleton />
+            <DonutSkeleton />
           ) : (
-            <DonutChart data={visualizationData} width={1000} height={600} />
+            <DonutChart data={visualizationData} width={1000} height={650} />
           )
         );
       case "Circular":
-        //todo - create Circular skeleton and CircularChart component
         return (
-          !visualizationData || visualizationData.children.length === 0 ? (
+          !visualizationData || !visualizationData.children || visualizationData.children.length === 0 ? (
             <TreeMapSkeleton />
           ) : (
             <Treemap data={visualizationData} width={1000} height={600} />
           )
         );
       case "ListGraph":
-        //todo - create ListGraph skeleton and ListGraph component
         return (
-          !visualizationData || visualizationData.children.length === 0 ? (
+          !visualizationData || !visualizationData.children || visualizationData.children.length === 0 ? (
             <TreeMapSkeleton />
           ) : (
             <Treemap data={visualizationData} width={1000} height={600} />
           )
         );
-
-
+      default:
+        return null;
     }
-  }
+  };
 
   return (
     <Box className="App" sx={{
@@ -141,7 +147,6 @@ function App() {
             }}>
               <Typography variant="h3">{value.toLocaleString("en-US")}$</Typography>
               <Typography variant="body1" color={"#596ee7"} sx={{ paddingLeft: '1em' }}>{incrementalChange.toLocaleString("en-US")}$ ({percentageChange.toLocaleString('en-US')}%) Overall</Typography>
-
             </Box>
             <fetcher.Form method="post" >
               <input type="hidden" name="tickers" value={stockTickers.join(",")} />

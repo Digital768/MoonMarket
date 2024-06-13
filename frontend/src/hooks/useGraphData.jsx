@@ -10,10 +10,12 @@ function useGraphData(data, selectedGraph) {
   const [visualizationData, setVisualizationData] = useState(null);
   const [value, setValue] = useState(0);
   const [moneySpent, setMoneySpent] = useState(0);
+  const [isDataProcessed, setIsDataProcessed] = useState(false);
 
   useEffect(() => {
-    if (data) { 
+    if (data) {
       async function processData() {
+        setIsDataProcessed(false);  // Set to false before processing starts
         let graphData;
         switch (selectedGraph) {
           case "Treemap":
@@ -26,18 +28,19 @@ function useGraphData(data, selectedGraph) {
           default:
             graphData = await processTreemapData(data.data, token);
         }
-        
+
         const { tickers, sum, totalSpent } = await getPortfolioStats(data.data, token);
         setVisualizationData(graphData);
         setStockTickers(tickers);
         setValue(sum);
         setMoneySpent(totalSpent);
+        setIsDataProcessed(true);  // Set to true after processing completes
       }
       processData();
     }
   }, [data, selectedGraph]);
 
-  return [stockTickers, visualizationData, value, moneySpent];
+  return [stockTickers, visualizationData, value, moneySpent, isDataProcessed];
 }
 
 export default useGraphData;

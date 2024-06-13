@@ -18,7 +18,7 @@ function Sidebar() {
     const { setSelectedGraph } = useContext(GraphContext);
 
     useEffect(() => {
-        if (location.pathname === '/portfolio') {
+        if (selectedIndex === undefined) {
             setSelectedIndex(0);
         }
     }, [location.pathname]);

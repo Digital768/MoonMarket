@@ -1,11 +1,12 @@
 import { useMemo, useRef } from "react";
 import * as d3 from "d3";
 import "@/styles/donut-chart.css";
+import { useNavigate } from "react-router-dom";
 
 
 const MARGIN_X = 150;
 const MARGIN_Y = 50;
-const INFLEXION_PADDING = 20; // space between donut and label inflexion point
+const INFLEXION_PADDING = 35; // space between donut and label inflexion point
 
 const colors = [
   "#e0ac2b",
@@ -14,10 +15,14 @@ const colors = [
   "#9a6fb0",
   "#a53253",
   "#69b3a2",
+  "#4caf50", // Alternative color 1
+  "#2196f3", // Alternative color 2
+  "#f44336"  // Alternative color 3
 ];
 
 export const DonutChart = ({ width, height, data }) => {
   const ref = useRef(null);
+  const navigate = useNavigate();
 
   const radius = Math.min(width - 2 * MARGIN_X, height - 2 * MARGIN_Y) / 2;
   const innerRadius = radius / 2;
@@ -54,18 +59,31 @@ export const DonutChart = ({ width, height, data }) => {
     const textAnchor = isRightLabel ? "start" : "end";
     const label = grp.data.name + " (" + grp.value.toLocaleString("en-US") + "$)";
 
+    const navigateToStockPage = (stockData) => {
+      if (stockData.name === 'Others') {
+        return
+      }
+      navigate(`/portfolio/${stockData.name}`, {
+        state: {
+          quantity: stockData.quantity,
+          // percentageOfPortfolio: stockData.percentageOfPortfolio,
+        },
+      });
+    };
+
     return (
       <g
         key={i}
         className="slice"
+        onClick={() => navigateToStockPage(grp.data)} // Navigate on click
         onMouseEnter={() => {
           if (ref.current) {
-            ref.current.classList.add(hasHighlight);
+            ref.current.classList.add("hasHighlight");
           }
         }}
         onMouseLeave={() => {
           if (ref.current) {
-            ref.current.classList.remove(hasHighlight);
+            ref.current.classList.remove("hasHighlight");
           }
         }}
       >
@@ -76,16 +94,16 @@ export const DonutChart = ({ width, height, data }) => {
           y1={centroid[1]}
           x2={inflexionPoint[0]}
           y2={inflexionPoint[1]}
-          stroke={"black"}
-          fill={"black"}
+          stroke={"white"}
+          fill={"white"}
         />
         <line
           x1={inflexionPoint[0]}
           y1={inflexionPoint[1]}
           x2={labelPosX}
           y2={inflexionPoint[1]}
-          stroke={"black"}
-          fill={"black"}
+          stroke={"white"}
+          fill={"white"}
         />
         <text
           x={labelPosX + (isRightLabel ? 2 : -2)}
@@ -93,6 +111,7 @@ export const DonutChart = ({ width, height, data }) => {
           textAnchor={textAnchor}
           dominantBaseline="middle"
           fontSize={14}
+          fill={"white"}
         >
           {label}
         </text>
