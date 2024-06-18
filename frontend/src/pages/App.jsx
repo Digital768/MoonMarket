@@ -15,6 +15,7 @@ import SyncIcon from '@mui/icons-material/Sync';
 import { GraphContext } from '@/pages/ProtectedRoute';
 import { useEffect, useContext } from "react";
 import { DonutChart } from "@/components/DonutChart";
+import { CircularPacking } from "@/components/CircularPackingChart";
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -65,11 +66,12 @@ function App() {
   const incrementalChange = (value - moneySpent);
   const percentageChange = ((incrementalChange / value) * 100);
 
-  useEffect(() => {
-    console.log(visualizationData);
-  }, [data, visualizationData]);
+  // useEffect(() => {
+  //   console.log(visualizationData);
+  // }, [data, visualizationData]);
 
   const renderGraph = () => {
+    // todo: add skeletons or loading component when switching between graphs
     if (!isDataProcessed) {
       switch (selectedGraph) {
         case "DonutChart":
@@ -101,10 +103,10 @@ function App() {
         );
       case "Circular":
         return (
-          !visualizationData || !visualizationData.children || visualizationData.children.length === 0 ? (
+          !visualizationData ? (
             <TreeMapSkeleton />
           ) : (
-            <Treemap data={visualizationData} width={1000} height={600} />
+            <CircularPacking data={visualizationData} width={1100} height={700} />
           )
         );
       case "ListGraph":

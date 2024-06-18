@@ -2,6 +2,7 @@ import { useMemo, useRef } from "react";
 import * as d3 from "d3";
 import "@/styles/donut-chart.css";
 import { useNavigate } from "react-router-dom";
+import { Box } from "@mui/material";
 
 
 const MARGIN_X = 150;
@@ -26,6 +27,7 @@ export const DonutChart = ({ width, height, data }) => {
 
   const radius = Math.min(width - 2 * MARGIN_X, height - 2 * MARGIN_Y) / 2;
   const innerRadius = radius / 2;
+  const verticalOffset = 18; // Adjust this value as needed
 
   const pie = useMemo(() => {
     const pieGenerator = d3.pie().value((d) => d.value);
@@ -58,6 +60,7 @@ export const DonutChart = ({ width, height, data }) => {
     const labelPosX = inflexionPoint[0] + 50 * (isRightLabel ? 1 : -1);
     const textAnchor = isRightLabel ? "start" : "end";
     const label = grp.data.name + " (" + grp.value.toLocaleString("en-US") + "$)";
+    const percentageOfPortfolio = grp.data.percentageOfPortfolio;
 
     const navigateToStockPage = (stockData) => {
       if (stockData.name === 'Others') {
@@ -66,7 +69,7 @@ export const DonutChart = ({ width, height, data }) => {
       navigate(`/portfolio/${stockData.name}`, {
         state: {
           quantity: stockData.quantity,
-          // percentageOfPortfolio: stockData.percentageOfPortfolio,
+          percentageOfPortfolio: stockData.percentageOfPortfolio,
         },
       });
     };
@@ -114,6 +117,15 @@ export const DonutChart = ({ width, height, data }) => {
           fill={"white"}
         >
           {label}
+        </text>
+        <text
+         x={labelPosX + (isRightLabel ? 2 : -2)}
+         y={inflexionPoint[1] + verticalOffset}
+         textAnchor={textAnchor}
+         dominantBaseline="middle"
+         fontSize={14}
+         fill={"white"}>
+        {percentageOfPortfolio}%
         </text>
       </g>
     );

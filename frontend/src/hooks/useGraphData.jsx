@@ -1,7 +1,7 @@
 import { useAuth } from "@/pages/AuthProvider";
 import "@/styles/App.css";
 import "@/styles/portfolio.css";
-import { processTreemapData, getPortfolioStats, processDonutData } from "@/utils/dataProcessing.js";
+import { processTreemapData, getPortfolioStats, processDonutData, processCircularData } from "@/utils/dataProcessing.js";
 import { useEffect, useState } from "react";
 
 function useGraphData(data, selectedGraph) {
@@ -25,6 +25,9 @@ function useGraphData(data, selectedGraph) {
             graphData = await processDonutData(data.data, token);
             break;
           // Add cases for other graph types if needed
+          case "Circular":
+            graphData = await processCircularData(data.data,token)
+            break;
           default:
             graphData = await processTreemapData(data.data, token);
         }

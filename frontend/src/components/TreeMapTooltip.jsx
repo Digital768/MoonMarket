@@ -1,9 +1,10 @@
 import { Tooltip, Typography, Divider, Box } from "@mui/material";
 import '@/styles/tooltip.css'
 
-function TreeMapTooltip({
+function CustomTooltip({
   children,
   ticker,
+  name,
   quantity,
   percentageOfPortfolio,
   value,
@@ -22,7 +23,7 @@ function TreeMapTooltip({
             padding: 2,
           }}
         >
-          <Typography variant="body1">{ticker}</Typography>
+          <Typography variant="body1">{name}</Typography>
           <Divider />
           <ul
             style={{
@@ -76,46 +77,4 @@ function TreeMapTooltip({
   );
 }
 
-export default TreeMapTooltip;
-// const TooltipContent = ({
-//   children,
-//   ticker,
-//   quantity,
-//   percentageOfPortfolio,
-//   priceChangePercentage,
-// }) => {
-//   return (
-//     <Tooltip
-//       followCursor
-//       title={
-//         <div>
-//           <Typography variant="body1">Ticker: {ticker}</Typography>
-//           <Typography variant="body1">Quantity: {quantity}</Typography>
-//           <Typography variant="body1">
-//             Percentage of Portfolio: {percentageOfPortfolio}%
-//           </Typography>
-//           <Typography variant="body1">
-//             Price Change Percentage: {priceChangePercentage}%
-//           </Typography>
-//           {/* Add any other properties you want to display */}
-//         </div>
-//       }
-//       slotProps={{
-//         popper: {
-//           modifiers: [
-//             {
-//               name: "offset",
-//               options: {
-//                 offset: [0, 14],
-//               },
-//             },
-//           ],
-//         },
-//       }}
-//     >
-//       {children}
-//     </Tooltip>
-//   );
-// };
-
-// export default TooltipContent;
+export default CustomTooltip;

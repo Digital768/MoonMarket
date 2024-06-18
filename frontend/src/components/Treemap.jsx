@@ -4,7 +4,7 @@ import * as d3 from "d3";
 import { useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 // import { Typography } from '@mui/material';
-import TreeMapTooltip from "@/components/TreeMapTooltip";
+import CustomTooltip from "@/components/TreeMapTooltip";
 
 export const Treemap = ({ width, height, data }) => {
   const navigate = useNavigate();
@@ -59,10 +59,11 @@ export const Treemap = ({ width, height, data }) => {
       avgSharePrice,
       value,
       last_price,
+      name
     } = leaf.data;
 
     return (
-      <TreeMapTooltip
+      <CustomTooltip
         percentageOfPortfolio={percentageOfPortfolio}
         quantity={quantity}
         ticker={ticker}
@@ -70,6 +71,7 @@ export const Treemap = ({ width, height, data }) => {
         avgSharePrice={avgSharePrice}
         value={value}
         key={i}
+        name={name}
       >
         <g key={i} className="rectangle">
           <rect
@@ -105,7 +107,7 @@ export const Treemap = ({ width, height, data }) => {
             {leaf.data.priceChangePercentage}%
           </text>
         </g>
-      </TreeMapTooltip>
+      </CustomTooltip>
     );
   });
 

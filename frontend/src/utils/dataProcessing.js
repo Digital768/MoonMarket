@@ -126,7 +126,7 @@ export async function processDonutData(data, token) {
   stockCollection.forEach((holding, i) => {
     const res = results[i];
     const value = holding.quantity * res.price;
-    const percentageOfPortfolio = (value / totalPortfolioValue) * 100;
+    const percentageOfPortfolio = Math.round((value / totalPortfolioValue) * 100);
 
     stocks.push({
       name: holding.ticker,
@@ -148,6 +148,60 @@ export async function processDonutData(data, token) {
   }
 
   return stocks;
+}
+
+export async function processCircularData(data, token) {
+  const stockCollection = data.holdings;
+  let children = []
+  let sum = 0;
+  let totalPortfolioValue = 0;
+  let promises = stockCollection.map((holding) =>
+    getStockFromPortfolio(holding.ticker, token)
+  );
+  let results = await Promise.all(promises);
+
+  results.forEach((res, i) => {
+    const holding = stockCollection[i];
+    const value = holding.quantity * res.price;
+    totalPortfolioValue += value;
+  });
+
+
+  for (let i = 0; i < results.length; i++) {
+    const res = results[i];
+    const holding = stockCollection[i];
+    const value = holding.quantity * res.price;
+    const ticker = holding.ticker;
+    sum += value;
+    const stock_avg_price = holding.avg_bought_price;
+    const percentageOfPortfolio = Math.round((value / totalPortfolioValue) * 100);
+    let stockType
+    if (res.price > stock_avg_price) {
+      stockType = 'positive'
+    }
+    else {
+      stockType = 'negative'
+    }
+    children.push({
+      type:'leaf',
+      ticker: ticker,
+      name: res.name,
+      value: value,
+      stockType: stockType,
+      quantity: holding.quantity,
+      avgSharePrice: stock_avg_price,
+      last_price: res.price,
+      percentageOfPortfolio: percentageOfPortfolio
+    })
+  }
+
+  const circularDataObject = {
+    type:'node',
+    name:'stocks',
+    value: sum,
+    children: children
+  }
+  return circularDataObject;
 }
 
 
