@@ -93,7 +93,7 @@ function Sidebar() {
                                 <ListItem disablePadding>
                                     <ListItemButton
                                         selected={selectedIndex === 3}
-                                        onClick={() => handleListItemClick(3, "ListGraph")}
+                                        onClick={() => handleListItemClick(3, "TableGraph")}
                                     >
                                         <ListItemIcon>
                                             <TocSharpIcon />

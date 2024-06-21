@@ -150,6 +150,35 @@ export async function processDonutData(data, token) {
   return stocks;
 }
 
+export function processTableData(stocksList, stocksInfo) {
+  console.log("stocksList", stocksList);
+  console.log("stocksInfo", stocksInfo);
+  let tableData = [];
+  stocksList.forEach((stock, i) => {
+    const value = stock.quantity * stocksInfo[i].price
+    const ticker = stock.ticker
+    const name = stocksInfo[i].name
+    const avg_bought_price = stock.avg_bought_price
+    const priceChange = stocksInfo[i].price - avg_bought_price
+    const priceChangePercentage = Math.round(
+      ((stocksInfo[i].price - avg_bought_price) / avg_bought_price) * 100
+    )
+
+    tableData.push({
+      ticker: ticker,
+      name: name,
+      value: value,
+      priceChange: priceChange,
+      priceChangePercentage: priceChangePercentage,
+      sharePrice: stocksInfo[i].price,
+      earnings: stocksInfo[i].earnings
+    });
+  })
+  tableData.sort((a, b) => b.value - a.value);
+
+  return tableData;
+}
+
 export async function processCircularData(data, token) {
   const stockCollection = data.holdings;
   let children = []
@@ -183,7 +212,7 @@ export async function processCircularData(data, token) {
       stockType = 'negative'
     }
     children.push({
-      type:'leaf',
+      type: 'leaf',
       ticker: ticker,
       name: res.name,
       value: value,
@@ -196,8 +225,8 @@ export async function processCircularData(data, token) {
   }
 
   const circularDataObject = {
-    type:'node',
-    name:'stocks',
+    type: 'node',
+    name: 'stocks',
     value: sum,
     children: children
   }
@@ -215,7 +244,7 @@ export function lastUpdateDate(data) {
     hour: "2-digit",
     minute: "2-digit",
   });
-  return { formattedDate}
+  return { formattedDate }
 }
 //   // Add similar function for Cake graph data processing
 //   export async function processCakeGraphData(data, token) {

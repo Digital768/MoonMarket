@@ -16,6 +16,7 @@ import { GraphContext } from '@/pages/ProtectedRoute';
 import { useEffect, useContext } from "react";
 import { DonutChart } from "@/components/DonutChart";
 import { CircularPacking } from "@/components/CircularPackingChart";
+import ReactVirtualizedTable from '@/components/TableChart'
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -78,7 +79,7 @@ function App() {
           return <DonutSkeleton />;
         case "Treemap":
         case "Circular":
-        case "ListGraph":
+        case "TableGraph":
         default:
           return <TreeMapSkeleton />;
       }
@@ -109,14 +110,10 @@ function App() {
             <CircularPacking data={visualizationData} width={1100} height={700} />
           )
         );
-      case "ListGraph":
+      case "TableGraph":
         return (
-          !visualizationData || !visualizationData.children || visualizationData.children.length === 0 ? (
-            <TreeMapSkeleton />
-          ) : (
-            <Treemap data={visualizationData} width={1000} height={600} />
-          )
-        );
+            <ReactVirtualizedTable data={visualizationData} />
+        )
       default:
         return null;
     }

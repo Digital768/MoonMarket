@@ -30,16 +30,14 @@ function StockItem() {
     if (data) {
       const res = data;
       const options = { day: "2-digit", month: "2-digit", year: "numeric" };
-      const formattedDate = new Date(
-        res.earningsAnnouncement
-      ).toLocaleDateString("en-GB", options);
+      
 
       const stockInfo = {
         ticker: res.symbol,
         name: res.name,
         price: res.price,
         exchange: res.exchange,
-        earningsAnnouncement: formattedDate, // use the formattedDate variable here
+        earningsAnnouncement: res.earningsAnnouncement, 
         priceAvg50: res.priceAvg50,
         priceAvg200: res.priceAvg200,
         yearHigh: res.yearHigh,

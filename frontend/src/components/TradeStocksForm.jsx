@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate} from "react-router-dom";
 
@@ -35,26 +35,36 @@ function TradeStocksForm({ stock, token, cancelAction }) {
 
   const onSubmit = async (data) => {
     try {
-
+      const portfolioStock = {
+        name: stock.name,
+        ticker: stock.ticker,
+        description: stock.description,
+        price: stock.price,
+      };
+  
+      // Only include earnings if it's not null
+      if (stock.earningsAnnouncement !== null) {
+        portfolioStock.earnings = stock.earningsAnnouncement;
+      }
+  
       await addStockMutation({
-        portfolioStock: {
-          name: stock.name,
-          ticker: stock.ticker,
-          description: stock.description,
-          price: stock.price,
-        },
+        portfolioStock,
         price: data.price,
         quantity: data.quantity,
         token,
       });
       navigate("/portfolio");
     } catch (error) {
-      if (error.response.status > 200) {
+      if (error.response && error.response.status > 200) {
         setServerError("ERROR! " + error.response.data.detail);
       }
       console.error("Error:", error);
     }
   };
+
+  useEffect(()=>{
+    console.log(stock)
+  }, [])
 
   return (
     <Box
