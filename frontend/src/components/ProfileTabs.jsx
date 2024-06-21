@@ -123,7 +123,7 @@ export function TabsDemo({ username, current_balance }) {
           <Form method="post" ref={money}>
             <CardContent className="space-y-2">
               <div className="space-y-1">
-                <Label htmlFor="new">Amount of money</Label>
+                <Label htmlFor="new">$$$</Label>
                 <Input id="new" type="number" name="money" />
               </div>
             </CardContent>

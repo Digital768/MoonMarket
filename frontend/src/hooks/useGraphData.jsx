@@ -24,24 +24,24 @@ function useGraphData(data, selectedGraph) {
         if (stocksInfo.length > 0) {
           switch (selectedGraph) {
             case "Treemap":
-              graphData = await processTreemapData(data.data, token);
+              graphData = await processTreemapData(stockList, stocksInfo);
               break;
             case "DonutChart":
-              graphData = await processDonutData(data.data, token);
+              graphData = await processDonutData(stockList, stocksInfo);
               break;
             // Add cases for other graph types if needed
             case "Circular":
-              graphData = await processCircularData(data.data, token)
+              graphData = await processCircularData(stockList, stocksInfo)
               break;
             case "TableGraph":
               graphData = processTableData(stockList, stocksInfo)
               break;
             default:
-              graphData = await processTreemapData(data.data, token);
+              graphData = await processTreemapData(stockList, stocksInfo);
           }
         }
 
-        const { tickers, sum, totalSpent } = await getPortfolioStats(data.data, token);
+        const { tickers, sum, totalSpent } = await getPortfolioStats(stockList, stocksInfo);
         setVisualizationData(graphData);
         setStockTickers(tickers);
         setValue(sum);
@@ -50,7 +50,7 @@ function useGraphData(data, selectedGraph) {
       }
       processData();
     }
-  }, [data, selectedGraph, stocksInfo]);
+  }, [selectedGraph, stocksInfo]);
 
   return [stockTickers, visualizationData, value, moneySpent, isDataProcessed];
 }

@@ -105,6 +105,15 @@ export default function CustomizedTables({ data }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+  const formatEarnings = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    const month = date.toLocaleString('default', { month: 'short' });
+    const day = date.getDate();
+    const year = date.getFullYear();
+    return `${month} ${day}, ${year}`;
+};
+
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
@@ -127,14 +136,14 @@ export default function CustomizedTables({ data }) {
             <StyledTableCell>Ticker</StyledTableCell>
             <StyledTableCell align="right">Type</StyledTableCell>
             <StyledTableCell align="right">Description</StyledTableCell>
-            <StyledTableCell align="right">Poisition price</StyledTableCell>
+            <StyledTableCell align="right">Position price</StyledTableCell>
             <StyledTableCell align="right">Date</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {(rowsPerPage > 0
             ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
+            : data
           ).map((transaction) => (
             <StyledTableRow key={transaction._id}>
               <StyledTableCell component="th" scope="row" style={{ width: 60 }}>
@@ -147,10 +156,10 @@ export default function CustomizedTables({ data }) {
                 {transaction.text}
               </StyledTableCell>
               <StyledTableCell style={{ width: 100 }} align="right">
-                {transaction.price*transaction.quantity}$
+                {(transaction.price*transaction.quantity).toFixed(2)}$
               </StyledTableCell>
               <StyledTableCell style={{ width: 160 }} align="right">
-                {transaction.transaction_date}
+                {formatEarnings(transaction.transaction_date)}
               </StyledTableCell>
             </StyledTableRow>
           ))}

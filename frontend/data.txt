@@ -142,3 +142,94 @@ Array(0)
 username
 : 
 "Ben"
+
+
+
+tabelchart sample data:
+
+const sampleData = [
+    {
+        "name": "Riot Blockchain, Inc.",
+        "priceChange": -7.020000000000001,
+        "priceChangePercentage": -40,
+        "ticker": "RIOT",
+        "value": 562.68
+    },
+    {
+        "name": "Marathon Digital Holdings, Inc.",
+        "priceChange": -2.7399999999999984,
+        "priceChangePercentage": -12,
+        "ticker": "MARA",
+        "value": 1508.18
+    },
+    {
+        "name": "Bit Digital, Inc.",
+        "priceChange": -1.65,
+        "priceChangePercentage": -37,
+        "ticker": "BTBT",
+        "value": 1281.28
+    },
+    {
+        "name": "CleanSpark, Inc.",
+        "priceChange": 5.090000000000002,
+        "priceChangePercentage": 36,
+        "ticker": "CLSK",
+        "value": 3565.6200000000003
+    },
+    {
+        "name": "Coinbase Global, Inc.",
+        "priceChange": 58.129999999999995,
+        "priceChangePercentage": 33,
+        "ticker": "COIN",
+        "value": 940.12
+    },
+    {
+        "name": "Iris Energy Limited",
+        "priceChange": 6.970000000000001,
+        "priceChangePercentage": 101,
+        "ticker": "IREN",
+        "value": 1570.7
+    },
+    {
+        "name": "TeraWulf Inc.",
+        "priceChange": 2.28,
+        "priceChangePercentage": 97,
+        "ticker": "WULF",
+        "value": 1060.27
+    },
+    {
+        "name": "Cipher Mining Inc.",
+        "priceChange": 1.4000000000000004,
+        "priceChangePercentage": 36,
+        "ticker": "CIFR",
+        "value": 1310
+    },
+    {
+        "name": "Core Scientific, Inc.",
+        "priceChange": 4.29,
+        "priceChangePercentage": 89,
+        "ticker": "CORZ",
+        "value": 190.89
+    },
+    {
+        "name": "HIVE Blockchain Technologies Ltd.",
+        "priceChange": -1.7799999999999998,
+        "priceChangePercentage": -35,
+        "ticker": "HIVE",
+        "value": 309.12
+    },
+    {
+        "name": "Bitfarms Ltd.",
+        "priceChange": 0.9100000000000001,
+        "priceChangePercentage": 41,
+        "ticker": "BITF",
+        "value": 698.88
+    },
+    {
+        "name": "iShares Bitcoin Trust",
+        "priceChange": 5.93,
+        "priceChangePercentage": 19,
+        "ticker": "IBIT",
+        "value": 259.28
+    }
+]

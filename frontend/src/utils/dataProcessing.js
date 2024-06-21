@@ -1,20 +1,14 @@
 import { getStockFromPortfolio } from "@/api/stock";
 
 
-export async function getPortfolioStats(data, token) {
-  const stockCollection = data.holdings;
+export async function getPortfolioStats(stocksList, stocksInfo) {
   let tickers = [];
   let sum = 0;
   let totalSpent = 0;
 
-  let promises = stockCollection.map((holding) =>
-    getStockFromPortfolio(holding.ticker, token)
-  );
-  let results = await Promise.all(promises);
-
-  for (let i = 0; i < results.length; i++) {
-    const res = results[i];
-    const holding = stockCollection[i];
+  for (let i = 0; i < stocksInfo.length; i++) {
+    const res = stocksInfo[i];
+    const holding = stocksList[i];
     const stock_avg_price = holding.avg_bought_price;
     const value = holding.quantity * res.price;
     sum += value;
@@ -26,20 +20,14 @@ export async function getPortfolioStats(data, token) {
   return { tickers, sum, totalSpent };
 }
 
-export async function processTreemapData(data, token) {
-  const stockCollection = data.holdings;
+export async function processTreemapData(stocksList, stocksInfo) {
   const positiveStocks = [];
   const negativeStocks = [];
   let sum = 0;
 
-  let promises = stockCollection.map((holding) =>
-    getStockFromPortfolio(holding.ticker, token)
-  );
-  let results = await Promise.all(promises);
-
-  for (let i = 0; i < results.length; i++) {
-    const res = results[i];
-    const holding = stockCollection[i];
+  for (let i = 0; i < stocksInfo.length; i++) {
+    const res = stocksInfo[i];
+    const holding = stocksList[i];
     const stock_avg_price = holding.avg_bought_price;
     const value = holding.quantity * res.price;
     sum += value;
@@ -105,26 +93,20 @@ export async function processTreemapData(data, token) {
   return newStocksTree;
 }
 
-export async function processDonutData(data, token) {
-  const stockCollection = data.holdings;
+export async function processDonutData(stocksList, stocksInfo) {
+  
   let stocks = [];
   let totalPortfolioValue = 0;
 
-  // Fetch stock prices and calculate total portfolio value
-  let promises = stockCollection.map((holding) =>
-    getStockFromPortfolio(holding.ticker, token)
-  );
-  let results = await Promise.all(promises);
-
-  results.forEach((res, i) => {
-    const holding = stockCollection[i];
+  stocksInfo.forEach((res, i) => {
+    const holding = stocksList[i];
     const value = holding.quantity * res.price;
     totalPortfolioValue += value;
   });
 
   // Calculate percentage of portfolio for each stock
-  stockCollection.forEach((holding, i) => {
-    const res = results[i];
+  stocksList.forEach((holding, i) => {
+    const res = stocksInfo[i];
     const value = holding.quantity * res.price;
     const percentageOfPortfolio = Math.round((value / totalPortfolioValue) * 100);
 
@@ -151,8 +133,14 @@ export async function processDonutData(data, token) {
 }
 
 export function processTableData(stocksList, stocksInfo) {
-  console.log("stocksList", stocksList);
-  console.log("stocksInfo", stocksInfo);
+  // console.log("stocksList", stocksList);
+  // console.log("stocksInfo", stocksInfo);
+  let totalPortfolioValue = 0;
+  stocksInfo.forEach((res, i) => {
+    const holding = stocksList[i];
+    const value = holding.quantity * res.price;
+    totalPortfolioValue += value;
+  });
   let tableData = [];
   stocksList.forEach((stock, i) => {
     const value = stock.quantity * stocksInfo[i].price
@@ -163,6 +151,7 @@ export function processTableData(stocksList, stocksInfo) {
     const priceChangePercentage = Math.round(
       ((stocksInfo[i].price - avg_bought_price) / avg_bought_price) * 100
     )
+    const percentageOfPortfolio = Math.round((value / totalPortfolioValue) * 100);
 
     tableData.push({
       ticker: ticker,
@@ -171,7 +160,9 @@ export function processTableData(stocksList, stocksInfo) {
       priceChange: priceChange,
       priceChangePercentage: priceChangePercentage,
       sharePrice: stocksInfo[i].price,
-      earnings: stocksInfo[i].earnings
+      earnings: stocksInfo[i].earnings,
+      quantity: stock.quantity,
+      percentageOfPortfolio: percentageOfPortfolio
     });
   })
   tableData.sort((a, b) => b.value - a.value);
@@ -179,26 +170,23 @@ export function processTableData(stocksList, stocksInfo) {
   return tableData;
 }
 
-export async function processCircularData(data, token) {
-  const stockCollection = data.holdings;
+export async function processCircularData(stocksList, stocksInfo) {
+
   let children = []
   let sum = 0;
   let totalPortfolioValue = 0;
-  let promises = stockCollection.map((holding) =>
-    getStockFromPortfolio(holding.ticker, token)
-  );
-  let results = await Promise.all(promises);
 
-  results.forEach((res, i) => {
-    const holding = stockCollection[i];
+
+  stocksInfo.forEach((res, i) => {
+    const holding = stocksList[i];
     const value = holding.quantity * res.price;
     totalPortfolioValue += value;
   });
 
 
-  for (let i = 0; i < results.length; i++) {
-    const res = results[i];
-    const holding = stockCollection[i];
+  for (let i = 0; i < stocksInfo.length; i++) {
+    const res = stocksInfo[i];
+    const holding = stocksList[i];
     const value = holding.quantity * res.price;
     const ticker = holding.ticker;
     sum += value;

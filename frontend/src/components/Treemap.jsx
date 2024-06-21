@@ -4,7 +4,7 @@ import * as d3 from "d3";
 import { useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 // import { Typography } from '@mui/material';
-import CustomTooltip from "@/components/TreeMapTooltip";
+import CustomTooltip from "@/components/CustomToolTip";
 
 export const Treemap = ({ width, height, data }) => {
   const navigate = useNavigate();

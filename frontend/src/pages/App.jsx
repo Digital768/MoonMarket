@@ -138,7 +138,7 @@ function App() {
           <Box sx={{
             display: 'flex',
             flexDirection: 'row',
-            marginBottom: '10em',
+            marginBottom: '2em',
           }}>
             <Box className="portfolio-details" sx={{
               display: 'flex',

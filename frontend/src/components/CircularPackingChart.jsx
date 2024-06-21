@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useMemo } from "react";
 import * as d3 from "d3";
 import { useTheme } from "@mui/material";
-import CustomTooltip from "@/components/TreeMapTooltip";
+import CustomTooltip from "@/components/CustomToolTip";
 
 export const CircularPacking = ({ width, height, data }) => {
     const svgRef = useRef(null);
