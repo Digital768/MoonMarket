@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import React, { useState, useEffect, useContext} from 'react';
-import mainlogo from '../../public/moonMarket_logo.png';
+import mainlogo from '../../public/uptrendMoon.png';
 import { Link, useLocation } from 'react-router-dom';
 import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import DonutLargeIcon from '@mui/icons-material/DonutLarge';
@@ -34,17 +34,17 @@ function Sidebar() {
             return (
                 <Box sx={{
                     backgroundColor: '#1d1d1d',
-                    width: 60,
+                    width: 70,
                     height: '100vh',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}>
                     <Box className="logo1" sx={{
-                        paddingTop: '30px',
+                        paddingTop: '50px',
                     }}>
                         <Link to="/portfolio" className="logo">
-                            <img src={mainlogo} style={{ height: '40px', width: '40px' }} />
+                            <img src={mainlogo} style={{ height: '60px', width: '70px' }} />
                         </Link>
                     </Box>
                     <Box className="Nav-views" sx={{
@@ -109,17 +109,17 @@ function Sidebar() {
             return (
                 <Box sx={{
                     backgroundColor: '#1d1d1d',
-                    width: 60,
+                    width: 70,
                     height: '100vh',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}>
                     <Box className="logo1" sx={{
-                        paddingTop: '30px',
+                        paddingTop: '50px',
                     }}>
                         <Link to="/portfolio" className="logo">
-                            <img src={mainlogo} style={{ height: '50px', width: '50px' }} />
+                            <img src={mainlogo} style={{ height: '60px', width: '70px' }} />
                         </Link>
                     </Box>
                 </Box>
