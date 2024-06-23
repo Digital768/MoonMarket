@@ -2,10 +2,24 @@ import '@/styles/searchBar.css';
 import SearchIcon from '@mui/icons-material/Search';
 import { TextField } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
+import { styled } from '@mui/material/styles';
+import { useLocation } from 'react-router-dom';
+
+const StyledTextField = styled(TextField)({
+  '& .MuiInputBase-input': {
+    '&:-webkit-autofill': {
+      WebkitBoxShadow: '0 0 0 1000px transparent inset',
+      WebkitTextFillColor: 'inherit',
+      caretColor: 'inherit',
+      transition: 'background-color 5000s ease-in-out 0s',
+    },
+  },
+});
 
 function SearchBar() {
+  const location = useLocation();
   const [tickerInput, setTickerInput] = useState(""); // State to store the typed ticker input
   const navigate = useNavigate();
 
@@ -43,6 +57,11 @@ function SearchBar() {
     }
   };
 
+  useEffect(() => {
+    if (location.pathname === '/portfolio') {
+      setTickerInput("");
+    }
+  }, [location.pathname])
 
   return (
 
@@ -51,8 +70,7 @@ function SearchBar() {
         <form onSubmit={handleSubmit}>
           {/* <CiSearch className="search-icon" />{" "} */}
           {/* Place CiSearch component before the input */}
-          <TextField
-            // className="search-input"
+          <StyledTextField
             type="text"
             name="ticker"
             InputProps={{

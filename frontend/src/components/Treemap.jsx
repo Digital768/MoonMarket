@@ -91,7 +91,7 @@ export const Treemap = ({ width, height, data }) => {
             textAnchor="middle"
             alignmentBaseline="middle"
             fill="white"
-            className="font-bold"
+            className="font-medium"
           >
             {leaf.data.ticker}
           </text>

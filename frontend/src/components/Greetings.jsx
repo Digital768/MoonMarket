@@ -2,6 +2,7 @@ import { Box, Divider, Typography } from '@mui/material'
 import AccountMenu from '@/components/AccountMenu';
 import React from 'react'
 import { useState } from 'react';
+import SearchBar from "@/components/SearchBar.jsx";
 
 
 function Greetings({ username }) {
@@ -23,6 +24,7 @@ function Greetings({ username }) {
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
+                alignItems:'center',
 
             }}>
                 <Box className="Greetings" sx={{
@@ -30,6 +32,11 @@ function Greetings({ username }) {
                 }}>
                     <Typography variant="h4">Hello, {username}</Typography>
                     <Typography color={"#BDBDBD"} variant='subtitle1'>{formattedDate}</Typography>
+                </Box>
+                <Box sx={{
+                    marginRight:'11em'
+                }}>
+                <SearchBar />
                 </Box>
                 <AccountMenu />
             </Box>

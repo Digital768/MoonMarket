@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
-import React, { useState, useEffect, useContext} from 'react';
-import mainlogo from '../../public/uptrendMoon.png';
+import React, { useState, useEffect, useContext } from 'react';
+import mainlogo from '../../public/ToTheMoon.png';
 import { Link, useLocation } from 'react-router-dom';
 import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import DonutLargeIcon from '@mui/icons-material/DonutLarge';
@@ -10,7 +10,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import BlurCircularIcon from '@mui/icons-material/BlurCircular';
-import {GraphContext} from '@/pages/ProtectedRoute'
+import { GraphContext } from '@/pages/ProtectedRoute'
 
 function Sidebar() {
     const location = useLocation();
@@ -41,10 +41,10 @@ function Sidebar() {
                     alignItems: 'center',
                 }}>
                     <Box className="logo1" sx={{
-                        paddingTop: '50px',
+                        paddingTop: '30px',
                     }}>
                         <Link to="/portfolio" className="logo">
-                            <img src={mainlogo} style={{ height: '60px', width: '70px' }} />
+                            <img src={mainlogo} style={{ height: '120px', width: '70px' }} />
                         </Link>
                     </Box>
                     <Box className="Nav-views" sx={{
@@ -63,7 +63,7 @@ function Sidebar() {
                                 <ListItem disablePadding>
                                     <ListItemButton
                                         selected={selectedIndex === 0}
-                                        onClick={() => handleListItemClick(0, "Treemap")}   
+                                        onClick={() => handleListItemClick(0, "Treemap")}
                                     >
                                         <ListItemIcon>
                                             <AutoAwesomeMosaicIcon />
@@ -116,10 +116,10 @@ function Sidebar() {
                     alignItems: 'center',
                 }}>
                     <Box className="logo1" sx={{
-                        paddingTop: '50px',
+                        paddingTop: '30px',
                     }}>
                         <Link to="/portfolio" className="logo">
-                            <img src={mainlogo} style={{ height: '60px', width: '70px' }} />
+                            <img src={mainlogo} style={{ height: '120px', width: '70px' }} />
                         </Link>
                     </Box>
                 </Box>

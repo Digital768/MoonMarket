@@ -17,6 +17,10 @@ import { useEffect, useContext } from "react";
 import { DonutChart } from "@/components/DonutChart";
 import { CircularPacking } from "@/components/CircularPackingChart";
 import ReactVirtualizedTable from '@/components/TableChart'
+import MarketStatus from '@/components/MarketStatus'
+import PortfolioValue  from '@/components/AnimatedNumber';
+
+
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -144,8 +148,10 @@ function App() {
               display: 'flex',
               flexDirection: 'column',
             }}>
-              <Typography variant="h3">{value.toLocaleString("en-US")}$</Typography>
-              <Typography variant="body1" color={"#596ee7"} sx={{ paddingLeft: '1em' }}>{incrementalChange.toLocaleString("en-US")}$ ({percentageChange.toLocaleString('en-US')}%) Overall</Typography>
+                <PortfolioValue value={value} />
+                <Typography variant="body1" color={"#596ee7"} sx={{ paddingLeft: '1em' }}>{incrementalChange.toLocaleString("en-US")}$ ({percentageChange.toLocaleString('en-US')}%) Overall</Typography>
+              
+              <MarketStatus/>
             </Box>
             <fetcher.Form method="post" >
               <input type="hidden" name="tickers" value={stockTickers.join(",")} />
@@ -164,7 +170,7 @@ function App() {
               </Tooltip>
             </fetcher.Form>
           </Box>
-          <SearchBar />
+          {/* <SearchBar /> */}
         </Container>
       </Box>
       <Box sx={{

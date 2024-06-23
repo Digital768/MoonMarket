@@ -143,6 +143,7 @@ export const CircularPacking = ({ width, height, data }) => {
                         textAnchor="middle"
                         alignmentBaseline="middle"
                         fill="white"
+                        className="font-medium"
                     >
                         {ticker}
                     </text>
