@@ -16,7 +16,7 @@ import { GraphContext } from '@/pages/ProtectedRoute';
 import { useEffect, useContext } from "react";
 import { DonutChart } from "@/components/DonutChart";
 import { CircularPacking } from "@/components/CircularPackingChart";
-import ReactVirtualizedTable from '@/components/TableChart'
+import DetailsChart from '@/components/TableChart'
 import MarketStatus from '@/components/MarketStatus'
 import PortfolioValue  from '@/components/AnimatedNumber';
 
@@ -116,7 +116,7 @@ function App() {
         );
       case "TableGraph":
         return (
-            <ReactVirtualizedTable data={visualizationData} />
+            <DetailsChart data={visualizationData} />
         )
       default:
         return null;
