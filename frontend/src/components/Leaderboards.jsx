@@ -28,11 +28,13 @@ export default function Leaderboards({ data }) {
   return (
     <Box
       sx={{
+        height: 600,
+        width: 1100,
         display: "flex",
         flexDirection: "column-reverse",
-        justifyContent: "center",
+        justifyContent: "flex-end", // Changed from "center"
         alignItems: "center",
-        gap: 2,
+        gap: page ===1 ? 1: 6
       }}
     >
       <Stack
@@ -56,7 +58,7 @@ export default function Leaderboards({ data }) {
           sx={{
             "& .MuiPagination-ul": {
               gap: 2,
-              justifyContent:'center'
+              justifyContent: 'center'
             },
           }}
         />
@@ -74,6 +76,8 @@ export default function Leaderboards({ data }) {
             backgroundRepeat: "repeat",
             width: "100%",
             height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <LeaderboardCard

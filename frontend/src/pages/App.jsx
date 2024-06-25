@@ -126,76 +126,64 @@ function App() {
         display: "flex",
         flexDirection: "row-reverse",
         height: "100%",
+        width: '100%',
         margin: "auto",
       }}
     >
-      <Box
+
+      <Box className="stats"
         sx={{
           display: "flex",
-          flexDirection: "column",
-          gap: 5,
-          alignItems: "center",
-          paddingTop: "7rem",
-          paddingLeft: "5rem",
+          flexDirection: "row",
+          justifyContent: 'center',
+          width: '25%',
+          marginTop: '5%', // This line moves the box down by 30%
+          paddingRight: '8em'
         }}
       >
-        <Container>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              marginBottom: "2em",
-            }}
+        <Box
+          className="portfolio-details"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <PortfolioValue value={value} />
+          <Typography
+            variant="body1"
+            color={"#596ee7"}
           >
-            <Box
-              className="portfolio-details"
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <PortfolioValue value={value} />
-              <Typography
-                variant="body1"
-                color={"#596ee7"}
-                sx={{ paddingLeft: "1em" }}
-              >
-                {incrementalChange.toLocaleString("en-US")}$ (
-                {percentageChange.toLocaleString("en-US")}%) Overall
-              </Typography>
+            {incrementalChange.toLocaleString("en-US")}$ (
+            {percentageChange.toLocaleString("en-US")}%) Overall
+          </Typography>
 
-              <MarketStatus />
-            </Box>
-            <fetcher.Form method="post">
-              <input
-                type="hidden"
-                name="tickers"
-                value={stockTickers.join(",")}
-              />
-              <input type="hidden" name="token" value={token} />
-              <Tooltip
-                title={`last updated at: ${formattedDate}. Click to refresh Stocks price`}
-                placement="top"
-              >
-                <Button
-                  sx={{
-                    marginTop: "15px",
-                    marginLeft: "25px",
-                    justifyContent: "flex-end",
-                  }}
-                  variant="outlined"
-                  type="submit"
-                  startIcon={<SyncIcon />}
-                ></Button>
-              </Tooltip>
-            </fetcher.Form>
-          </Box>
-          {/* <SearchBar /> */}
-        </Container>
+          <MarketStatus />
+        </Box>
+        <fetcher.Form method="post">
+          <input
+            type="hidden"
+            name="tickers"
+            value={stockTickers.join(",")}
+          />
+          <input type="hidden" name="token" value={token} />
+          <Tooltip
+            title={`last updated at: ${formattedDate}. Click to refresh Stocks price`}
+            placement="top"
+          >
+            <Button
+              sx={{
+                marginTop: "10px",
+                justifyContent: "flex-end",
+              }}
+              variant="outlined"
+              type="submit"
+              startIcon={<SyncIcon />}
+            ></Button>
+          </Tooltip>
+        </fetcher.Form>
       </Box>
-      <Box
+      <Box className="graph"
         sx={{
-          flexGrow: 1,
           margin: "auto",
           padding: 0,
         }}

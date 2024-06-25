@@ -13,15 +13,13 @@ const MarketStatus = () => {
             const minutes = israelTime.getMinutes();
             const time = hours * 60 + minutes;
 
-            // Adjust these times based on the current time difference
-            // This assumes a 7-hour difference. Adjust if it's daylight saving time.
-            if (day === 0 || day === 6) {
+            if (day === 5 || day === 6) {
                 setStatus('Closed (Weekend)');
-            } else if (time >= 1140 || time < 30) { // 7:00 PM to 12:30 AM Israel time
+            } else if (time >= 660 && time < 990) { // 11:00 to 16:30 Israel time
                 setStatus('Pre-market');
-            } else if (time >= 30 && time < 420) { // 12:30 AM to 7:00 PM Israel time
+            } else if (time >= 990 && time < 1380) { // 16:30 to 23:00 Israel time
                 setStatus('Regular market');
-            } else if (time >= 420 && time < 660) { // 7:00 PM to 11:00 PM Israel time
+            } else if ((time >= 1380 && time <= 1439) || (time >= 0 && time < 180)) { // 23:00 to 03:00 Israel time
                 setStatus('After-market');
             } else {
                 setStatus('Closed');
@@ -33,10 +31,9 @@ const MarketStatus = () => {
 
         return () => clearInterval(interval);
     }, []);
-    
+
     return <Box sx={{
-        paddingLeft: '0.5em',
-        paddingTop: '1em',
+        paddingTop: '0.5em',
     }}>
         <Typography variant="h7">Market Status: {status}</Typography>
     </Box>;
