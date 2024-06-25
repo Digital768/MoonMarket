@@ -1,7 +1,7 @@
 import { useAuth } from "@/pages/AuthProvider";
 import "@/styles/App.css";
 import "@/styles/portfolio.css";
-import { processTreemapData, getPortfolioStats, processDonutData, processCircularData, processTableData } from "@/utils/dataProcessing.js";
+import { processTreemapData, getPortfolioStats, processDonutData, processCircularData, processTableData, processLeaderboardsData } from "@/utils/dataProcessing.js";
 import { useEffect, useState } from "react";
 import useHoldingsData from '@/hooks/useHoldingsData'
 
@@ -36,6 +36,9 @@ function useGraphData(data, selectedGraph) {
             case "TableGraph":
               graphData = processTableData(stockList, stocksInfo)
               break;
+            case "Leaderboards":
+              graphData = processLeaderboardsData(stockList, stocksInfo)
+              break;
             default:
               graphData = await processTreemapData(stockList, stocksInfo);
           }
@@ -49,6 +52,7 @@ function useGraphData(data, selectedGraph) {
         setIsDataProcessed(true);  // Set to true after processing completes
       }
       processData();
+
     }
   }, [selectedGraph, stocksInfo]);
 

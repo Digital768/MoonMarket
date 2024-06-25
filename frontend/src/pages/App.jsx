@@ -5,22 +5,20 @@ import SearchBar from "@/components/SearchBar.jsx";
 import { Treemap } from "@/components/Treemap";
 import useGraphData from "@/hooks/useGraphData";
 import { useAuth } from "@/pages/AuthProvider";
-import { getUserData } from '@/api/user';
+import { getUserData } from "@/api/user";
 import { useFetcher, useLoaderData } from "react-router-dom";
-import { lastUpdateDate } from '@/utils/dataProcessing';
+import { lastUpdateDate } from "@/utils/dataProcessing";
 import { Button, Container, Typography } from "@mui/material";
 import { Box } from "@mui/material";
-import Tooltip from '@mui/material/Tooltip';
-import SyncIcon from '@mui/icons-material/Sync';
-import { GraphContext } from '@/pages/ProtectedRoute';
+import Tooltip from "@mui/material/Tooltip";
+import SyncIcon from "@mui/icons-material/Sync";
+import { GraphContext } from "@/pages/ProtectedRoute";
 import { useEffect, useContext } from "react";
 import { DonutChart } from "@/components/DonutChart";
 import { CircularPacking } from "@/components/CircularPackingChart";
-import DetailsChart from '@/components/TableChart'
-import MarketStatus from '@/components/MarketStatus'
-import PortfolioValue  from '@/components/AnimatedNumber';
-
-
+import DetailsChart from "@/components/DetailsChart";
+import MarketStatus from "@/components/MarketStatus";
+import PortfolioValue from "@/components/AnimatedNumber";
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -54,22 +52,23 @@ export const action = async ({ request }) => {
     console.error("Error updating stock prices:", error);
     return null;
   }
-}
+};
 
 export const loader = (token) => async () => {
   const user = await getUserData(token);
   return user;
-}
+};
 
 function App() {
   const { selectedGraph } = useContext(GraphContext);
   const { token } = useAuth();
   const fetcher = useFetcher();
   const data = useLoaderData();
-  const [stockTickers, visualizationData, value, moneySpent, isDataProcessed] = useGraphData(data, selectedGraph);
+  const [stockTickers, visualizationData, value, moneySpent, isDataProcessed] =
+    useGraphData(data, selectedGraph);
   const { formattedDate } = lastUpdateDate(data);
-  const incrementalChange = (value - moneySpent);
-  const percentageChange = ((incrementalChange / value) * 100);
+  const incrementalChange = value - moneySpent;
+  const percentageChange = (incrementalChange / value) * 100;
 
   // useEffect(() => {
   //   console.log(visualizationData);
@@ -84,6 +83,7 @@ function App() {
         case "Treemap":
         case "Circular":
         case "TableGraph":
+        case "Leaderboards":
         default:
           return <TreeMapSkeleton />;
       }
@@ -91,93 +91,115 @@ function App() {
 
     switch (selectedGraph) {
       case "Treemap":
-        return (
-          !visualizationData || !visualizationData.children || visualizationData.children.length === 0 ? (
-            <TreeMapSkeleton />
-          ) : (
-            <Treemap data={visualizationData} width={1000} height={600} />
-          )
+        return !visualizationData ||
+          !visualizationData.children ||
+          visualizationData.children.length === 0 ? (
+          <TreeMapSkeleton />
+        ) : (
+          <Treemap data={visualizationData} width={1000} height={600} />
         );
       case "DonutChart":
-        return (
-          !visualizationData ? (
-            <DonutSkeleton />
-          ) : (
-            <DonutChart data={visualizationData} width={1000} height={650} />
-          )
+        return !visualizationData ? (
+          <DonutSkeleton />
+        ) : (
+          <DonutChart data={visualizationData} width={1000} height={650} />
         );
       case "Circular":
-        return (
-          !visualizationData ? (
-            <TreeMapSkeleton />
-          ) : (
-            <CircularPacking data={visualizationData} width={1100} height={700} />
-          )
+        return !visualizationData ? (
+          <TreeMapSkeleton />
+        ) : (
+          <CircularPacking data={visualizationData} width={1100} height={700} />
         );
       case "TableGraph":
-        return (
-            <DetailsChart data={visualizationData} />
-        )
+        return <DetailsChart data={visualizationData} />;
+      case "Leaderboards":
+        return <DetailsChart data={visualizationData} />;
       default:
         return null;
     }
   };
 
   return (
-    <Box className="App" sx={{
-      display: 'flex',
-      flexDirection: 'row-reverse',
-      height: '100%',
-      margin: 'auto'
-    }}>
-      <Box sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 5,
-        alignItems: 'center',
-        paddingTop: '7rem',
-        paddingLeft: '5rem'
-      }}>
+    <Box
+      className="App"
+      sx={{
+        display: "flex",
+        flexDirection: "row-reverse",
+        height: "100%",
+        margin: "auto",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 5,
+          alignItems: "center",
+          paddingTop: "7rem",
+          paddingLeft: "5rem",
+        }}
+      >
         <Container>
-          <Box sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            marginBottom: '2em',
-          }}>
-            <Box className="portfolio-details" sx={{
-              display: 'flex',
-              flexDirection: 'column',
-            }}>
-                <PortfolioValue value={value} />
-                <Typography variant="body1" color={"#596ee7"} sx={{ paddingLeft: '1em' }}>{incrementalChange.toLocaleString("en-US")}$ ({percentageChange.toLocaleString('en-US')}%) Overall</Typography>
-              
-              <MarketStatus/>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              marginBottom: "2em",
+            }}
+          >
+            <Box
+              className="portfolio-details"
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <PortfolioValue value={value} />
+              <Typography
+                variant="body1"
+                color={"#596ee7"}
+                sx={{ paddingLeft: "1em" }}
+              >
+                {incrementalChange.toLocaleString("en-US")}$ (
+                {percentageChange.toLocaleString("en-US")}%) Overall
+              </Typography>
+
+              <MarketStatus />
             </Box>
-            <fetcher.Form method="post" >
-              <input type="hidden" name="tickers" value={stockTickers.join(",")} />
+            <fetcher.Form method="post">
+              <input
+                type="hidden"
+                name="tickers"
+                value={stockTickers.join(",")}
+              />
               <input type="hidden" name="token" value={token} />
-              <Tooltip title={`last updated at: ${formattedDate}. Click to refresh Stocks price`} placement="top">
-                <Button sx={{
-                  marginTop: '15px',
-                  marginLeft: '25px',
-                  justifyContent: 'flex-end'
-                }}
+              <Tooltip
+                title={`last updated at: ${formattedDate}. Click to refresh Stocks price`}
+                placement="top"
+              >
+                <Button
+                  sx={{
+                    marginTop: "15px",
+                    marginLeft: "25px",
+                    justifyContent: "flex-end",
+                  }}
                   variant="outlined"
                   type="submit"
                   startIcon={<SyncIcon />}
-                >
-                </Button>
+                ></Button>
               </Tooltip>
             </fetcher.Form>
           </Box>
           {/* <SearchBar /> */}
         </Container>
       </Box>
-      <Box sx={{
-        flexGrow: 1,
-        margin: 'auto',
-        padding: 0
-      }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          margin: "auto",
+          padding: 0,
+        }}
+      >
         {renderGraph()}
       </Box>
     </Box>

@@ -1,6 +1,5 @@
 import { getStockFromPortfolio } from "@/api/stock";
 
-
 export async function getPortfolioStats(stocksList, stocksInfo) {
   let tickers = [];
   let sum = 0;
@@ -12,7 +11,7 @@ export async function getPortfolioStats(stocksList, stocksInfo) {
     const stock_avg_price = holding.avg_bought_price;
     const value = holding.quantity * res.price;
     sum += value;
-    totalSpent += (holding.avg_bought_price * holding.quantity);
+    totalSpent += holding.avg_bought_price * holding.quantity;
     const ticker = holding.ticker;
     tickers.push(ticker);
   }
@@ -94,7 +93,6 @@ export async function processTreemapData(stocksList, stocksInfo) {
 }
 
 export async function processDonutData(stocksList, stocksInfo) {
-  
   let stocks = [];
   let totalPortfolioValue = 0;
 
@@ -108,7 +106,9 @@ export async function processDonutData(stocksList, stocksInfo) {
   stocksList.forEach((holding, i) => {
     const res = stocksInfo[i];
     const value = holding.quantity * res.price;
-    const percentageOfPortfolio = Math.round((value / totalPortfolioValue) * 100);
+    const percentageOfPortfolio = Math.round(
+      (value / totalPortfolioValue) * 100
+    );
 
     stocks.push({
       name: holding.ticker,
@@ -123,10 +123,18 @@ export async function processDonutData(stocksList, stocksInfo) {
 
   // If there are more than 8 stocks, combine the rest into "Others"
   if (stocks.length > 8) {
-    const othersValue = stocks.slice(8).reduce((acc, curr) => acc + curr.value, 0);
-    const othersPercentage = stocks.slice(8).reduce((acc, curr) => acc + curr.percentageOfPortfolio, 0);
+    const othersValue = stocks
+      .slice(8)
+      .reduce((acc, curr) => acc + curr.value, 0);
+    const othersPercentage = stocks
+      .slice(8)
+      .reduce((acc, curr) => acc + curr.percentageOfPortfolio, 0);
     stocks = stocks.slice(0, 8);
-    stocks.push({ name: "Others", value: othersValue, percentageOfPortfolio: othersPercentage });
+    stocks.push({
+      name: "Others",
+      value: othersValue,
+      percentageOfPortfolio: othersPercentage,
+    });
   }
 
   return stocks;
@@ -143,15 +151,17 @@ export function processTableData(stocksList, stocksInfo) {
   });
   let tableData = [];
   stocksList.forEach((stock, i) => {
-    const value = stock.quantity * stocksInfo[i].price
-    const ticker = stock.ticker
-    const name = stocksInfo[i].name
-    const avg_bought_price = stock.avg_bought_price
-    const priceChange = stocksInfo[i].price - avg_bought_price
+    const value = stock.quantity * stocksInfo[i].price;
+    const ticker = stock.ticker;
+    const name = stocksInfo[i].name;
+    const avg_bought_price = stock.avg_bought_price;
+    const priceChange = stocksInfo[i].price - avg_bought_price;
     const priceChangePercentage = Math.round(
       ((stocksInfo[i].price - avg_bought_price) / avg_bought_price) * 100
-    )
-    const percentageOfPortfolio = Math.round((value / totalPortfolioValue) * 100);
+    );
+    const percentageOfPortfolio = Math.round(
+      (value / totalPortfolioValue) * 100
+    );
 
     tableData.push({
       ticker: ticker,
@@ -162,27 +172,66 @@ export function processTableData(stocksList, stocksInfo) {
       sharePrice: stocksInfo[i].price,
       earnings: stocksInfo[i].earnings,
       quantity: stock.quantity,
-      percentageOfPortfolio: percentageOfPortfolio
+      percentageOfPortfolio: percentageOfPortfolio,
     });
-  })
+  });
   tableData.sort((a, b) => b.value - a.value);
 
   return tableData;
 }
 
-export async function processCircularData(stocksList, stocksInfo) {
+export function processLeaderboardsData(stocksList, stocksInfo) {
+  // console.log("stocksList", stocksList);
+  // console.log("stocksInfo", stocksInfo);
+  let totalPortfolioValue = 0;
+  stocksInfo.forEach((res, i) => {
+    const holding = stocksList[i];
+    const value = holding.quantity * res.price;
+    totalPortfolioValue += value;
+  });
+  let LeaderboardsData = [];
+  stocksList.forEach((stock, i) => {
+    const value = stock.quantity * stocksInfo[i].price;
+    const ticker = stock.ticker;
+    const name = stocksInfo[i].name;
+    const avg_bought_price = stock.avg_bought_price;
+    const priceChange = stocksInfo[i].price - avg_bought_price;
+    const priceChangePercentage = Math.round(
+      ((stocksInfo[i].price - avg_bought_price) / avg_bought_price) * 100
+    );
+    const percentageOfPortfolio = Math.round(
+      (value / totalPortfolioValue) * 100
+    );
 
-  let children = []
+    LeaderboardsData.push({
+      ticker: ticker,
+      name: name,
+      value: value,
+      priceChange: priceChange,
+      priceChangePercentage: priceChangePercentage,
+      sharePrice: stocksInfo[i].price,
+      earnings: stocksInfo[i].earnings,
+      quantity: stock.quantity,
+      percentageOfPortfolio: percentageOfPortfolio,
+    });
+  });
+  LeaderboardsData.sort(
+    (a, b) => b.priceChangePercentage - a.priceChangePercentage
+  );
+
+  return LeaderboardsData;
+}
+
+export async function processCircularData(stocksList, stocksInfo) {
+  let children = [];
   let sum = 0;
   let totalPortfolioValue = 0;
-
 
   stocksInfo.forEach((res, i) => {
     const holding = stocksList[i];
     const value = holding.quantity * res.price;
     totalPortfolioValue += value;
   });
-
 
   for (let i = 0; i < stocksInfo.length; i++) {
     const res = stocksInfo[i];
@@ -191,16 +240,17 @@ export async function processCircularData(stocksList, stocksInfo) {
     const ticker = holding.ticker;
     sum += value;
     const stock_avg_price = holding.avg_bought_price;
-    const percentageOfPortfolio = Math.round((value / totalPortfolioValue) * 100);
-    let stockType
+    const percentageOfPortfolio = Math.round(
+      (value / totalPortfolioValue) * 100
+    );
+    let stockType;
     if (res.price > stock_avg_price) {
-      stockType = 'positive'
-    }
-    else {
-      stockType = 'negative'
+      stockType = "positive";
+    } else {
+      stockType = "negative";
     }
     children.push({
-      type: 'leaf',
+      type: "leaf",
       ticker: ticker,
       name: res.name,
       value: value,
@@ -208,19 +258,18 @@ export async function processCircularData(stocksList, stocksInfo) {
       quantity: holding.quantity,
       avgSharePrice: stock_avg_price,
       last_price: res.price,
-      percentageOfPortfolio: percentageOfPortfolio
-    })
+      percentageOfPortfolio: percentageOfPortfolio,
+    });
   }
 
   const circularDataObject = {
-    type: 'node',
-    name: 'stocks',
+    type: "node",
+    name: "stocks",
     value: sum,
-    children: children
-  }
+    children: children,
+  };
   return circularDataObject;
 }
-
 
 export function lastUpdateDate(data) {
   let last_update_date = data.data.last_refresh;
@@ -232,7 +281,7 @@ export function lastUpdateDate(data) {
     hour: "2-digit",
     minute: "2-digit",
   });
-  return { formattedDate }
+  return { formattedDate };
 }
 //   // Add similar function for Cake graph data processing
 //   export async function processCakeGraphData(data, token) {
