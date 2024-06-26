@@ -65,7 +65,7 @@ export default function LeaderboardCard({ Number, ticker, changeCount }) {
             <ShowChartSharpIcon />
           </Avatar>
           <Typography>{ticker}</Typography>
-          <Typography>{changeCount}%</Typography>
+          <Typography>{changeCount}</Typography>
           <FolderIcon />
         </Box>
         <Box

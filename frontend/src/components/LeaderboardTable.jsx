@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
-export default function BasicTable({ data }) {
+export default function LeaderBoardsTable({ data }) {
 
   const formatPriceChange = (change, percentage) => {
     const isPositive = change >= 0;

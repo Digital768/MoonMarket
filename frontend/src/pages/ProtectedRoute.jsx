@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
-import { getUserName } from '@/api/user'
+import { getUserName } from "@/api/user";
 import { useLoaderData } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import { useEffect, useState, createContext } from "react";
@@ -9,11 +9,10 @@ import Greetings from "@/components/Greetings";
 
 export const loader = (token) => async () => {
   // console.log("loader activated")
-  const userName = await getUserName(token)
+  const userName = await getUserName(token);
   // console.log("user: " , user.data)
-  return userName
-}
-
+  return userName;
+};
 
 export const GraphContext = createContext();
 
@@ -21,7 +20,7 @@ export const ProtectedRoute = () => {
   const { token } = useAuth();
   const data = useLoaderData();
   const [selectedGraph, setSelectedGraph] = useState("Treemap");
-  const username = data.data
+  const username = data.data;
   // todo: need to check if the token is acutally valid and not just exist
   // Check if the user is authenticated
   if (!token) {
@@ -29,26 +28,33 @@ export const ProtectedRoute = () => {
     return <Navigate to="/login" replace={true} />;
   }
 
-  // useEffect(() => { console.log(selectedGraph); },
-  //   [selectedGraph]);
+  // useEffect(() => {
+  //   console.log(selectedGraph);
+  // }, [selectedGraph]);
 
   // If authenticated, render the child routes
-  return <>
-    <GraphContext.Provider value={{ selectedGraph, setSelectedGraph }}>
-      <Box sx={{
-        display: 'flex',
-        flexDirection: 'row',
-      }}>
-        <Sidebar></Sidebar>
-        <Box sx={{
-          flexGrow: 1,
-          display: 'flex',
-          flexDirection: 'column',
-        }}>
-          <Greetings username={username} />
-          <Outlet />
+  return (
+    <>
+      <GraphContext.Provider value={{ selectedGraph, setSelectedGraph }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <Sidebar></Sidebar>
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Greetings username={username} />
+            <Outlet />
+          </Box>
         </Box>
-      </Box>
-    </GraphContext.Provider>
-  </>;
+      </GraphContext.Provider>
+    </>
+  );
 };

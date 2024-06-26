@@ -8,9 +8,8 @@ import { GraphContext } from "@/pages/ProtectedRoute";
 export default function DetailsChart({ data }) {
   const [view, setview] = useState("table");
   const { setSelectedGraph } = useContext(GraphContext);
-  
-  return (
 
+  return (
     <Box
       sx={{
         display: "flex",
@@ -19,9 +18,9 @@ export default function DetailsChart({ data }) {
       }}
     >
       <Button
+        variant="outlined"
         sx={{
           maxWidth: "10em",
-          justifyContent: "flex-start",
         }}
         onClick={() => {
           if (view === "table") {

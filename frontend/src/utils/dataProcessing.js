@@ -1,4 +1,3 @@
-import { getStockFromPortfolio } from "@/api/stock";
 
 export async function getPortfolioStats(stocksList, stocksInfo) {
   let tickers = [];
@@ -183,6 +182,7 @@ export function processTableData(stocksList, stocksInfo) {
 export function processLeaderboardsData(stocksList, stocksInfo) {
   // console.log("stocksList", stocksList);
   // console.log("stocksInfo", stocksInfo);
+  
   let totalPortfolioValue = 0;
   stocksInfo.forEach((res, i) => {
     const holding = stocksList[i];
@@ -203,6 +203,8 @@ export function processLeaderboardsData(stocksList, stocksInfo) {
       (value / totalPortfolioValue) * 100
     );
 
+    const gainLoss = (value - (stock.avg_bought_price * stock.quantity)).toFixed(2)  ;
+
     LeaderboardsData.push({
       ticker: ticker,
       name: name,
@@ -213,11 +215,13 @@ export function processLeaderboardsData(stocksList, stocksInfo) {
       earnings: stocksInfo[i].earnings,
       quantity: stock.quantity,
       percentageOfPortfolio: percentageOfPortfolio,
+      gainLoss: gainLoss,
     });
   });
   LeaderboardsData.sort(
     (a, b) => b.priceChangePercentage - a.priceChangePercentage
   );
+  // console.log("LeaderboardsData is: " , LeaderboardsData)
 
   return LeaderboardsData;
 }
