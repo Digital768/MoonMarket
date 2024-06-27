@@ -32,15 +32,17 @@ export default function LeaderBoardsTable({ data }) {
         <span style={{ color }}>
           {`${sign}${gainLossNumber.toFixed(2)}$`}
         </span>
-        {` (${sign}${value.toFixed(2)}$)`}
+        {` (${value.toFixed(2)}$)`}
       </span>
     );
   };
   
 
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+    <TableContainer component={Paper} sx={{
+      marginTop:'6em'
+    }}>
+      <Table sx={{ minWidth: 650,}} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>Company</TableCell>

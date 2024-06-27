@@ -14,7 +14,7 @@ import * as React from "react";
 import TopLeaders from "@/components/TopLeaders";
 
 export default function Leaderboards({ data }) {
-  const [category, setCategory] = React.useState("percentage");
+  const [category, setCategory] = React.useState("positionSize");
   const [page, setPage] = React.useState(1);
   const leadersCount = 3;
   const rowsPerPage = 5;
@@ -48,7 +48,8 @@ export default function Leaderboards({ data }) {
         flexDirection: "column-reverse",
         justifyContent: "flex-end", // Changed from "center"
         alignItems: "center",
-        gap: page === 1 ? 1 : 6,
+        gap: page === 1 ? 1 : 5,
+        position: "relative"
       }}
     >
       <Stack
@@ -77,7 +78,12 @@ export default function Leaderboards({ data }) {
           }}
         />
       </Stack>
-      <Box>
+      <Box sx={{
+        position: "absolute",
+        top: 0,
+        right: 0,
+        zIndex:2
+      }}>
         <Box sx={{ minWidth: 120 }}>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">Category</InputLabel>
@@ -88,9 +94,9 @@ export default function Leaderboards({ data }) {
               label="Category"
               onChange={handleCategoryChange}
             >
-              <MenuItem value={"total"}>Total</MenuItem>
+              <MenuItem value={"total"}>Money Earned</MenuItem>
               <MenuItem value={"percentage"}>Percentage</MenuItem>
-              <MenuItem value={"positionSize"}>positionSize</MenuItem>
+              <MenuItem value={"positionSize"}>Position Size</MenuItem>
             </Select>
           </FormControl>
         </Box>

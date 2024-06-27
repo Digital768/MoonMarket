@@ -1,10 +1,11 @@
-import { redirect } from "react-router-dom";
+
 import { useNavigate, Form } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 import { useState } from "react";
 import { loginUser, refreshJwtKey } from "@/api/user";
 import { useForm } from "react-hook-form";
 import { TextField, Box, Card, Typography, Button } from "@mui/material";
+import WebsiteName from '@/components/WebsiteName';
 
 const Login = () => {
   const { setToken } = useAuth();
@@ -77,6 +78,8 @@ const Login = () => {
     );
   }
 
+  
+
   return (
     <Box
       sx={{
@@ -84,6 +87,9 @@ const Login = () => {
         display: "grid",
         placeItems: "center",
         backgroundImage: "url(https://i.redd.it/exu4qasg7tr61.png)",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
       }}
     >
       <Card
@@ -93,7 +99,7 @@ const Login = () => {
         action="/login"
         sx={{ padding: 4, display: "flex", flexDirection: "column", gap: 4 }}
       >
-        <Typography variant="h4" sx={{letterSpacing:'-2px'}}>MOON MARKET</Typography>
+        <WebsiteName/>
         {error && <div style={{ color: "white" }}>{error}</div>}
         <TextField
           {...register("email", {

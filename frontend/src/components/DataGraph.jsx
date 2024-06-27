@@ -28,7 +28,7 @@ function DataGraph({ isDataProcessed, selectedGraph, visualizationData }) {
     return <Skeleton />;
   }
 
-  if (!visualizationData || (selectedGraph === "Treemap" && (!visualizationData.children || visualizationData.children.length === 0))) {
+  if (!visualizationData ) {
     return <Skeleton />;
   }
 

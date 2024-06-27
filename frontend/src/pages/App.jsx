@@ -7,12 +7,13 @@ import { lastUpdateDate } from "@/utils/dataProcessing";
 import SyncIcon from "@mui/icons-material/Sync";
 import { Box, Button, Typography } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useFetcher, useLoaderData } from "react-router-dom";
 // import DetailsChart from "@/components/DetailsChart";
 import PortfolioValue from "@/components/AnimatedNumber";
 import DataGraph from "@/components/DataGraph";
 import MarketStatus from "@/components/MarketStatus";
+import NewUserNoHoldings from "@/components/NewUserNoHoldings";
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -65,10 +66,10 @@ function App() {
   const incrementalChange = value - moneySpent;
   const percentageChange = (incrementalChange / value) * 100;
 
-  // useEffect(() => {
-  //   console.log(visualizationData);
-  // }, [data, visualizationData]);
-  
+  useEffect(() => {
+    console.log(data);
+  }, [data, visualizationData]);
+
 
   return (
     <Box
@@ -100,14 +101,13 @@ function App() {
           }}
         >
           <PortfolioValue value={value} />
-          <Typography variant="body1" color={"#596ee7"}>
+          {value === 0 ? null : <Typography variant="body1" color={"#596ee7"}>
             {incrementalChange.toLocaleString("en-US")}$ (
             {percentageChange.toLocaleString("en-US")}%) Overall
-          </Typography>
-
+          </Typography>}
           <MarketStatus />
         </Box>
-        <fetcher.Form method="post">
+        {value === 0 ? null : <fetcher.Form method="post">
           <input type="hidden" name="tickers" value={stockTickers.join(",")} />
           <input type="hidden" name="token" value={token} />
           <Tooltip
@@ -124,7 +124,8 @@ function App() {
               startIcon={<SyncIcon />}
             ></Button>
           </Tooltip>
-        </fetcher.Form>
+        </fetcher.Form>}
+
       </Box>
       <Box
         className="graph"
@@ -133,11 +134,12 @@ function App() {
           padding: 0,
         }}
       >
-        <DataGraph
+        {data.data.transactions.length === 0 ? <NewUserNoHoldings /> : <DataGraph
           isDataProcessed={isDataProcessed}
           selectedGraph={selectedGraph}
           visualizationData={visualizationData}
-        />
+        />}
+
       </Box>
     </Box>
   );

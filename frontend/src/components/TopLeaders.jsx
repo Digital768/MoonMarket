@@ -45,7 +45,7 @@ function TopLeaders({ leaderboardsData, category }) {
             category === "percentage"
               ? leaderboardsData[0].priceChangePercentage + "%"
               : category === "positionSize"
-              ? leaderboardsData[1].value + "$"
+              ? leaderboardsData[0].value + "$"
               : leaderboardsData[0].gainLoss + "$"
           }
         />
@@ -56,7 +56,7 @@ function TopLeaders({ leaderboardsData, category }) {
             category === "percentage"
               ? leaderboardsData[2].priceChangePercentage + "%"
               : category === "positionSize"
-              ? leaderboardsData[1].value + "$"
+              ? leaderboardsData[2].value + "$"
               : leaderboardsData[2].gainLoss + "$"
           }
         />

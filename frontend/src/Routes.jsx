@@ -16,6 +16,7 @@ import Transactions, {
   loader as transactionsLoader,
 } from "@/pages/Transactions";
 import {action as profileAction} from '@/components/ProfileTabs'
+import Register from "@/pages/Register";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -92,6 +93,11 @@ const Routes = () => {
         },
       ],
     },
+    {
+      path: "/register",
+      element: <Register />,
+      errorElement: <ErrorPage />,
+    }
   ]);
 
   // Provide the router configuration using RouterProvider
