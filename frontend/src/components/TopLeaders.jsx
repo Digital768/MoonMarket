@@ -1,9 +1,6 @@
 import LeaderboardCard from "@/components/LeaderboardCard";
 import { Box } from "@mui/material";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
+
 
 function TopLeaders({ leaderboardsData, category }) {
   return (
@@ -36,6 +33,8 @@ function TopLeaders({ leaderboardsData, category }) {
           changeCount={
             category === "percentage"
               ? leaderboardsData[1].priceChangePercentage + "%"
+              : category === "positionSize"
+              ? leaderboardsData[1].value + "$"
               : leaderboardsData[1].gainLoss + "$"
           }
         />
@@ -45,6 +44,8 @@ function TopLeaders({ leaderboardsData, category }) {
           changeCount={
             category === "percentage"
               ? leaderboardsData[0].priceChangePercentage + "%"
+              : category === "positionSize"
+              ? leaderboardsData[1].value + "$"
               : leaderboardsData[0].gainLoss + "$"
           }
         />
@@ -54,6 +55,8 @@ function TopLeaders({ leaderboardsData, category }) {
           changeCount={
             category === "percentage"
               ? leaderboardsData[2].priceChangePercentage + "%"
+              : category === "positionSize"
+              ? leaderboardsData[1].value + "$"
               : leaderboardsData[2].gainLoss + "$"
           }
         />

@@ -12,59 +12,69 @@ import {
 import { useEffect, useState } from "react";
 import useHoldingsData from "@/hooks/useHoldingsData";
 
-
 function useGraphData(data, selectedGraph) {
   const { token } = useAuth();
   const stockList = data.data.holdings;
   const stocksInfo = useHoldingsData(stockList, token);
+
   const [stockTickers, setStockTickers] = useState([]);
-  const [visualizationData, setVisualizationData] = useState(null);
+  const [treemapData, setTreemapData] = useState(null);
+  const [donutData, setDonutData] = useState(null);
+  const [circularData, setCircularData] = useState(null);
+  const [leaderboardsData, setLeaderboardsData] = useState(null);
+
   const [value, setValue] = useState(0);
   const [moneySpent, setMoneySpent] = useState(0);
   const [isDataProcessed, setIsDataProcessed] = useState(false);
 
   useEffect(() => {
-    if (data) {
+    if (data && stocksInfo.length > 0) {
       async function processData() {
-        setIsDataProcessed(false); // Set to false before processing starts
-        let graphData;
-        //need to check this condition
-        if (stocksInfo.length > 0) {
-          switch (selectedGraph) {
-            case "Treemap":
-              graphData = await processTreemapData(stockList, stocksInfo);
-              break;
-            case "DonutChart":
-              graphData = await processDonutData(stockList, stocksInfo);
-              break;
-            // Add cases for other graph types if needed
-            case "Circular":
-              graphData = await processCircularData(stockList, stocksInfo);
-              break;
-            case "TableGraph":
-              graphData = processTableData(stockList, stocksInfo);
-              break;
-            case "Leaderboards":
-              graphData = processLeaderboardsData(stockList, stocksInfo);
-              break;
-            default:
-              graphData = await processTreemapData(stockList, stocksInfo);
-          }
-        }
+        setIsDataProcessed(false);
+        const { tickers, sum, totalSpent } = await getPortfolioStats(stockList, stocksInfo);
 
-        const { tickers, sum, totalSpent } = await getPortfolioStats(
-          stockList,
-          stocksInfo
-        );
-        setVisualizationData(graphData);
         setStockTickers(tickers);
         setValue(sum);
         setMoneySpent(totalSpent);
-        setIsDataProcessed(true); // Set to true after processing completes
+
+        switch (selectedGraph) {
+          case "Treemap":
+            setTreemapData(processTreemapData(stockList, stocksInfo));
+            break;
+          case "DonutChart":
+            setDonutData(processDonutData(stockList, stocksInfo));
+            break;
+          case "Circular":
+            setCircularData(processCircularData(stockList, stocksInfo));
+            break;
+          case "Leaderboards":
+            setLeaderboardsData(processLeaderboardsData(stockList, stocksInfo));
+            break;
+          default:
+            setTreemapData(processTreemapData(stockList, stocksInfo));
+        }
+
+        setIsDataProcessed(true);
       }
+
       processData();
     }
   }, [selectedGraph, stocksInfo]);
+
+  const visualizationData = (() => {
+    switch (selectedGraph) {
+      case "Treemap":
+        return treemapData;
+      case "DonutChart":
+        return donutData;
+      case "Circular":
+        return circularData;
+      case "Leaderboards":
+        return leaderboardsData;
+      default:
+        return treemapData;
+    }
+  })();
 
   return [stockTickers, visualizationData, value, moneySpent, isDataProcessed];
 }

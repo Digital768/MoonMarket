@@ -18,7 +18,7 @@ export async function getPortfolioStats(stocksList, stocksInfo) {
   return { tickers, sum, totalSpent };
 }
 
-export async function processTreemapData(stocksList, stocksInfo) {
+export function processTreemapData(stocksList, stocksInfo) {
   const positiveStocks = [];
   const negativeStocks = [];
   let sum = 0;
@@ -91,7 +91,7 @@ export async function processTreemapData(stocksList, stocksInfo) {
   return newStocksTree;
 }
 
-export async function processDonutData(stocksList, stocksInfo) {
+export function processDonutData(stocksList, stocksInfo) {
   let stocks = [];
   let totalPortfolioValue = 0;
 
@@ -226,7 +226,7 @@ export function processLeaderboardsData(stocksList, stocksInfo) {
   return LeaderboardsData;
 }
 
-export async function processCircularData(stocksList, stocksInfo) {
+export function processCircularData(stocksList, stocksInfo) {
   let children = [];
   let sum = 0;
   let totalPortfolioValue = 0;
@@ -288,7 +288,7 @@ export function lastUpdateDate(data) {
   return { formattedDate };
 }
 //   // Add similar function for Cake graph data processing
-//   export async function processCakeGraphData(data, token) {
+//   export function processCakeGraphData(data, token) {
 //     const stockCollection = data.holdings;
 //     let sum = 0;
 //     let chartData = [];

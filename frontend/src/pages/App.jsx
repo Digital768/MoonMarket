@@ -1,24 +1,18 @@
-import TreeMapSkeleton from "@/Skeletons/TreeMapSkeleton";
-import DonutSkeleton from "@/Skeletons/DonutSkeleton";
 import { updateStockPrice } from "@/api/stock";
-import SearchBar from "@/components/SearchBar.jsx";
-import { Treemap } from "@/components/Treemap";
+import { getUserData } from "@/api/user";
 import useGraphData from "@/hooks/useGraphData";
 import { useAuth } from "@/pages/AuthProvider";
-import { getUserData } from "@/api/user";
-import { useFetcher, useLoaderData } from "react-router-dom";
-import { lastUpdateDate } from "@/utils/dataProcessing";
-import { Button, Container, Typography } from "@mui/material";
-import { Box } from "@mui/material";
-import Tooltip from "@mui/material/Tooltip";
-import SyncIcon from "@mui/icons-material/Sync";
 import { GraphContext } from "@/pages/ProtectedRoute";
-import { useEffect, useContext } from "react";
-import { DonutChart } from "@/components/DonutChart";
-import { CircularPacking } from "@/components/CircularPackingChart";
-import DetailsChart from "@/components/DetailsChart";
-import MarketStatus from "@/components/MarketStatus";
+import { lastUpdateDate } from "@/utils/dataProcessing";
+import SyncIcon from "@mui/icons-material/Sync";
+import { Box, Button, Typography } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
+import { useContext } from "react";
+import { useFetcher, useLoaderData } from "react-router-dom";
+// import DetailsChart from "@/components/DetailsChart";
 import PortfolioValue from "@/components/AnimatedNumber";
+import DataGraph from "@/components/DataGraph";
+import MarketStatus from "@/components/MarketStatus";
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -66,6 +60,7 @@ function App() {
   const data = useLoaderData();
   const [stockTickers, visualizationData, value, moneySpent, isDataProcessed] =
     useGraphData(data, selectedGraph);
+  // console.log(visualizationData)
   const { formattedDate } = lastUpdateDate(data);
   const incrementalChange = value - moneySpent;
   const percentageChange = (incrementalChange / value) * 100;
@@ -73,51 +68,7 @@ function App() {
   // useEffect(() => {
   //   console.log(visualizationData);
   // }, [data, visualizationData]);
-
-  const renderGraph = () => {
-    // todo: add skeletons or loading component when switching between graphs
-    if (!isDataProcessed) {
-      switch (selectedGraph) {
-        case "DonutChart":
-          return <DonutSkeleton />;
-        case "Treemap":
-        case "Circular":
-        case "TableGraph":
-        case "Leaderboards":
-        default:
-          return <TreeMapSkeleton />;
-      }
-    }
-
-    switch (selectedGraph) {
-      case "Treemap":
-        return !visualizationData ||
-          !visualizationData.children ||
-          visualizationData.children.length === 0 ? (
-          <TreeMapSkeleton />
-        ) : (
-          <Treemap data={visualizationData} width={1000} height={600} />
-        );
-      case "DonutChart":
-        return !visualizationData ? (
-          <DonutSkeleton />
-        ) : (
-          <DonutChart data={visualizationData} width={1000} height={650} />
-        );
-      case "Circular":
-        return !visualizationData ? (
-          <TreeMapSkeleton />
-        ) : (
-          <CircularPacking data={visualizationData} width={1100} height={700} />
-        );
-      case "TableGraph":
-        return <DetailsChart data={visualizationData} />;
-      case "Leaderboards":
-        return <DetailsChart data={visualizationData} />;
-      default:
-        return null;
-    }
-  };
+  
 
   return (
     <Box
@@ -126,19 +77,19 @@ function App() {
         display: "flex",
         flexDirection: "row-reverse",
         height: "100%",
-        width: '100%',
+        width: "100%",
         margin: "auto",
       }}
     >
-
-      <Box className="stats"
+      <Box
+        className="stats"
         sx={{
           display: "flex",
           flexDirection: "row",
-          justifyContent: 'center',
-          width: '25%',
-          marginTop: '5%', // This line moves the box down by 30%
-          paddingRight: '8em'
+          justifyContent: "center",
+          width: "25%",
+          marginTop: "5%", // This line moves the box down by 30%
+          paddingRight: "8em",
         }}
       >
         <Box
@@ -149,10 +100,7 @@ function App() {
           }}
         >
           <PortfolioValue value={value} />
-          <Typography
-            variant="body1"
-            color={"#596ee7"}
-          >
+          <Typography variant="body1" color={"#596ee7"}>
             {incrementalChange.toLocaleString("en-US")}$ (
             {percentageChange.toLocaleString("en-US")}%) Overall
           </Typography>
@@ -160,11 +108,7 @@ function App() {
           <MarketStatus />
         </Box>
         <fetcher.Form method="post">
-          <input
-            type="hidden"
-            name="tickers"
-            value={stockTickers.join(",")}
-          />
+          <input type="hidden" name="tickers" value={stockTickers.join(",")} />
           <input type="hidden" name="token" value={token} />
           <Tooltip
             title={`last updated at: ${formattedDate}. Click to refresh Stocks price`}
@@ -182,13 +126,18 @@ function App() {
           </Tooltip>
         </fetcher.Form>
       </Box>
-      <Box className="graph"
+      <Box
+        className="graph"
         sx={{
           margin: "auto",
           padding: 0,
         }}
       >
-        {renderGraph()}
+        <DataGraph
+          isDataProcessed={isDataProcessed}
+          selectedGraph={selectedGraph}
+          visualizationData={visualizationData}
+        />
       </Box>
     </Box>
   );

@@ -8,6 +8,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 export default function LeaderBoardsTable({ data }) {
+  console.log(data)
 
   const formatPriceChange = (change, percentage) => {
     const isPositive = change >= 0;
@@ -20,9 +21,22 @@ export default function LeaderBoardsTable({ data }) {
     );
   };
 
-  const formatValue = (value) => {
-    return value.toFixed(2) + "$";
+  const formatValue = (value, gainLoss) => {
+    const gainLossNumber = parseFloat(gainLoss); // Convert gainLoss to a number
+    const isPositive = gainLossNumber >= 0;
+    const color = isPositive ? "green" : "red";
+    const sign = isPositive ? "+" : "";
+    
+    return (
+      <span>
+        <span style={{ color }}>
+          {`${sign}${gainLossNumber.toFixed(2)}$`}
+        </span>
+        {` (${sign}${value.toFixed(2)}$)`}
+      </span>
+    );
   };
+  
 
   return (
     <TableContainer component={Paper}>
@@ -57,7 +71,7 @@ export default function LeaderBoardsTable({ data }) {
               </TableCell>
               <TableCell align="right">{formatPriceChange(row.priceChange, row.priceChangePercentage)}</TableCell>
               <TableCell align="right">{row.sharePrice}%</TableCell>
-              <TableCell align="right">{formatValue(row.value)}</TableCell>
+              <TableCell align="right">{formatValue(row.value, row.gainLoss)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

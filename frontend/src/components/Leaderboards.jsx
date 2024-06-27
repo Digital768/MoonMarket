@@ -18,10 +18,11 @@ export default function Leaderboards({ data }) {
   const [page, setPage] = React.useState(1);
   const leadersCount = 3;
   const rowsPerPage = 5;
-
   const leaderboardsData =
     category === "total"
       ? [...data].sort((a, b) => b.gainLoss - a.gainLoss)
+      : category === "positionSize"
+      ? [...data].sort((a, b) => b.value - a.value)
       : data;
 
   const handleChange = (event, value) => {
@@ -34,9 +35,9 @@ export default function Leaderboards({ data }) {
 
   const totalPages = Math.ceil((data.length - 3) / 5) + 1;
 
-  React.useEffect(() => {
-    console.log("leaderboardsData is ", leaderboardsData);
-  }, [category]);
+  // React.useEffect(() => {
+  //   console.log("leaderboardsData is ", leaderboardsData);
+  // }, [category]);
 
   return (
     <Box
@@ -89,6 +90,7 @@ export default function Leaderboards({ data }) {
             >
               <MenuItem value={"total"}>Total</MenuItem>
               <MenuItem value={"percentage"}>Percentage</MenuItem>
+              <MenuItem value={"positionSize"}>positionSize</MenuItem>
             </Select>
           </FormControl>
         </Box>
