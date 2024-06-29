@@ -41,7 +41,7 @@ function Register() {
                 if (response.status === 200) {
                     navigate("/login", { replace: true });
                 }
-                console.log(response)
+                // console.log(response)
             }
             catch (error) {
                 console.log("An error occurred while registering");

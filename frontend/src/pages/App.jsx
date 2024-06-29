@@ -14,11 +14,13 @@ import PortfolioValue from "@/components/AnimatedNumber";
 import DataGraph from "@/components/DataGraph";
 import MarketStatus from "@/components/MarketStatus";
 import NewUserNoHoldings from "@/components/NewUserNoHoldings";
+import {postSnapshot} from '@/api/portfolioSnapshot'
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
   const tickers = formData.get("tickers").split(",");
   const token = formData.get("token");
+  const value = formData.get("value");
 
   if (!tickers || tickers.length === 0) {
     console.warn("No tickers available for price update.");
@@ -41,6 +43,8 @@ export const action = async ({ request }) => {
         console.error(`Failed to update ${tickers[index]}:`, result.reason);
       }
     });
+    const addPortfolioSnapshot = await postSnapshot(parseFloat(value), token);
+    console.log(addPortfolioSnapshot)
 
     return results;
   } catch (error) {
@@ -67,7 +71,7 @@ function App() {
   const percentageChange = (incrementalChange / value) * 100;
 
   useEffect(() => {
-    console.log(data);
+    console.log(typeof(value));
   }, [data, visualizationData]);
 
 
@@ -110,6 +114,7 @@ function App() {
         {value === 0 ? null : <fetcher.Form method="post">
           <input type="hidden" name="tickers" value={stockTickers.join(",")} />
           <input type="hidden" name="token" value={token} />
+          <input type="hidden" name="value" value={value} />
           <Tooltip
             title={`last updated at: ${formattedDate}. Click to refresh Stocks price`}
             placement="top"

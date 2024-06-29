@@ -28,9 +28,9 @@ export const ProtectedRoute = () => {
     return <Navigate to="/login" replace={true} />;
   }
 
-  useEffect(() => {
-    console.log(selectedGraph);
-  }, [selectedGraph]);
+  // useEffect(() => {
+  //   console.log(selectedGraph);
+  // }, [selectedGraph]);
 
   // If authenticated, render the child routes
   return (

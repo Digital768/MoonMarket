@@ -12,6 +12,8 @@ from config import CONFIG
 from models.user import User
 from models.stock import Stock
 from models.transaction import Transaction
+from models.PortfolioSnapshot import PortfolioSnapshot
+
 
 
 
@@ -29,7 +31,7 @@ It supports:
 async def lifespan(app: FastAPI):  # type: ignore
     """Initialize application services."""
     app.db = AsyncIOMotorClient(CONFIG.DB_URL).stock_db  # type: ignore[attr-defined]
-    await init_beanie(app.db, document_models=[User, Stock, Transaction])  # type: ignore[arg-type,attr-defined]
+    await init_beanie(app.db, document_models=[User, Stock, Transaction, PortfolioSnapshot])  # type: ignore[arg-type,attr-defined]
     print("Startup complete")
     yield
     print("Shutdown complete")

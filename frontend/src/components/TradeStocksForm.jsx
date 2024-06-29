@@ -62,9 +62,9 @@ function TradeStocksForm({ stock, token, cancelAction }) {
     }
   };
 
-  useEffect(()=>{
-    console.log(stock)
-  }, [])
+  // useEffect(()=>{
+  //   console.log(stock)
+  // }, [])
 
   return (
     <Box
