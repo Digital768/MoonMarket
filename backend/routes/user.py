@@ -35,7 +35,6 @@ async def get_user_transactions(user: User = Depends(current_user)):
 @router.get("/user_transactions/{type}",response_model=UserOut, operation_id="retrieve_user_transactions_by_type")
 async def get_user_transactions_by_type(type: str, user: User = Depends(current_user)):
     # Retrieve transactions for the specified user ID
-    # transactions = await Transaction.get_Transactions_by_type_and_user(type, current_user.id)
     transactions = await Transaction.find(Transaction.user_id.id == user.id, Transaction.type == type).to_list()
     # Return the list of transactions
     return transactions

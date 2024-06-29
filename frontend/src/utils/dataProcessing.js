@@ -146,92 +146,45 @@ export function processDonutData(stocksList, stocksInfo) {
   return stocks;
 }
 
-export function processTableData(stocksList, stocksInfo) {
-  // console.log("stocksList", stocksList);
-  // console.log("stocksInfo", stocksInfo);
-  let totalPortfolioValue = 0;
-  stocksInfo.forEach((res, i) => {
-    const holding = stocksList[i];
-    const value = holding.quantity * res.price;
-    totalPortfolioValue += value;
-  });
-  let tableData = [];
-  stocksList.forEach((stock, i) => {
-    const value = stock.quantity * stocksInfo[i].price;
-    const ticker = stock.ticker;
-    const name = stocksInfo[i].name;
-    const avg_bought_price = stock.avg_bought_price;
-    const priceChange = stocksInfo[i].price - avg_bought_price;
-    const priceChangePercentage = Math.round(
-      ((stocksInfo[i].price - avg_bought_price) / avg_bought_price) * 100
-    );
-    const percentageOfPortfolio = Math.round(
-      (value / totalPortfolioValue) * 100
-    );
+// export function processTableData(stocksList, stocksInfo) {
+//   // console.log("stocksList", stocksList);
+//   // console.log("stocksInfo", stocksInfo);
+//   let totalPortfolioValue = 0;
+//   stocksInfo.forEach((res, i) => {
+//     const holding = stocksList[i];
+//     const value = holding.quantity * res.price;
+//     totalPortfolioValue += value;
+//   });
+//   let tableData = [];
+//   stocksList.forEach((stock, i) => {
+//     const value = stock.quantity * stocksInfo[i].price;
+//     const ticker = stock.ticker;
+//     const name = stocksInfo[i].name;
+//     const avg_bought_price = stock.avg_bought_price;
+//     const priceChange = stocksInfo[i].price - avg_bought_price;
+//     const priceChangePercentage = Math.round(
+//       ((stocksInfo[i].price - avg_bought_price) / avg_bought_price) * 100
+//     );
+//     const percentageOfPortfolio = Math.round(
+//       (value / totalPortfolioValue) * 100
+//     );
 
-    tableData.push({
-      ticker: ticker,
-      name: name,
-      value: value,
-      priceChange: priceChange,
-      priceChangePercentage: priceChangePercentage,
-      sharePrice: stocksInfo[i].price,
-      earnings: stocksInfo[i].earnings,
-      quantity: stock.quantity,
-      percentageOfPortfolio: percentageOfPortfolio,
-    });
-  });
-  tableData.sort((a, b) => b.value - a.value);
+//     tableData.push({
+//       ticker: ticker,
+//       name: name,
+//       value: value,
+//       priceChange: priceChange,
+//       priceChangePercentage: priceChangePercentage,
+//       sharePrice: stocksInfo[i].price,
+//       earnings: stocksInfo[i].earnings,
+//       quantity: stock.quantity,
+//       percentageOfPortfolio: percentageOfPortfolio,
+//     });
+//   });
+//   tableData.sort((a, b) => b.value - a.value);
 
-  return tableData;
-}
-
-export function processLeaderboardsData(stocksList, stocksInfo) {
-  // console.log("stocksList", stocksList);
-  // console.log("stocksInfo", stocksInfo);
-
-  let totalPortfolioValue = 0;
-  stocksInfo.forEach((res, i) => {
-    const holding = stocksList[i];
-    const value = holding.quantity * res.price;
-    totalPortfolioValue += value;
-  });
-  let LeaderboardsData = [];
-  stocksList.forEach((stock, i) => {
-    const value = stock.quantity * stocksInfo[i].price;
-    const ticker = stock.ticker;
-    const name = stocksInfo[i].name;
-    const avg_bought_price = stock.avg_bought_price;
-    const priceChange = stocksInfo[i].price - avg_bought_price;
-    const priceChangePercentage = Math.round(
-      ((stocksInfo[i].price - avg_bought_price) / avg_bought_price) * 100
-    );
-    const percentageOfPortfolio = Math.round(
-      (value / totalPortfolioValue) * 100
-    );
-
-    const gainLoss = (value - (stock.avg_bought_price * stock.quantity)).toFixed(2);
-
-    LeaderboardsData.push({
-      ticker: ticker,
-      name: name,
-      value: value,
-      priceChange: priceChange,
-      priceChangePercentage: priceChangePercentage,
-      sharePrice: stocksInfo[i].price,
-      earnings: stocksInfo[i].earnings,
-      quantity: stock.quantity,
-      percentageOfPortfolio: percentageOfPortfolio,
-      gainLoss: gainLoss,
-    });
-  });
-  LeaderboardsData.sort(
-    (a, b) => b.priceChangePercentage - a.priceChangePercentage
-  );
-  // console.log("LeaderboardsData is: " , LeaderboardsData)
-
-  return LeaderboardsData;
-}
+//   return tableData;
+// }
 
 export function processCircularData(stocksList, stocksInfo) {
   let children = [];
@@ -282,6 +235,55 @@ export function processCircularData(stocksList, stocksInfo) {
   return circularDataObject;
 }
 
+export function processLeaderboardsData(stocksList, stocksInfo) {
+  // console.log("stocksList", stocksList);
+  // console.log("stocksInfo", stocksInfo);
+
+  let totalPortfolioValue = 0;
+  stocksInfo.forEach((res, i) => {
+    const holding = stocksList[i];
+    const value = holding.quantity * res.price;
+    totalPortfolioValue += value;
+  });
+  let LeaderboardsData = [];
+  stocksList.forEach((stock, i) => {
+    const value = stock.quantity * stocksInfo[i].price;
+    const ticker = stock.ticker;
+    const name = stocksInfo[i].name;
+    const avg_bought_price = stock.avg_bought_price;
+    const priceChange = stocksInfo[i].price - avg_bought_price;
+    const priceChangePercentage = Math.round(
+      ((stocksInfo[i].price - avg_bought_price) / avg_bought_price) * 100
+    );
+    const percentageOfPortfolio = Math.round(
+      (value / totalPortfolioValue) * 100
+    );
+
+    const gainLoss = (value - (stock.avg_bought_price * stock.quantity)).toFixed(2);
+
+    LeaderboardsData.push({
+      ticker: ticker,
+      name: name,
+      value: value,
+      priceChange: priceChange,
+      priceChangePercentage: priceChangePercentage,
+      sharePrice: stocksInfo[i].price,
+      earnings: stocksInfo[i].earnings,
+      quantity: stock.quantity,
+      percentageOfPortfolio: percentageOfPortfolio,
+      gainLoss: gainLoss,
+    });
+  });
+  LeaderboardsData.sort(
+    (a, b) => b.priceChangePercentage - a.priceChangePercentage
+  );
+  // console.log("LeaderboardsData is: " , LeaderboardsData)
+
+  return LeaderboardsData;
+}
+
+
+
 export function lastUpdateDate(data) {
   let last_update_date = data.data.last_refresh;
   let date = new Date(last_update_date);
@@ -294,29 +296,3 @@ export function lastUpdateDate(data) {
   });
   return { formattedDate };
 }
-//   // Add similar function for Cake graph data processing
-//   export function processCakeGraphData(data, token) {
-//     const stockCollection = data.holdings;
-//     let sum = 0;
-//     let chartData = [];
-
-//     let promises = stockCollection.map(holding => getStockFromPortfolio(holding.ticker, token));
-//     let results = await Promise.all(promises);
-
-//     for (let i = 0; i < results.length; i++) {
-//       const res = results[i];
-//       const holding = stockCollection[i];
-//       const value = holding.quantity * res.price;
-//       sum += value;
-
-//       chartData.push({
-//         label: holding.ticker,
-//         value: value,
-//       });
-//     }
-
-//     return {
-//       totalValue: sum,
-//       chartData: chartData,
-//     };
-//   }

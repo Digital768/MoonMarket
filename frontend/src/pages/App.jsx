@@ -14,7 +14,7 @@ import PortfolioValue from "@/components/AnimatedNumber";
 import DataGraph from "@/components/DataGraph";
 import MarketStatus from "@/components/MarketStatus";
 import NewUserNoHoldings from "@/components/NewUserNoHoldings";
-import {postSnapshot} from '@/api/portfolioSnapshot'
+import {postSnapshot, getPortfolioSnapshots} from '@/api/portfolioSnapshot'
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -44,7 +44,7 @@ export const action = async ({ request }) => {
       }
     });
     const addPortfolioSnapshot = await postSnapshot(parseFloat(value), token);
-    console.log(addPortfolioSnapshot)
+    
 
     return results;
   } catch (error) {
@@ -55,7 +55,9 @@ export const action = async ({ request }) => {
 
 export const loader = (token) => async () => {
   const user = await getUserData(token);
-  return user;
+  // const portfolioSnapShots = await getPortfolioSnapshots(token)
+  // return {user, portfolioSnapShots};
+  return user
 };
 
 function App() {
@@ -63,16 +65,16 @@ function App() {
   const { token } = useAuth();
   const fetcher = useFetcher();
   const data = useLoaderData();
+  // console.log(data)
   const [stockTickers, visualizationData, value, moneySpent, isDataProcessed] =
     useGraphData(data, selectedGraph);
-  // console.log(visualizationData)
   const { formattedDate } = lastUpdateDate(data);
   const incrementalChange = value - moneySpent;
   const percentageChange = (incrementalChange / value) * 100;
 
-  useEffect(() => {
-    console.log(typeof(value));
-  }, [data, visualizationData]);
+  // useEffect(() => {
+  //   console.log(typeof(value));
+  // }, [data, visualizationData]);
 
 
   return (

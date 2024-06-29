@@ -6,7 +6,6 @@ import {
   getPortfolioStats,
   processDonutData,
   processCircularData,
-  processTableData,
   processLeaderboardsData,
 } from "@/utils/dataProcessing.js";
 import { useEffect, useState } from "react";

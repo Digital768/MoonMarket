@@ -1,10 +1,9 @@
 
-from fastapi import APIRouter, Request, Body, HTTPException, status, Depends
+from fastapi import APIRouter, Body, Depends
 from models.PortfolioSnapshot import PortfolioSnapshot
 from util.current_user import current_user
 from models.user import User
-from decouple import config
-import requests
+
 from datetime import datetime
 
 
@@ -12,13 +11,14 @@ from datetime import datetime
 router = APIRouter(prefix="/PortfolioSnapshot", tags=["Stock"])
 
 @router.post("/snapshot")
-async def create_snapshot(value: float = Body(...)):
-    snapshot = PortfolioSnapshot(timestamp=datetime.utcnow(), value=value)
+async def create_snapshot(value: float = Body(...), user: User = Depends(current_user)):
+    snapshot = PortfolioSnapshot(timestamp=datetime.utcnow(), value=value, user_id=str(user.id))
     await snapshot.insert()
     return {"message": "Snapshot created successfully"}
 
 @router.get("/snapshots")
 async def get_snapshots(timeframe: str = "intraday"):
+    print(timeframe)
     if timeframe == "intraday":
         # Return all snapshots for the current day
         today = datetime.utcnow().date()

@@ -9,7 +9,7 @@ export function postSnapshot(value, token) {
 }
 
 export async function getPortfolioSnapshots(token) {
-    return axios.get("http://localhost:8000/PortfolioSnapshots/snapshots", {
+    return axios.get("http://localhost:8000/PortfolioSnapshot/snapshots", {
         headers: {
             'Authorization': `Bearer ${token}`,
         },
