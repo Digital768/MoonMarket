@@ -94,6 +94,7 @@ export function processTreemapData(stocksList, stocksInfo) {
 export function processDonutData(stocksList, stocksInfo) {
   let stocks = [];
   let totalPortfolioValue = 0;
+  let othersStocks = []; // Define othersStocks here
 
   stocksInfo.forEach((res, i) => {
     const holding = stocksList[i];
@@ -122,12 +123,16 @@ export function processDonutData(stocksList, stocksInfo) {
 
   // If there are more than 8 stocks, combine the rest into "Others"
   if (stocks.length > 8) {
-    const othersValue = stocks
-      .slice(8)
-      .reduce((acc, curr) => acc + curr.value, 0);
-    const othersPercentage = stocks
-      .slice(8)
-      .reduce((acc, curr) => acc + curr.percentageOfPortfolio, 0);
+    othersStocks = stocks.slice(8).map(stock => ({
+      name: stock.name,
+      value: stock.value,
+      quantity: stock.quantity,
+      percentageOfPortfolio: stock.percentageOfPortfolio
+    }));
+
+    const othersValue = othersStocks.reduce((acc, curr) => acc + curr.value, 0);
+    const othersPercentage = othersStocks.reduce((acc, curr) => acc + curr.percentageOfPortfolio, 0);
+
     stocks = stocks.slice(0, 8);
     stocks.push({
       name: "Others",
@@ -135,6 +140,8 @@ export function processDonutData(stocksList, stocksInfo) {
       percentageOfPortfolio: othersPercentage,
     });
   }
+
+  stocks.othersStocks = othersStocks;
 
   return stocks;
 }
@@ -182,7 +189,7 @@ export function processTableData(stocksList, stocksInfo) {
 export function processLeaderboardsData(stocksList, stocksInfo) {
   // console.log("stocksList", stocksList);
   // console.log("stocksInfo", stocksInfo);
-  
+
   let totalPortfolioValue = 0;
   stocksInfo.forEach((res, i) => {
     const holding = stocksList[i];
@@ -203,7 +210,7 @@ export function processLeaderboardsData(stocksList, stocksInfo) {
       (value / totalPortfolioValue) * 100
     );
 
-    const gainLoss = (value - (stock.avg_bought_price * stock.quantity)).toFixed(2)  ;
+    const gainLoss = (value - (stock.avg_bought_price * stock.quantity)).toFixed(2);
 
     LeaderboardsData.push({
       ticker: ticker,

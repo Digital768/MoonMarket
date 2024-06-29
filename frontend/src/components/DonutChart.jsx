@@ -1,43 +1,39 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import "@/styles/donut-chart.css";
 import { useNavigate } from "react-router-dom";
-import { Box } from "@mui/material";
-
+import { Box, Button } from "@mui/material";
 
 const MARGIN_X = 150;
 const MARGIN_Y = 50;
-const INFLEXION_PADDING = 35; // space between donut and label inflexion point
+const INFLEXION_PADDING = 25;
 
 const colors = [
-  "#e0ac2b",
-  "#e85252",
-  "#6689c6",
-  "#9a6fb0",
-  "#a53253",
-  "#69b3a2",
-  "#4caf50", // Alternative color 1
-  "#2196f3", // Alternative color 2
-  "#f44336"  // Alternative color 3
+  "#e0ac2b", "#e85252", "#6689c6", "#9a6fb0", "#a53253",
+  "#69b3a2", "#4caf50", "#2196f3", "#f44336"
 ];
 
 export const DonutChart = ({ width, height, data }) => {
+  const [showOthers, setShowOthers] = useState(false);
   const ref = useRef(null);
   const navigate = useNavigate();
 
   const radius = Math.min(width - 2 * MARGIN_X, height - 2 * MARGIN_Y) / 2;
   const innerRadius = radius / 2;
-  const verticalOffset = 18; // Adjust this value as needed
+  const verticalOffset = 18;
+
+  const chartData = useMemo(() => {
+    return showOthers ? data.othersStocks : data;
+  }, [data, showOthers]);
 
   const pie = useMemo(() => {
     const pieGenerator = d3.pie().value((d) => d.value);
-    return pieGenerator(data);
-  }, [data]);
+    return pieGenerator(chartData);
+  }, [chartData]);
 
   const arcGenerator = d3.arc();
 
   const shapes = pie.map((grp, i) => {
-    // First arc is for the donut
     const sliceInfo = {
       innerRadius,
       outerRadius: radius,
@@ -47,7 +43,6 @@ export const DonutChart = ({ width, height, data }) => {
     const centroid = arcGenerator.centroid(sliceInfo);
     const slicePath = arcGenerator(sliceInfo);
 
-    // Second arc is for the legend inflexion point
     const inflexionInfo = {
       innerRadius: radius + INFLEXION_PADDING,
       outerRadius: radius + INFLEXION_PADDING,
@@ -62,23 +57,33 @@ export const DonutChart = ({ width, height, data }) => {
     const label = grp.data.name + " (" + grp.value.toLocaleString("en-US") + "$)";
     const percentageOfPortfolio = grp.data.percentageOfPortfolio;
 
-    const navigateToStockPage = (stockData) => {
-      if (stockData.name === 'Others') {
-        return
+    const handleClick = (stockData) => {
+      if (stockData.name === 'Others' && !showOthers) {
+        setShowOthers(true);
+      } else if (showOthers && stockData.name !== 'Others') {
+        navigate(`/portfolio/${stockData.name}`, {
+          state: {
+            quantity: stockData.quantity,
+            percentageOfPortfolio: stockData.percentageOfPortfolio,
+          },
+        });
+      } else if (showOthers) {
+        setShowOthers(false);
+      } else {
+        navigate(`/portfolio/${stockData.name}`, {
+          state: {
+            quantity: stockData.quantity,
+            percentageOfPortfolio: stockData.percentageOfPortfolio,
+          },
+        });
       }
-      navigate(`/portfolio/${stockData.name}`, {
-        state: {
-          quantity: stockData.quantity,
-          percentageOfPortfolio: stockData.percentageOfPortfolio,
-        },
-      });
     };
 
     return (
       <g
         key={i}
         className="slice"
-        onClick={() => navigateToStockPage(grp.data)} // Navigate on click
+        onClick={() => handleClick(grp.data)}
         onMouseEnter={() => {
           if (ref.current) {
             ref.current.classList.add("hasHighlight");
@@ -90,7 +95,7 @@ export const DonutChart = ({ width, height, data }) => {
           }
         }}
       >
-        <path d={slicePath} fill={colors[i]} />
+        <path d={slicePath} fill={colors[i % colors.length]} />
         <circle cx={centroid[0]} cy={centroid[1]} r={2} />
         <line
           x1={centroid[0]}
@@ -119,27 +124,39 @@ export const DonutChart = ({ width, height, data }) => {
           {label}
         </text>
         <text
-         x={labelPosX + (isRightLabel ? 2 : -2)}
-         y={inflexionPoint[1] + verticalOffset}
-         textAnchor={textAnchor}
-         dominantBaseline="middle"
-         fontSize={14}
-         fill={"white"}>
-        {percentageOfPortfolio}%
+          x={labelPosX + (isRightLabel ? 2 : -2)}
+          y={inflexionPoint[1] + verticalOffset}
+          textAnchor={textAnchor}
+          dominantBaseline="middle"
+          fontSize={14}
+          fill={"white"}
+        >
+          {percentageOfPortfolio}%
         </text>
       </g>
     );
   });
 
   return (
-    <svg width={width} height={height} style={{ display: "inline-block" }}>
-      <g
-        transform={`translate(${width / 2}, ${height / 2})`}
-        className="container"
-        ref={ref}
-      >
-        {shapes}
-      </g>
-    </svg>
+    <Box sx={{position:'relative'}}>
+      {showOthers && (
+        <Button onClick={() => setShowOthers(false)} sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0
+        }}>
+          Back to Main View
+        </Button>
+      )}
+      <svg width={width} height={height} style={{ display: "inline-block" }}>
+        <g
+          transform={`translate(${width / 2}, ${height / 2})`}
+          className="container"
+          ref={ref}
+        >
+          {shapes}
+        </g>
+      </svg>
+    </Box>
   );
 };
