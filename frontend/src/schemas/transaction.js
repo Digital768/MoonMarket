@@ -17,3 +17,4 @@ export const transactionSchema = z.object({
     })
     .positive({ message: "Quantity must be positive" }),
 });
+

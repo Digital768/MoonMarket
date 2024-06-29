@@ -30,7 +30,7 @@ const WebsiteName = () => {
   };
 
   return (
-    <Typography variant="h4" sx={{ letterSpacing: '-2px', display: 'flex', alignItems: 'center' }}>
+    <Typography variant="h4" sx={{ letterSpacing: '-2px', display: 'flex', alignItems: 'center', justifyContent:'center' }}>
       {renderTextWithImages(text.slice(0, 4))}
       <Box component="span" sx={{ marginLeft: '0.3em' }}>
         {renderTextWithImages(text.slice(4))}

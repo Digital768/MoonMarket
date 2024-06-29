@@ -2,7 +2,8 @@ import React from 'react'
 
 function NewUserNoHoldings() {
   return (
-    <div>hey Bro</div>
+    <div>Nothing in this portfolio yet.<br></br>
+      Add investments to see performance and track returns</div>
   )
 }
 

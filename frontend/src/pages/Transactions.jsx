@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { getUserTransactions } from "@/api/transaction";
 import { useLoaderData } from "react-router-dom";
 import CustomizedTables from "@/components/TransactionsTable";
-import { Divider, Container } from "@mui/material";
+import { Divider, Container, Box } from "@mui/material";
 
 export const loader = (token) => async () => {
   const transactions = await getUserTransactions(token);
@@ -11,6 +11,7 @@ export const loader = (token) => async () => {
 
 function Transactions() {
   const data = useLoaderData();
+
 
 
   return (
@@ -30,9 +31,13 @@ function Transactions() {
         </h2>
       </div>
       <Divider />
-      <Container>
+      {data.length === 0 ? <Box sx={{
+        textAlign: "center",
+        marginTop:'5em'
+      }}>Nothing in this portfolio yet.<br></br>
+        Add investments to see performance and track returns</Box> : <Container>
         <CustomizedTables data={data} />
-      </Container>
+      </Container>}
     </div>
   );
 }

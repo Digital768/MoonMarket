@@ -1,6 +1,12 @@
 import axios from "axios";
 import { postApiStock } from "@/api/stock";
 
+
+export async function RegisterUser(user) {
+  const newUser = await axios.post("http://localhost:8000/register", user)
+  return newUser
+}
+
 export async function getUserData(token) {
 
   const user = await axios.get("http://localhost:8000/user/", {
@@ -130,7 +136,7 @@ export async function addDeposit(money, token) {
     amount: money,
     date: currentDate
   };
-  
+
   try {
     const response = await axios.post("http://localhost:8000/user/add_deposit", depositPayload, {
       headers: {

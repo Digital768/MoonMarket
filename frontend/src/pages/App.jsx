@@ -134,7 +134,7 @@ function App() {
           padding: 0,
         }}
       >
-        {data.data.transactions.length === 0 ? <NewUserNoHoldings /> : <DataGraph
+        {data.data.holdings.length === 0 ? <NewUserNoHoldings /> : <DataGraph
           isDataProcessed={isDataProcessed}
           selectedGraph={selectedGraph}
           visualizationData={visualizationData}
