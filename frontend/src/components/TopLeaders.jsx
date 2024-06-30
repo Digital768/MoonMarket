@@ -1,8 +1,27 @@
 import LeaderboardCard from "@/components/LeaderboardCard";
 import { Box } from "@mui/material";
 
-
 function TopLeaders({ leaderboardsData, category }) {
+  const renderLeaderboardCard = (index, position) => {
+    if (leaderboardsData.length > index) {
+      const data = leaderboardsData[index];
+      return (
+        <LeaderboardCard
+          Number={position}
+          ticker={data.ticker}
+          changeCount={
+            category === "percentage"
+              ? data.priceChangePercentage + "%"
+              : category === "positionSize"
+              ? data.value + "$"
+              : data.gainLoss + "$"
+          }
+        />
+      );
+    }
+    return null;
+  };
+
   return (
     <Box
       sx={{
@@ -27,39 +46,9 @@ function TopLeaders({ leaderboardsData, category }) {
           gap: 1,
         }}
       >
-        <LeaderboardCard
-          Number={2}
-          ticker={leaderboardsData[1].ticker}
-          changeCount={
-            category === "percentage"
-              ? leaderboardsData[1].priceChangePercentage + "%"
-              : category === "positionSize"
-              ? leaderboardsData[1].value + "$"
-              : leaderboardsData[1].gainLoss + "$"
-          }
-        />
-        <LeaderboardCard
-          Number={1}
-          ticker={leaderboardsData[0].ticker}
-          changeCount={
-            category === "percentage"
-              ? leaderboardsData[0].priceChangePercentage + "%"
-              : category === "positionSize"
-              ? leaderboardsData[0].value + "$"
-              : leaderboardsData[0].gainLoss + "$"
-          }
-        />
-        <LeaderboardCard
-          Number={3}
-          ticker={leaderboardsData[2].ticker}
-          changeCount={
-            category === "percentage"
-              ? leaderboardsData[2].priceChangePercentage + "%"
-              : category === "positionSize"
-              ? leaderboardsData[2].value + "$"
-              : leaderboardsData[2].gainLoss + "$"
-          }
-        />
+        {renderLeaderboardCard(1, 2)}
+        {renderLeaderboardCard(0, 1)}
+        {renderLeaderboardCard(2, 3)}
       </Box>
     </Box>
   );

@@ -58,9 +58,7 @@ export const action = async ({ request }) => {
 
 export const loader = (token) => async () => {
   const user = await getUserData(token);
-  const portfolioSnapShots = await getPortfolioSnapshots(token)
-  return { user, portfolioSnapShots };
-  // return user
+  return user
 };
 
 function App() {
@@ -68,16 +66,17 @@ function App() {
   const { token } = useAuth();
   const fetcher = useFetcher();
   const data = useLoaderData();
+  const [hourlySnapShots, dailySnapShots] = useSnapshotData()
+  //add that dailty data to the chart
   const [stockTickers, visualizationData, value, moneySpent, isDataProcessed] =
-    useGraphData(data.user, selectedGraph);
-  const { formattedDate } = lastUpdateDate(data.user);
-  // const portfolioSnapShotData = useSnapshotData(data.portfolioSnapShots.data)
+    useGraphData(data, selectedGraph);
+  const { formattedDate } = lastUpdateDate(data);
   const incrementalChange = value - moneySpent;
   const percentageChange = (incrementalChange / value) * 100;
 
   // useEffect(() => {
-  //   console.log(typeof(value));
-  // }, [data, visualizationData]);
+  //   console.log(hourlySnapShots);
+  // }, [data]);
 
 
   return (
@@ -94,9 +93,9 @@ function App() {
       <Box sx={{
         display: "flex",
         flexDirection: 'column',
-        gap: 10,
+        gap: 5,
         width: "30%",
-        marginTop: "5%", // This line moves the box down by 30%
+        marginTop: "8%", // This line moves the box down by 30%
       }}>
         <Box
           className="stats"
@@ -141,7 +140,7 @@ function App() {
           </fetcher.Form>}
 
         </Box>
-        {data.portfolioSnapShots.data.length === 0 ? null : <LineChart data={data.portfolioSnapShots.data} width={400} height={300} />}
+        {hourlySnapShots === null ? null : <LineChart data={hourlySnapShots} width={400} height={300} />}
       </Box>
       <Box
         className="graph"
@@ -150,7 +149,7 @@ function App() {
           padding: 0,
         }}
       >
-        {data.user.data.holdings.length === 0 ? <NewUserNoHoldings /> : <DataGraph
+        {data.data.holdings.length === 0 ? <NewUserNoHoldings /> : <DataGraph
           isDataProcessed={isDataProcessed}
           selectedGraph={selectedGraph}
           visualizationData={visualizationData}

@@ -17,8 +17,8 @@ async def create_snapshot(value: float , user: User = Depends(current_user)):
     await snapshot.insert()
     return {"message": "Snapshot created successfully"}
 
-@router.get("/snapshots")
-async def get_snapshots(timeframe: str = "intraday"):
+@router.get("/{timeframe}")
+async def get_snapshots(timeframe: str, user: User = Depends(current_user)):
     print(timeframe)
     if timeframe == "intraday":
         # Return all snapshots for the current day
@@ -26,6 +26,7 @@ async def get_snapshots(timeframe: str = "intraday"):
         snapshots = await PortfolioSnapshot.find(
             PortfolioSnapshot.timestamp >= today
         ).to_list()
+        return [{"timestamp": s.timestamp, "value": s.value} for s in snapshots]
     elif timeframe == "daily":
         # Return the latest snapshot for each day
         pipeline = [
@@ -37,7 +38,6 @@ async def get_snapshots(timeframe: str = "intraday"):
             {"$sort": {"timestamp": 1}}
         ]
         snapshots = await PortfolioSnapshot.aggregate(pipeline).to_list()
+        return [{"timestamp": s["timestamp"], "value": s["value"]} for s in snapshots]
     else:
         return {"error": "Invalid timeframe"}
-    
-    return [{"timestamp": s.timestamp, "value": s.value} for s in snapshots]
