@@ -14,7 +14,9 @@ import PortfolioValue from "@/components/AnimatedNumber";
 import DataGraph from "@/components/DataGraph";
 import MarketStatus from "@/components/MarketStatus";
 import NewUserNoHoldings from "@/components/NewUserNoHoldings";
-import {postSnapshot, getPortfolioSnapshots} from '@/api/portfolioSnapshot'
+import { postSnapshot, getPortfolioSnapshots } from '@/api/portfolioSnapshot'
+import useSnapshotData from '@/hooks/useSnapshotData'
+import LineChart from "@/components/LineGraph";
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -44,8 +46,8 @@ export const action = async ({ request }) => {
       }
     });
     const addPortfolioSnapshot = await postSnapshot(parseFloat(value), token);
-    
-    
+
+
 
     return results;
   } catch (error) {
@@ -57,7 +59,7 @@ export const action = async ({ request }) => {
 export const loader = (token) => async () => {
   const user = await getUserData(token);
   const portfolioSnapShots = await getPortfolioSnapshots(token)
-  return {user, portfolioSnapShots};
+  return { user, portfolioSnapShots };
   // return user
 };
 
@@ -69,6 +71,7 @@ function App() {
   const [stockTickers, visualizationData, value, moneySpent, isDataProcessed] =
     useGraphData(data.user, selectedGraph);
   const { formattedDate } = lastUpdateDate(data.user);
+  // const portfolioSnapShotData = useSnapshotData(data.portfolioSnapShots.data)
   const incrementalChange = value - moneySpent;
   const percentageChange = (incrementalChange / value) * 100;
 
@@ -88,51 +91,57 @@ function App() {
         margin: "auto",
       }}
     >
-      <Box
-        className="stats"
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "center",
-          width: "25%",
-          marginTop: "5%", // This line moves the box down by 30%
-          paddingRight: "8em",
-        }}
-      >
+      <Box sx={{
+        display: "flex",
+        flexDirection: 'column',
+        gap: 10,
+        width: "30%",
+        marginTop: "5%", // This line moves the box down by 30%
+      }}>
         <Box
-          className="portfolio-details"
+          className="stats"
           sx={{
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
+            paddingLeft: '4em'
           }}
         >
-          <PortfolioValue value={value} />
-          {value === 0 ? null : <Typography variant="body1" color={"#596ee7"}>
-            {incrementalChange.toLocaleString("en-US")}$ (
-            {percentageChange.toLocaleString("en-US")}%) Overall
-          </Typography>}
-          <MarketStatus />
-        </Box>
-        {value === 0 ? null : <fetcher.Form method="post">
-          <input type="hidden" name="tickers" value={stockTickers.join(",")} />
-          <input type="hidden" name="token" value={token} />
-          <input type="hidden" name="value" value={value} />
-          <Tooltip
-            title={`last updated at: ${formattedDate}. Click to refresh Stocks price`}
-            placement="top"
+          <Box
+            className="portfolio-details"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+            }}
           >
-            <Button
-              sx={{
-                marginTop: "10px",
-                justifyContent: "flex-end",
-              }}
-              variant="outlined"
-              type="submit"
-              startIcon={<SyncIcon />}
-            ></Button>
-          </Tooltip>
-        </fetcher.Form>}
+            <PortfolioValue value={value} />
+            {value === 0 ? null : <Typography variant="body1" color={"#596ee7"}>
+              {incrementalChange.toLocaleString("en-US")}$ (
+              {percentageChange.toLocaleString("en-US")}%) Overall
+            </Typography>}
+            <MarketStatus />
+          </Box>
+          {value === 0 ? null : <fetcher.Form method="post">
+            <input type="hidden" name="tickers" value={stockTickers.join(",")} />
+            <input type="hidden" name="token" value={token} />
+            <input type="hidden" name="value" value={value} />
+            <Tooltip
+              title={`last updated at: ${formattedDate}. Click to refresh Stocks price`}
+              placement="top"
+            >
+              <Button
+                sx={{
+                  marginTop: "10px",
+                  justifyContent: "flex-end",
+                }}
+                variant="outlined"
+                type="submit"
+                startIcon={<SyncIcon />}
+              ></Button>
+            </Tooltip>
+          </fetcher.Form>}
 
+        </Box>
+        {data.portfolioSnapShots.data.length === 0 ? null : <LineChart data={data.portfolioSnapShots.data} width={400} height={300} />}
       </Box>
       <Box
         className="graph"
