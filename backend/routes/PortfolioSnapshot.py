@@ -3,6 +3,7 @@ from fastapi import APIRouter, Body, Depends
 from models.PortfolioSnapshot import PortfolioSnapshot
 from util.current_user import current_user
 from models.user import User
+from typing import Annotated
 
 from datetime import datetime
 
@@ -11,8 +12,8 @@ from datetime import datetime
 router = APIRouter(prefix="/PortfolioSnapshot", tags=["Stock"])
 
 @router.post("/snapshot")
-async def create_snapshot(value: float = Body(...), user: User = Depends(current_user)):
-    snapshot = PortfolioSnapshot(timestamp=datetime.utcnow(), value=value, user_id=str(user.id))
+async def create_snapshot(value: float , user: User = Depends(current_user)):
+    snapshot = PortfolioSnapshot(timestamp=datetime.utcnow(), value=value, userId=user.id)  # Changed from user_id to userId
     await snapshot.insert()
     return {"message": "Snapshot created successfully"}
 

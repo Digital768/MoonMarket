@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Request, Body, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends
 from models.stock import Stock
 from util.current_user import current_user
 from models.user import User

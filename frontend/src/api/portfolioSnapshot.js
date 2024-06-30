@@ -1,15 +1,21 @@
 import axios from "axios";
 
-export function postSnapshot(value, token) {
-    return axios.post("http://localhost:8000/PortfolioSnapshot/snapshot", value, {
+export async function postSnapshot(value, token) {
+    const numericValue = Number(value);
+    if (isNaN(numericValue)) {
+        throw new Error("Value must be a valid number");
+    }
+    return await axios.post("http://localhost:8000/PortfolioSnapshot/snapshot", null, {
+        params: { value },
         headers: {
             'Authorization': `Bearer ${token}`,
         },
     })
 }
 
+
 export async function getPortfolioSnapshots(token) {
-    return axios.get("http://localhost:8000/PortfolioSnapshot/snapshots", {
+    return await axios.get("http://localhost:8000/PortfolioSnapshot/snapshots", {
         headers: {
             'Authorization': `Bearer ${token}`,
         },

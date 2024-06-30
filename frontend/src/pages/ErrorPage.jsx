@@ -10,7 +10,6 @@ const ErrorPage = () => {
   const navigate = useNavigate();
 
   // Log the error object to the console for debugging
-  console.error('Route Error:', error);
 
 
   const handleClick =  () => {

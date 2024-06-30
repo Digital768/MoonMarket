@@ -45,6 +45,7 @@ export const action = async ({ request }) => {
     });
     const addPortfolioSnapshot = await postSnapshot(parseFloat(value), token);
     
+    
 
     return results;
   } catch (error) {
@@ -55,9 +56,9 @@ export const action = async ({ request }) => {
 
 export const loader = (token) => async () => {
   const user = await getUserData(token);
-  // const portfolioSnapShots = await getPortfolioSnapshots(token)
-  // return {user, portfolioSnapShots};
-  return user
+  const portfolioSnapShots = await getPortfolioSnapshots(token)
+  return {user, portfolioSnapShots};
+  // return user
 };
 
 function App() {
@@ -65,10 +66,9 @@ function App() {
   const { token } = useAuth();
   const fetcher = useFetcher();
   const data = useLoaderData();
-  // console.log(data)
   const [stockTickers, visualizationData, value, moneySpent, isDataProcessed] =
-    useGraphData(data, selectedGraph);
-  const { formattedDate } = lastUpdateDate(data);
+    useGraphData(data.user, selectedGraph);
+  const { formattedDate } = lastUpdateDate(data.user);
   const incrementalChange = value - moneySpent;
   const percentageChange = (incrementalChange / value) * 100;
 
@@ -141,7 +141,7 @@ function App() {
           padding: 0,
         }}
       >
-        {data.data.holdings.length === 0 ? <NewUserNoHoldings /> : <DataGraph
+        {data.user.data.holdings.length === 0 ? <NewUserNoHoldings /> : <DataGraph
           isDataProcessed={isDataProcessed}
           selectedGraph={selectedGraph}
           visualizationData={visualizationData}
